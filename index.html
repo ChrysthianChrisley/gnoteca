@@ -11,10 +11,10 @@
     <header>
         <button id="btn-home" class="brand-button" type="button">Gnoteca</button>
         <nav>
-            <button id="btn-write" class="hidden">Nova Ideia</button>
-            <button id="btn-read" class="hidden">Meu Acervo</button>
+            <button id="btn-write" class="hidden" data-i18n="newIdea">Nova Ideia</button>
+            <button id="btn-read" class="hidden" data-i18n="myCollection">Meu Acervo</button>
         </nav>
-        <button id="login-trigger" class="login-trigger" type="button">Entrar</button>
+        <button id="login-trigger" class="login-trigger" type="button" data-i18n="signIn">Entrar</button>
         <button id="btn-profile" class="profile-trigger hidden" aria-label="Abrir perfil" aria-expanded="false">
             <span class="profile-avatar" data-profile-avatar>C</span>
         </button>
@@ -32,15 +32,15 @@
             <p data-i18n="profileSubtitle">colecionador de ideias</p>
         </div>
         <div id="auth-panel" class="auth-panel">
-            <p id="auth-status" class="auth-status">Não autenticado</p>
-            <input id="auth-email" class="auth-input" type="email" placeholder="Seu e-mail">
-            <input id="auth-password" class="auth-input" type="password" placeholder="Sua senha">
+            <p id="auth-status" class="auth-status" data-i18n="notAuthenticated">Não autenticado</p>
+            <input id="auth-email" class="auth-input" type="email" placeholder="Seu e-mail" data-i18n-placeholder="emailPlaceholder">
+            <input id="auth-password" class="auth-input" type="password" placeholder="Sua senha" data-i18n-placeholder="passwordPlaceholder">
             <div class="auth-actions">
-                <button id="email-sign-in" type="button">Entrar</button>
-                <button id="email-sign-up" type="button">Criar conta</button>
+                <button id="email-sign-in" type="button" data-i18n="signIn">Entrar</button>
+                <button id="email-sign-up" type="button" data-i18n="createAccount">Criar conta</button>
             </div>
-            <button id="google-sign-in" class="google-button" type="button">Continuar com Google</button>
-            <button id="sign-out" class="signout-button hidden" type="button">Sair</button>
+            <button id="google-sign-in" class="google-button" type="button" data-i18n="continueGoogle">Continuar com Google</button>
+            <button id="sign-out" class="signout-button hidden" type="button" data-i18n="signOutShort">Sair</button>
         </div>
         <div class="profile-stats" aria-label="Resumo do acervo">
             <div><strong id="ideas-count">0</strong><span data-i18n="fragments">fragmentos</span></div>
@@ -55,9 +55,9 @@
         <div class="language-panel">
             <span class="language-label" data-i18n="language">Idioma</span>
             <div class="language-options lang-menu" role="group" aria-label="Idioma">
-                <a class="language-option" data-language="pt-BR" href="/pt"><span class="fi fi-br" aria-hidden="true"></span> PT-BR</a>
-                <a class="language-option" data-language="en-US" href="/en"><span class="fi fi-us" aria-hidden="true"></span> EN-US</a>
-                <a class="language-option" data-language="es-ES" href="/es"><span class="fi fi-es" aria-hidden="true"></span> ES</a>
+                <button class="language-option" data-language="pt-BR" type="button"><span class="fi fi-br" aria-hidden="true"></span> PT-BR</button>
+                <button class="language-option" data-language="en-US" type="button"><span class="fi fi-us" aria-hidden="true"></span> EN-US</button>
+                <button class="language-option" data-language="es-ES" type="button"><span class="fi fi-es" aria-hidden="true"></span> ES</button>
             </div>
         </div>
         <button id="btn-signout" class="signout-button" type="button" data-i18n="signOut">Sair da conta</button>
@@ -67,16 +67,16 @@
         <div class="auth-gate-card">
             <button id="close-auth-gate" class="auth-gate-close" type="button" aria-label="Fechar">x</button>
             <p class="section-kicker">Gnoteca</p>
-            <h2 id="auth-gate-title">Entre para continuar</h2>
-            <p>Crie sua conta ou entre para publicar, votar e explorar todo o acervo.</p>
-            <input id="gate-email" class="auth-input" type="email" placeholder="Seu e-mail" autocomplete="email">
-            <input id="gate-password" class="auth-input" type="password" placeholder="Sua senha" autocomplete="current-password">
+            <h2 id="auth-gate-title" data-i18n="signInToContinue">Entre para continuar</h2>
+            <p data-i18n="authDescription">Crie sua conta ou entre para publicar, votar e explorar todo o acervo.</p>
+            <input id="gate-email" class="auth-input" type="email" placeholder="Seu e-mail" data-i18n-placeholder="emailPlaceholder" autocomplete="email">
+            <input id="gate-password" class="auth-input" type="password" placeholder="Sua senha" data-i18n-placeholder="passwordPlaceholder" autocomplete="current-password">
             <div class="gate-email-actions">
-                <button id="gate-email-sign-in" class="gate-primary-button" type="button">Entrar</button>
-                <button id="gate-email-sign-up" class="gate-secondary-button" type="button">Criar conta</button>
+                <button id="gate-email-sign-in" class="gate-primary-button" type="button" data-i18n="signIn">Entrar</button>
+                <button id="gate-email-sign-up" class="gate-secondary-button" type="button" data-i18n="createAccount">Criar conta</button>
             </div>
-            <div class="auth-divider"><span>ou</span></div>
-            <button id="gate-google-sign-in" class="google-button" type="button"><span class="google-mark" aria-hidden="true">G</span> Continuar com Google</button>
+            <div class="auth-divider"><span data-i18n="or">ou</span></div>
+            <button id="gate-google-sign-in" class="google-button" type="button"><span class="google-mark" aria-hidden="true">G</span> <span data-i18n="continueGoogle">Continuar com Google</span></button>
             <p id="gate-auth-feedback" class="gate-auth-feedback" role="status"></p>
         </div>
     </div>
@@ -98,7 +98,7 @@
         <!-- Tela de Registro -->
         <section id="write-section" class="hidden">
             <textarea id="idea-input" maxlength="280" placeholder="O que quer registrar?" data-i18n-placeholder="ideaPlaceholder"></textarea>
-            <div id="char-counter">0 / 280</div><button id="btn-save">Salvar na Gnoteca</button>
+            <div id="char-counter">0 / 280</div><button id="btn-save" data-i18n="saveToGnoteca">Salvar na Gnoteca</button>
             <p id="feedback-msg" class="hidden">Ideia salva com sucesso!</p>
         </section>
 
@@ -121,7 +121,7 @@
             <div id="ideas-list">
                 <!-- As ideias salvas aparecerão aqui -->
             </div>
-            <button id="load-more-feed" class="load-more-button hidden" type="button">Entrar para ver mais</button>
+            <button id="load-more-feed" class="load-more-button hidden" type="button" data-i18n="signInToSeeMore">Entrar para ver mais</button>
         </section>
     </main>
 

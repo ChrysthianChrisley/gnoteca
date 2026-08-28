@@ -72,7 +72,7 @@ async function refreshAuthState() {
         name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'Usuário'
     } : null;
     const authenticated = Boolean(user);
-    authStatus.textContent = authenticated ? user.email : 'Não autenticado';
+    authStatus.textContent = authenticated ? user.email : translate('notAuthenticated');
     emailSignIn.classList.toggle('hidden', authenticated);
     emailSignUp.classList.toggle('hidden', authenticated);
     googleSignIn.classList.toggle('hidden', authenticated);
@@ -89,6 +89,11 @@ async function refreshAuthState() {
         profileName.textContent = authenticatedUser.name;
         profileAvatars.forEach(avatar => {
             avatar.textContent = authenticatedUser.name.charAt(0).toUpperCase();
+        });
+    } else {
+        profileName.textContent = translate('notAuthenticated');
+        profileAvatars.forEach(avatar => {
+            avatar.textContent = '?';
         });
     }
     loadIdeas();
@@ -114,7 +119,7 @@ gateEmailSignIn.addEventListener('click', async () => {
         email: gateEmail.value.trim(),
         password: gatePassword.value
     });
-    gateAuthFeedback.textContent = error ? error.message : 'Login realizado.';
+    gateAuthFeedback.textContent = error ? error.message : translate('loginSuccess') + '.';
     if (!error) hideAuthGate();
 });
 gateEmailSignUp.addEventListener('click', async () => {
@@ -122,20 +127,20 @@ gateEmailSignUp.addEventListener('click', async () => {
         email: gateEmail.value.trim(),
         password: gatePassword.value
     });
-    gateAuthFeedback.textContent = error ? error.message : 'Confirme seu e-mail para continuar.';
+    gateAuthFeedback.textContent = error ? error.message : translate('confirmEmail') + '.';
 });
 loadMoreFeed.addEventListener('click', showAuthGate);
 loginTrigger.addEventListener('click', showAuthGate);
 
 emailSignIn.addEventListener('click', async () => {
     const { error } = await supabaseClient.auth.signInWithPassword({ email: authEmail.value.trim(), password: authPassword.value });
-    showAuthMessage(error ? error.message : 'Login realizado');
+    showAuthMessage(error ? error.message : translate('loginSuccess'));
     if (!error) await refreshAuthState();
 });
 
 emailSignUp.addEventListener('click', async () => {
     const { error } = await supabaseClient.auth.signUp({ email: authEmail.value.trim(), password: authPassword.value });
-    showAuthMessage(error ? error.message : 'Confirme seu e-mail para continuar');
+    showAuthMessage(error ? error.message : translate('confirmEmail'));
 });
 
 googleSignIn.addEventListener('click', async () => {
@@ -154,6 +159,9 @@ refreshAuthState();
 const translations = {
     'pt-BR': {
         profileTitle: 'Meu perfil', profileSubtitle: 'colecionador de ideias',
+        newIdea: 'Nova Ideia', myCollection: 'Meu Acervo', notAuthenticated: 'Não autenticado', emailPlaceholder: 'Seu e-mail', passwordPlaceholder: 'Sua senha',
+        signIn: 'Entrar', createAccount: 'Criar conta', continueGoogle: 'Continuar com Google', signOutShort: 'Sair', or: 'ou', signInToContinue: 'Entre para continuar',
+        authDescription: 'Crie sua conta ou entre para publicar, votar e explorar todo o acervo.', loginSuccess: 'Login realizado', confirmEmail: 'Confirme seu e-mail para continuar', save: 'Salvar', saveToGnoteca: 'Salvar na Gnoteca', signInToSeeMore: 'Entrar para ver mais', by: 'por', edit: 'Editar', delete: 'Apagar',
         fragments: 'fragmentos', favorites: 'favoritos', overview: 'Visão geral', settings: 'Configurações', signOut: 'Sair da conta',
         language: 'Idioma', removeEntry: 'Remover entrada', deleteQuestion: 'Apagar este fragmento?', deleteWarning: 'Essa ação não poderá ser desfeita.',
         cancel: 'Cancelar', delete: 'Apagar', ideaPlaceholder: 'O que quer registrar?', backToFeed: 'Voltar ao acervo', publicCollection: 'Acervo público',
@@ -163,6 +171,9 @@ const translations = {
     },
     'en-US': {
         profileTitle: 'My profile', profileSubtitle: 'idea collector', fragments: 'fragments', favorites: 'favorites',
+        newIdea: 'New Idea', myCollection: 'My Collection', notAuthenticated: 'Not authenticated', emailPlaceholder: 'Your email', passwordPlaceholder: 'Your password',
+        signIn: 'Sign in', createAccount: 'Create account', continueGoogle: 'Continue with Google', signOutShort: 'Sign out', or: 'or', signInToContinue: 'Sign in to continue',
+        authDescription: 'Create an account or sign in to publish, vote, and explore the entire collection.', loginSuccess: 'Signed in', confirmEmail: 'Confirm your email to continue', save: 'Save', saveToGnoteca: 'Save to Gnoteca', signInToSeeMore: 'Sign in to see more', by: 'by', edit: 'Edit', delete: 'Delete',
         overview: 'Overview', settings: 'Settings', signOut: 'Sign out', language: 'Language', removeEntry: 'Remove entry', deleteQuestion: 'Delete this fragment?',
         deleteWarning: 'This action cannot be undone.', cancel: 'Cancel', delete: 'Delete', ideaPlaceholder: 'What would you like to record?', backToFeed: 'Back to collection',
         publicCollection: 'Public collection', latestFragments: 'Latest fragments', sortBy: 'Sort by', newest: 'Newest', mostVoted: 'Most voted', mostFavorited: 'Most favorited',
@@ -171,6 +182,9 @@ const translations = {
     },
     'es-ES': {
         profileTitle: 'Mi perfil', profileSubtitle: 'coleccionista de ideas', fragments: 'fragmentos', favorites: 'favoritos',
+        newIdea: 'Nueva idea', myCollection: 'Mi acervo', notAuthenticated: 'No autenticado', emailPlaceholder: 'Tu correo', passwordPlaceholder: 'Tu contraseña',
+        signIn: 'Entrar', createAccount: 'Crear cuenta', continueGoogle: 'Continuar con Google', signOutShort: 'Salir', or: 'o', signInToContinue: 'Inicia sesión para continuar',
+        authDescription: 'Crea una cuenta o inicia sesión para publicar, votar y explorar todo el acervo.', loginSuccess: 'Sesión iniciada', confirmEmail: 'Confirma tu correo para continuar', save: 'Guardar', saveToGnoteca: 'Guardar en Gnoteca', signInToSeeMore: 'Inicia sesión para ver más', by: 'por', edit: 'Editar', delete: 'Eliminar',
         overview: 'Vista general', settings: 'Configuración', signOut: 'Cerrar sesión', language: 'Idioma', removeEntry: 'Eliminar entrada', deleteQuestion: '¿Eliminar este fragmento?',
         deleteWarning: 'Esta acción no se puede deshacer.', cancel: 'Cancelar', delete: 'Eliminar', ideaPlaceholder: '¿Qué quieres registrar?', backToFeed: 'Volver al acervo',
         publicCollection: 'Acervo público', latestFragments: 'Últimos fragmentos', sortBy: 'Ordenar por', newest: 'Más nuevos', mostVoted: 'Más votados', mostFavorited: 'Más favoritos',
@@ -200,10 +214,8 @@ function applyLanguage(language) {
     loadIdeas();
 }
 
-languageOptions.forEach(option => option.addEventListener('click', event => {
-    event.preventDefault();
+languageOptions.forEach(option => option.addEventListener('click', () => {
     applyLanguage(option.dataset.language);
-    window.history.pushState({ language: option.dataset.language }, '', `${projectBasePath}${option.getAttribute('href')}`);
 }));
 
 function slugify(name) {
@@ -216,11 +228,18 @@ function slugify(name) {
 }
 
 function getAccountBySlug(slug) {
-    return getAccounts().find(account => slugify(account.name) === slug);
+    const knownAccount = getAccounts().find(account => slugify(account.name) === slug);
+    if (knownAccount) return knownAccount;
+    const ideas = JSON.parse(localStorage.getItem('gnoteca_ideas')) || [];
+    const idea = ideas.find(item => slugify(item.authorName || '') === slug);
+    return idea ? { id: idea.authorId, name: idea.authorName } : null;
 }
 
 function getProfilePath(account) {
-    return `${projectBasePath}/${slugify(account.name)}`;
+    const profileSlug = slugify(account.name);
+    return window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
+        ? `${projectBasePath}/#/${profileSlug}`
+        : `${projectBasePath}/${profileSlug}`;
 }
 
 function getHomePath() {
@@ -335,7 +354,8 @@ function showProfile(profileId) {
 
 function loadRouteFromUrl() {
     const pathWithoutBase = window.location.pathname.slice(projectBasePath.length);
-    const slug = pathWithoutBase.split('/').filter(Boolean)[0];
+    const hashSlug = window.location.hash.startsWith('#/') ? window.location.hash.slice(2).split('/')[0] : '';
+    const slug = hashSlug || pathWithoutBase.split('/').filter(Boolean)[0];
     const account = slug ? getAccountBySlug(slug) : null;
 
     if (account) {
@@ -506,10 +526,10 @@ function loadIdeas() {
         const isAuthor = idea.authorId === currentAccount.id;
         card.innerHTML = `
             <div class="idea-header">
-                <span class="idea-date">${idea.date}<span class="idea-author">por <button class="author-link" type="button" data-action="profile" data-profile-id="${idea.authorId}">${idea.authorName}</button></span></span>
+                <span class="idea-date">${idea.date}<span class="idea-author">${translate('by')} <button class="author-link" type="button" data-action="profile" data-profile-id="${idea.authorId}">${idea.authorName}</button></span></span>
                 <div class="entry-actions${isAuthor ? '' : ' hidden'}">
-                    <button class="entry-action" type="button" data-action="edit" data-idea-id="${idea.id}" aria-label="Editar entrada">Editar</button>
-                    <button class="entry-action delete-action" type="button" data-action="delete" data-idea-id="${idea.id}" aria-label="Apagar entrada">Apagar</button>
+                    <button class="entry-action" type="button" data-action="edit" data-idea-id="${idea.id}" aria-label="${translate('edit')} entrada">${translate('edit')}</button>
+                    <button class="entry-action delete-action" type="button" data-action="delete" data-idea-id="${idea.id}" aria-label="${translate('delete')} entrada">${translate('delete')}</button>
                 </div>
             </div>
             <p class="idea-content">${idea.content.replace(/\n/g, '<br>')}</p>
@@ -572,13 +592,13 @@ function loadIdeas() {
         if (!idea) return;
 
         if ((action === 'edit' || action === 'delete' || action === 'save-edit') && idea.authorId !== currentAccount.id) {
-            showActionFeedback('Apenas o autor pode alterar esta entrada.');
+            showActionFeedback(translate('authorOnly'));
             return;
         }
 
         if (action === 'edit') {
             if (idea.authorId && idea.authorId !== currentAccount.id) {
-                showActionFeedback('Apenas o autor pode editar esta entrada.');
+                showActionFeedback(translate('authorOnly'));
                 return;
             }
             enterEditMode(button.closest('.idea-card'), idea);
@@ -597,7 +617,7 @@ function loadIdeas() {
             });
         } else if (action === 'delete') {
             if (idea.authorId && idea.authorId !== currentAccount.id) {
-                showActionFeedback('Apenas o autor pode apagar esta entrada.');
+                showActionFeedback(translate('authorOnly'));
                 return;
             }
             openDeleteDialog(ideaId, button.closest('.idea-card'));
@@ -653,12 +673,12 @@ function enterEditMode(card, idea) {
     content.replaceWith(editField);
 
     editButton.dataset.action = 'save-edit';
-    editButton.textContent = 'Salvar';
-    editButton.setAttribute('aria-label', 'Salvar edição');
+    editButton.textContent = translate('save');
+    editButton.setAttribute('aria-label', `${translate('save')} ${translate('edit').toLowerCase()}`);
     deleteButton.dataset.action = 'cancel-edit';
-    deleteButton.textContent = 'Cancelar';
+    deleteButton.textContent = translate('cancel');
     deleteButton.classList.remove('delete-action');
-    deleteButton.setAttribute('aria-label', 'Cancelar edição');
+    deleteButton.setAttribute('aria-label', `${translate('cancel')} ${translate('edit').toLowerCase()}`);
     actions.classList.add('editing-actions');
     editField.focus();
 }
