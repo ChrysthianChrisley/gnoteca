@@ -10,6 +10,7 @@ const ideasList = document.getElementById('ideas-list');
 const profileSidebar = document.getElementById('profile-sidebar');
 const sidebarOverlay = document.getElementById('sidebar-overlay');
 const btnProfile = document.getElementById('btn-profile');
+const loginTrigger = document.getElementById('login-trigger');
 const btnCloseSidebar = document.getElementById('btn-close-sidebar');
 const ideasCount = document.getElementById('ideas-count');
 const favoritesCount = document.getElementById('favorites-count');
@@ -37,6 +38,15 @@ const emailSignIn = document.getElementById('email-sign-in');
 const emailSignUp = document.getElementById('email-sign-up');
 const googleSignIn = document.getElementById('google-sign-in');
 const signOut = document.getElementById('sign-out');
+const authGate = document.getElementById('auth-gate');
+const closeAuthGate = document.getElementById('close-auth-gate');
+const gateGoogleSignIn = document.getElementById('gate-google-sign-in');
+const gateEmailSignIn = document.getElementById('gate-email-sign-in');
+const gateEmailSignUp = document.getElementById('gate-email-sign-up');
+const gateEmail = document.getElementById('gate-email');
+const gatePassword = document.getElementById('gate-password');
+const gateAuthFeedback = document.getElementById('gate-auth-feedback');
+const loadMoreFeed = document.getElementById('load-more-feed');
 
 const charCounter = document.getElementById('char-counter');
 const maxLength = 280;
@@ -45,6 +55,7 @@ let activeFeed = 'global';
 let selectedProfileId = null;
 const projectBasePath = window.location.pathname.startsWith('/gnoteca') ? '/gnoteca' : '';
 let authenticatedUser = null;
+const publicFeedLimit = 10;
 
 const supabaseUrl = 'https://vavitcyykwqqmjqkhyna.supabase.co';
 const supabasePublishableKey = 'sb_publishable_5hBpKXPuMB0HmAuyww6WcA_I7C55xwa';
@@ -68,7 +79,13 @@ async function refreshAuthState() {
     authEmail.classList.toggle('hidden', authenticated);
     authPassword.classList.toggle('hidden', authenticated);
     signOut.classList.toggle('hidden', !authenticated);
+    btnWrite.classList.toggle('hidden', !authenticated);
+    btnRead.classList.toggle('hidden', !authenticated);
+    btnProfile.classList.toggle('hidden', !authenticated);
+    loginTrigger.classList.toggle('hidden', authenticated);
+    loadMoreFeed.classList.toggle('hidden', authenticated || activeFeed !== 'global');
     if (authenticatedUser) {
+        hideAuthGate();
         profileName.textContent = authenticatedUser.name;
         profileAvatars.forEach(avatar => {
             avatar.textContent = authenticatedUser.name.charAt(0).toUpperCase();
@@ -77,6 +94,38 @@ async function refreshAuthState() {
     loadIdeas();
     updateProfileStats();
 }
+
+function showAuthGate() {
+    authGate.classList.remove('hidden');
+    closeAuthGate.focus();
+}
+
+function hideAuthGate() {
+    authGate.classList.add('hidden');
+}
+
+closeAuthGate.addEventListener('click', hideAuthGate);
+authGate.addEventListener('click', event => {
+    if (event.target === authGate) hideAuthGate();
+});
+gateGoogleSignIn.addEventListener('click', () => googleSignIn.click());
+gateEmailSignIn.addEventListener('click', async () => {
+    const { error } = await supabaseClient.auth.signInWithPassword({
+        email: gateEmail.value.trim(),
+        password: gatePassword.value
+    });
+    gateAuthFeedback.textContent = error ? error.message : 'Login realizado.';
+    if (!error) hideAuthGate();
+});
+gateEmailSignUp.addEventListener('click', async () => {
+    const { error } = await supabaseClient.auth.signUp({
+        email: gateEmail.value.trim(),
+        password: gatePassword.value
+    });
+    gateAuthFeedback.textContent = error ? error.message : 'Confirme seu e-mail para continuar.';
+});
+loadMoreFeed.addEventListener('click', showAuthGate);
+loginTrigger.addEventListener('click', showAuthGate);
 
 emailSignIn.addEventListener('click', async () => {
     const { error } = await supabaseClient.auth.signInWithPassword({ email: authEmail.value.trim(), password: authPassword.value });
@@ -253,6 +302,10 @@ function toggleSidebar(isOpen) {
 }
 
 function showFeed(feedType) {
+    if (feedType !== 'global' && !authenticatedUser) {
+        showAuthGate();
+        return;
+    }
     activeFeed = feedType;
     selectedProfileId = null;
     window.history.pushState({ feedType }, '', getHomePath());
@@ -264,6 +317,10 @@ function showFeed(feedType) {
 }
 
 function showProfile(profileId) {
+    if (!authenticatedUser) {
+        showAuthGate();
+        return;
+    }
     const account = getAccounts().find(item => item.id === profileId);
     if (!account) return;
     activeFeed = 'profile';
@@ -323,6 +380,10 @@ ideaInput.addEventListener('input', () => {
 
 // Navegação (Alternar entre Escrever e Ler)
 btnWrite.addEventListener('click', () => {
+    if (!authenticatedUser) {
+        showAuthGate();
+        return;
+    }
     writeSection.classList.remove('hidden');
     readSection.classList.add('hidden');
     btnWrite.classList.add('active');
@@ -330,6 +391,10 @@ btnWrite.addEventListener('click', () => {
 });
 
 btnRead.addEventListener('click', () => {
+    if (!authenticatedUser) {
+        showAuthGate();
+        return;
+    }
     showFeed('mine');
 });
 
@@ -337,6 +402,10 @@ loadRouteFromUrl();
 
 // Salvar a Ideia
 btnSave.addEventListener('click', () => {
+    if (!authenticatedUser) {
+        showAuthGate();
+        return;
+    }
     const text = ideaInput.value.trim();
     if (!text) return; // Não salva se estiver vazio
 
@@ -400,6 +469,8 @@ function loadIdeas() {
         : activeFeed === 'favorites'
             ? allIdeas.filter(idea => idea.favoritesByAccount[currentAccount.id])
             : allIdeas;
+    const isPublicVisitor = !authenticatedUser && activeFeed === 'global';
+    if (isPublicVisitor) savedIdeas = savedIdeas.slice(0, publicFeedLimit);
     const profileAccount = getAccounts().find(account => account.id === selectedProfileId);
     feedKicker.textContent = activeFeed === 'profile' ? translate('profile') : translate('publicCollection');
     feedTitle.textContent = activeFeed === 'profile'
@@ -424,6 +495,7 @@ function loadIdeas() {
     }
 
     ideasCount.textContent = savedIdeas.length;
+    loadMoreFeed.classList.toggle('hidden', !isPublicVisitor || allIdeas.length <= publicFeedLimit);
 
     // Renderiza cada ideia na tela
     savedIdeas.forEach(idea => {

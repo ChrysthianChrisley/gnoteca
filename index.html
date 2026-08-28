@@ -11,10 +11,11 @@
     <header>
         <button id="btn-home" class="brand-button" type="button">Gnoteca</button>
         <nav>
-            <button id="btn-write" class="active">Nova Ideia</button>
-            <button id="btn-read">Meu Acervo</button>
+            <button id="btn-write" class="hidden">Nova Ideia</button>
+            <button id="btn-read" class="hidden">Meu Acervo</button>
         </nav>
-        <button id="btn-profile" class="profile-trigger" aria-label="Abrir perfil" aria-expanded="false">
+        <button id="login-trigger" class="login-trigger" type="button">Entrar</button>
+        <button id="btn-profile" class="profile-trigger hidden" aria-label="Abrir perfil" aria-expanded="false">
             <span class="profile-avatar" data-profile-avatar>C</span>
         </button>
     </header>
@@ -62,6 +63,24 @@
         <button id="btn-signout" class="signout-button" type="button" data-i18n="signOut">Sair da conta</button>
     </aside>
 
+    <div id="auth-gate" class="auth-gate hidden" role="dialog" aria-modal="true" aria-labelledby="auth-gate-title">
+        <div class="auth-gate-card">
+            <button id="close-auth-gate" class="auth-gate-close" type="button" aria-label="Fechar">x</button>
+            <p class="section-kicker">Gnoteca</p>
+            <h2 id="auth-gate-title">Entre para continuar</h2>
+            <p>Crie sua conta ou entre para publicar, votar e explorar todo o acervo.</p>
+            <input id="gate-email" class="auth-input" type="email" placeholder="Seu e-mail" autocomplete="email">
+            <input id="gate-password" class="auth-input" type="password" placeholder="Sua senha" autocomplete="current-password">
+            <div class="gate-email-actions">
+                <button id="gate-email-sign-in" class="gate-primary-button" type="button">Entrar</button>
+                <button id="gate-email-sign-up" class="gate-secondary-button" type="button">Criar conta</button>
+            </div>
+            <div class="auth-divider"><span>ou</span></div>
+            <button id="gate-google-sign-in" class="google-button" type="button"><span class="google-mark" aria-hidden="true">G</span> Continuar com Google</button>
+            <p id="gate-auth-feedback" class="gate-auth-feedback" role="status"></p>
+        </div>
+    </div>
+
     <div id="delete-dialog" class="delete-dialog hidden" role="dialog" aria-modal="true" aria-labelledby="delete-dialog-title">
         <div class="delete-dialog-card">
             <p class="dialog-eyebrow" data-i18n="removeEntry">Remover entrada</p>
@@ -77,14 +96,14 @@
     <main>
         <p id="action-feedback" class="action-feedback hidden" role="status"></p>
         <!-- Tela de Registro -->
-        <section id="write-section">
+        <section id="write-section" class="hidden">
             <textarea id="idea-input" maxlength="280" placeholder="O que quer registrar?" data-i18n-placeholder="ideaPlaceholder"></textarea>
             <div id="char-counter">0 / 280</div><button id="btn-save">Salvar na Gnoteca</button>
             <p id="feedback-msg" class="hidden">Ideia salva com sucesso!</p>
         </section>
 
         <!-- Tela de Leitura -->
-        <section id="read-section" class="hidden">
+        <section id="read-section">
             <div class="feed-header">
                 <div>
                     <button id="back-to-feed" class="back-link hidden" type="button" data-i18n="backToFeed">Voltar ao acervo</button>
@@ -102,6 +121,7 @@
             <div id="ideas-list">
                 <!-- As ideias salvas aparecerão aqui -->
             </div>
+            <button id="load-more-feed" class="load-more-button hidden" type="button">Entrar para ver mais</button>
         </section>
     </main>
 
