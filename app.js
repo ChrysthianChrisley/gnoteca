@@ -40,6 +40,7 @@ const maxLength = 280;
 let pendingDeleteId = null;
 let activeFeed = 'global';
 let selectedProfileId = null;
+const projectBasePath = window.location.pathname.startsWith('/gnoteca') ? '/gnoteca' : '';
 const defaultAccounts = [
     { id: 'account-1', name: 'Chrysthian', createdAt: 0 },
     { id: 'account-2', name: 'Conta de teste', createdAt: 0 }
@@ -97,7 +98,7 @@ function applyLanguage(language) {
 languageOptions.forEach(option => option.addEventListener('click', event => {
     event.preventDefault();
     applyLanguage(option.dataset.language);
-    window.history.pushState({ language: option.dataset.language }, '', option.getAttribute('href'));
+    window.history.pushState({ language: option.dataset.language }, '', `${projectBasePath}${option.getAttribute('href')}`);
 }));
 
 function slugify(name) {
@@ -114,7 +115,11 @@ function getAccountBySlug(slug) {
 }
 
 function getProfilePath(account) {
-    return `/${slugify(account.name)}`;
+    return `${projectBasePath}/${slugify(account.name)}`;
+}
+
+function getHomePath() {
+    return `${projectBasePath}/`;
 }
 
 function getAccounts() {
@@ -269,7 +274,7 @@ function toggleSidebar(isOpen) {
 function showFeed(feedType) {
     activeFeed = feedType;
     selectedProfileId = null;
-    window.history.pushState({ feedType }, '', '/');
+    window.history.pushState({ feedType }, '', getHomePath());
     writeSection.classList.add('hidden');
     readSection.classList.remove('hidden');
     btnWrite.classList.remove('active');
@@ -291,7 +296,8 @@ function showProfile(profileId) {
 }
 
 function loadRouteFromUrl() {
-    const slug = window.location.pathname.split('/').filter(Boolean)[0];
+    const pathWithoutBase = window.location.pathname.slice(projectBasePath.length);
+    const slug = pathWithoutBase.split('/').filter(Boolean)[0];
     const account = slug ? getAccountBySlug(slug) : null;
 
     if (account) {
@@ -302,7 +308,7 @@ function loadRouteFromUrl() {
         btnWrite.classList.remove('active');
         btnRead.classList.remove('active');
     } else if (slug) {
-        window.history.replaceState({ feedType: 'global' }, '', '/');
+        window.history.replaceState({ feedType: 'global' }, '', getHomePath());
         activeFeed = 'global';
         selectedProfileId = null;
     }
