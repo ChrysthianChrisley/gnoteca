@@ -206,6 +206,22 @@ h1 {
     letter-spacing: 0.02em;
 }
 
+.brand-button {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--primary-color);
+    cursor: pointer;
+    font: inherit;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.brand-button:hover {
+    color: var(--accent-color);
+}
+
 nav button {
     background: none;
     border: none;
@@ -224,6 +240,140 @@ nav button.active, nav button:hover {
 main {
     width: 100%;
     max-width: 760px;
+}
+
+.account-label,
+.filter-label,
+.section-kicker {
+    color: var(--muted-color);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.account-label {
+    margin-top: 1.25rem;
+}
+
+.account-select,
+.feed-filter,
+.account-create input {
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--surface-color);
+    color: var(--text-color);
+    font: inherit;
+}
+
+.account-select {
+    width: 100%;
+    margin-top: 0.4rem;
+    padding: 0.6rem;
+}
+
+.account-create {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+}
+
+.account-create input {
+    min-width: 0;
+    width: 100%;
+    padding: 0.55rem;
+}
+
+.account-create button {
+    padding: 0.55rem 0.65rem;
+    border: 0;
+    border-radius: 6px;
+    background: var(--soft-accent-color);
+    color: var(--accent-color);
+    cursor: pointer;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.account-feedback {
+    margin-top: 0.45rem;
+    color: #e74c3c;
+    font-size: 0.78rem;
+}
+
+.language-panel {
+    margin-top: 1.5rem;
+}
+
+.language-label {
+    color: var(--muted-color);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.language-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.35rem;
+    margin-top: 0.5rem;
+}
+
+.language-option {
+    display: grid;
+    justify-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 0.25rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--muted-color);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.7rem;
+    text-decoration: none;
+}
+
+.language-option:hover,
+.language-option.selected {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+.language-option .fi {
+    font-size: 1.35rem;
+}
+
+.feed-header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.feed-header h2 {
+    margin-top: 0.25rem;
+    color: var(--primary-color);
+    font-size: clamp(1.35rem, 3vw, 1.8rem);
+}
+
+.back-link {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--accent-color);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.feed-filter {
+    margin-top: 0.35rem;
+    padding: 0.55rem 0.65rem;
+    font-size: 0.85rem;
 }
 
 /* Formulário de Escrita */
@@ -282,6 +432,7 @@ textarea:focus {
 }
 
 #action-feedback {
+    width: 100%;
     margin-top: 0.75rem;
     color: #e67e22;
     text-align: center;
@@ -302,6 +453,26 @@ textarea:focus {
     font-size: 0.8rem;
     color: var(--muted-color);
     display: block;
+}
+
+.idea-author {
+    margin-left: 0.35rem;
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+.author-link {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
+    font-weight: inherit;
+}
+
+.author-link:hover {
+    text-decoration: underline;
 }
 
 .idea-header {
@@ -518,19 +689,22 @@ textarea:focus {
         margin-left: 0;
     }
 
+    .feed-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .feed-filter {
+        width: 100%;
+    }
+
     .delete-dialog {
-        display: flex;
-        align-items: flex-end;
         background: rgba(15, 25, 35, 0.42);
     }
 
     .delete-dialog-card {
-        position: relative;
-        top: auto;
-        left: auto;
-        width: 100%;
+        width: min(380px, calc(100vw - 32px));
         padding: 1.5rem;
-        border-radius: 16px 16px 0 0;
     }
 }
 

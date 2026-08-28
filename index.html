@@ -5,66 +5,96 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gnoteca | Seus Fragmentos de Conhecimento</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css">
 </head>
 <body>
     <header>
-        <h1>Gnoteca</h1>
+        <button id="btn-home" class="brand-button" type="button">Gnoteca</button>
         <nav>
             <button id="btn-write" class="active">Nova Ideia</button>
             <button id="btn-read">Meu Acervo</button>
         </nav>
         <button id="btn-profile" class="profile-trigger" aria-label="Abrir perfil" aria-expanded="false">
-            <span class="profile-avatar">C</span>
+            <span class="profile-avatar" data-profile-avatar>C</span>
         </button>
     </header>
 
     <div id="sidebar-overlay" class="sidebar-overlay hidden"></div>
     <aside id="profile-sidebar" class="profile-sidebar" aria-label="Perfil e opções" aria-hidden="true">
         <div class="sidebar-header">
-            <h2>Meu perfil</h2>
+            <h2 data-i18n="profileTitle">Meu perfil</h2>
                 <button id="btn-close-sidebar" class="icon-button" aria-label="Fechar menu">x</button>
         </div>
         <div class="profile-summary">
-            <span class="profile-avatar profile-avatar-large">C</span>
-            <h3>Seu nome</h3>
-            <p>colecionador de ideias</p>
+            <span class="profile-avatar profile-avatar-large" data-profile-avatar>C</span>
+            <h3 id="profile-name">Seu nome</h3>
+            <p data-i18n="profileSubtitle">colecionador de ideias</p>
         </div>
+        <label class="account-label" for="account-select" data-i18n="testAccount">Conta de teste</label>
+        <select id="account-select" class="account-select"></select>
+        <div class="account-create">
+            <input id="new-account-name" type="text" maxlength="24" placeholder="Nova conta">
+            <button id="create-account" type="button" data-i18n="add">Adicionar</button>
+        </div>
+        <p id="account-feedback" class="account-feedback hidden" role="status"></p>
         <div class="profile-stats" aria-label="Resumo do acervo">
-            <div><strong id="ideas-count">0</strong><span>fragmentos</span></div>
-            <div><strong id="favorites-count">0</strong><span>favoritos</span></div>
+            <div><strong id="ideas-count">0</strong><span data-i18n="fragments">fragmentos</span></div>
+            <div><strong id="favorites-count">0</strong><span data-i18n="favorites">favoritos</span></div>
         </div>
         <nav class="sidebar-menu" aria-label="Opções do perfil">
-                <button class="menu-item active" type="button">Visão geral</button>
-                <button class="menu-item" type="button">Favoritos</button>
-                <button class="menu-item" type="button">Configurações</button>
+                <button id="overview-menu" class="menu-item active" type="button" data-i18n="overview">Visão geral</button>
+                <button id="favorites-menu" class="menu-item" type="button" data-i18n="favorites">Favoritos</button>
+                <button class="menu-item" type="button" data-i18n="settings">Configurações</button>
                 <button id="theme-toggle" class="menu-item" type="button" aria-pressed="false"><span id="theme-label">Modo noturno</span></button>
         </nav>
-        <button id="btn-signout" class="signout-button" type="button">Sair da conta</button>
+        <div class="language-panel">
+            <span class="language-label" data-i18n="language">Idioma</span>
+            <div class="language-options lang-menu" role="group" aria-label="Idioma">
+                <a class="language-option" data-language="pt-BR" href="/pt"><span class="fi fi-br" aria-hidden="true"></span> PT-BR</a>
+                <a class="language-option" data-language="en-US" href="/en"><span class="fi fi-us" aria-hidden="true"></span> EN-US</a>
+                <a class="language-option" data-language="es-ES" href="/es"><span class="fi fi-es" aria-hidden="true"></span> ES</a>
+            </div>
+        </div>
+        <button id="btn-signout" class="signout-button" type="button" data-i18n="signOut">Sair da conta</button>
     </aside>
 
     <div id="delete-dialog" class="delete-dialog hidden" role="dialog" aria-modal="true" aria-labelledby="delete-dialog-title">
         <div class="delete-dialog-card">
-            <p class="dialog-eyebrow">Remover entrada</p>
-            <h2 id="delete-dialog-title">Apagar este fragmento?</h2>
-            <p>Essa ação não poderá ser desfeita.</p>
+            <p class="dialog-eyebrow" data-i18n="removeEntry">Remover entrada</p>
+            <h2 id="delete-dialog-title" data-i18n="deleteQuestion">Apagar este fragmento?</h2>
+            <p data-i18n="deleteWarning">Essa ação não poderá ser desfeita.</p>
             <div class="dialog-actions">
-                <button id="cancel-delete" class="dialog-button secondary" type="button">Cancelar</button>
-                <button id="confirm-delete" class="dialog-button danger" type="button">Apagar</button>
+                <button id="cancel-delete" class="dialog-button secondary" type="button" data-i18n="cancel">Cancelar</button>
+                <button id="confirm-delete" class="dialog-button danger" type="button" data-i18n="delete">Apagar</button>
             </div>
         </div>
     </div>
 
     <main>
+        <p id="action-feedback" class="action-feedback hidden" role="status"></p>
         <!-- Tela de Registro -->
         <section id="write-section">
-            <textarea id="idea-input" maxlength="280" placeholder="O que quer registrar?"></textarea>
+            <textarea id="idea-input" maxlength="280" placeholder="O que quer registrar?" data-i18n-placeholder="ideaPlaceholder"></textarea>
             <div id="char-counter">0 / 280</div><button id="btn-save">Salvar na Gnoteca</button>
             <p id="feedback-msg" class="hidden">Ideia salva com sucesso!</p>
-            <p id="action-feedback" class="hidden" role="status"></p>
         </section>
 
         <!-- Tela de Leitura -->
         <section id="read-section" class="hidden">
+            <div class="feed-header">
+                <div>
+                    <button id="back-to-feed" class="back-link hidden" type="button" data-i18n="backToFeed">Voltar ao acervo</button>
+                    <p id="feed-kicker" class="section-kicker" data-i18n="publicCollection">Acervo público</p>
+                    <h2 id="feed-title" data-i18n="latestFragments">Últimos fragmentos</h2>
+                </div>
+                <label class="filter-label" for="feed-filter"><span data-i18n="sortBy">Ordenar por</span>
+                    <select id="feed-filter" class="feed-filter">
+                        <option value="newest" data-i18n="newest">Mais novas</option>
+                        <option value="voted" data-i18n="mostVoted">Mais votadas</option>
+                        <option value="favorite" data-i18n="mostFavorited">Mais favoritas</option>
+                    </select>
+                </label>
+            </div>
             <div id="ideas-list">
                 <!-- As ideias salvas aparecerão aqui -->
             </div>
