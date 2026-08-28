@@ -13,14 +13,54 @@
             <button id="btn-write" class="active">Nova Ideia</button>
             <button id="btn-read">Meu Acervo</button>
         </nav>
+        <button id="btn-profile" class="profile-trigger" aria-label="Abrir perfil" aria-expanded="false">
+            <span class="profile-avatar">C</span>
+        </button>
     </header>
+
+    <div id="sidebar-overlay" class="sidebar-overlay hidden"></div>
+    <aside id="profile-sidebar" class="profile-sidebar" aria-label="Perfil e opções" aria-hidden="true">
+        <div class="sidebar-header">
+            <h2>Meu perfil</h2>
+                <button id="btn-close-sidebar" class="icon-button" aria-label="Fechar menu">x</button>
+        </div>
+        <div class="profile-summary">
+            <span class="profile-avatar profile-avatar-large">C</span>
+            <h3>Seu nome</h3>
+            <p>colecionador de ideias</p>
+        </div>
+        <div class="profile-stats" aria-label="Resumo do acervo">
+            <div><strong id="ideas-count">0</strong><span>fragmentos</span></div>
+            <div><strong id="favorites-count">0</strong><span>favoritos</span></div>
+        </div>
+        <nav class="sidebar-menu" aria-label="Opções do perfil">
+                <button class="menu-item active" type="button">Visão geral</button>
+                <button class="menu-item" type="button">Favoritos</button>
+                <button class="menu-item" type="button">Configurações</button>
+                <button id="theme-toggle" class="menu-item" type="button" aria-pressed="false"><span id="theme-label">Modo noturno</span></button>
+        </nav>
+        <button id="btn-signout" class="signout-button" type="button">Sair da conta</button>
+    </aside>
+
+    <div id="delete-dialog" class="delete-dialog hidden" role="dialog" aria-modal="true" aria-labelledby="delete-dialog-title">
+        <div class="delete-dialog-card">
+            <p class="dialog-eyebrow">Remover entrada</p>
+            <h2 id="delete-dialog-title">Apagar este fragmento?</h2>
+            <p>Essa ação não poderá ser desfeita.</p>
+            <div class="dialog-actions">
+                <button id="cancel-delete" class="dialog-button secondary" type="button">Cancelar</button>
+                <button id="confirm-delete" class="dialog-button danger" type="button">Apagar</button>
+            </div>
+        </div>
+    </div>
 
     <main>
         <!-- Tela de Registro -->
         <section id="write-section">
             <textarea id="idea-input" maxlength="280" placeholder="O que quer registrar?"></textarea>
-            <div id="char-counter" style="text-align: right; font-size: 0.8rem; color: #888; margin-bottom: 1rem;">0 / 280</div><button id="btn-save">Salvar na Gnoteca</button>
+            <div id="char-counter">0 / 280</div><button id="btn-save">Salvar na Gnoteca</button>
             <p id="feedback-msg" class="hidden">Ideia salva com sucesso!</p>
+            <p id="action-feedback" class="hidden" role="status"></p>
         </section>
 
         <!-- Tela de Leitura -->
