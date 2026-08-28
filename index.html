@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gnoteca | Seus Fragmentos de Conhecimento</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Gnoteca</h1>
+        <nav>
+            <button id="btn-write" class="active">Nova Ideia</button>
+            <button id="btn-read">Meu Acervo</button>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Tela de Registro -->
+        <section id="write-section">
+            <textarea id="idea-input" placeholder="A gravidade não é uma força, e sim uma propriedade do espaço-tempo..."></textarea>
+            <button id="btn-save">Salvar na Gnoteca</button>
+            <p id="feedback-msg" class="hidden">Ideia salva com sucesso!</p>
+        </section>
+
+        <!-- Tela de Leitura -->
+        <section id="read-section" class="hidden">
+            <div id="ideas-list">
+                <!-- As ideias salvas aparecerão aqui -->
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+:root {
+    --bg-color: #f9f9f9;
+    --text-color: #333;
+    --primary-color: #2c3e50;
+    --accent-color: #3498db;
+    --border-color: #e0e0e0;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+}
+
+header {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 1rem;
+}
+
+h1 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+nav button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #888;
+    margin-left: 1rem;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+nav button.active, nav button:hover {
+    color: var(--accent-color);
+}
+
+main {
+    width: 100%;
+    max-width: 600px;
+}
+
+/* Formulário de Escrita */
+textarea {
+    width: 100%;
+    height: 200px;
+    padding: 1rem;
+    font-size: 1.1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    resize: vertical;
+    margin-bottom: 1rem;
+    background-color: #fff;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+#btn-save {
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+    transition: background-color 0.2s;
+}
+
+#btn-save:hover {
+    background-color: var(--accent-color);
+}
+
+#feedback-msg {
+    color: #27ae60;
+    margin-top: 1rem;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Lista de Ideias */
+.idea-card {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.idea-date {
+    font-size: 0.8rem;
+    color: #888;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.hidden {
+    display: none !important;
+}
