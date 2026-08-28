@@ -30,6 +30,17 @@
             <h3 id="profile-name">Seu nome</h3>
             <p data-i18n="profileSubtitle">colecionador de ideias</p>
         </div>
+        <div id="auth-panel" class="auth-panel">
+            <p id="auth-status" class="auth-status">Modo local</p>
+            <input id="auth-email" class="auth-input" type="email" placeholder="Seu e-mail">
+            <input id="auth-password" class="auth-input" type="password" placeholder="Sua senha">
+            <div class="auth-actions">
+                <button id="email-sign-in" type="button">Entrar</button>
+                <button id="email-sign-up" type="button">Criar conta</button>
+            </div>
+            <button id="google-sign-in" class="google-button" type="button">Continuar com Google</button>
+            <button id="sign-out" class="signout-button hidden" type="button">Sair</button>
+        </div>
         <label class="account-label" for="account-select" data-i18n="testAccount">Conta de teste</label>
         <select id="account-select" class="account-select"></select>
         <div class="account-create">
@@ -101,6 +112,7 @@
         </section>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js"></script>
 </body>
 </html>

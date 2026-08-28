@@ -34,6 +34,13 @@ const backToFeed = document.getElementById('back-to-feed');
 const overviewMenu = document.getElementById('overview-menu');
 const favoritesMenu = document.getElementById('favorites-menu');
 const languageOptions = document.querySelectorAll('[data-language]');
+const authStatus = document.getElementById('auth-status');
+const authEmail = document.getElementById('auth-email');
+const authPassword = document.getElementById('auth-password');
+const emailSignIn = document.getElementById('email-sign-in');
+const emailSignUp = document.getElementById('email-sign-up');
+const googleSignIn = document.getElementById('google-sign-in');
+const signOut = document.getElementById('sign-out');
 
 const charCounter = document.getElementById('char-counter');
 const maxLength = 280;
@@ -45,6 +52,50 @@ const defaultAccounts = [
     { id: 'account-1', name: 'Chrysthian', createdAt: 0 },
     { id: 'account-2', name: 'Conta de teste', createdAt: 0 }
 ];
+
+const supabaseUrl = 'https://vavitcyykwqqmjqkhyna.supabase.co';
+const supabasePublishableKey = 'sb_publishable_5hBpKXPuMB0HmAuyww6WcA_I7C55xwa';
+const supabaseClient = window.supabase.createClient(supabaseUrl, supabasePublishableKey);
+
+function showAuthMessage(message) {
+    authStatus.textContent = message;
+}
+
+async function refreshAuthState() {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    const authenticated = Boolean(user);
+    authStatus.textContent = authenticated ? user.email : 'Modo local';
+    emailSignIn.classList.toggle('hidden', authenticated);
+    emailSignUp.classList.toggle('hidden', authenticated);
+    googleSignIn.classList.toggle('hidden', authenticated);
+    authEmail.classList.toggle('hidden', authenticated);
+    authPassword.classList.toggle('hidden', authenticated);
+    signOut.classList.toggle('hidden', !authenticated);
+}
+
+emailSignIn.addEventListener('click', async () => {
+    const { error } = await supabaseClient.auth.signInWithPassword({ email: authEmail.value.trim(), password: authPassword.value });
+    showAuthMessage(error ? error.message : 'Login realizado');
+    if (!error) await refreshAuthState();
+});
+
+emailSignUp.addEventListener('click', async () => {
+    const { error } = await supabaseClient.auth.signUp({ email: authEmail.value.trim(), password: authPassword.value });
+    showAuthMessage(error ? error.message : 'Confirme seu e-mail para continuar');
+});
+
+googleSignIn.addEventListener('click', async () => {
+    const { error } = await supabaseClient.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
+    if (error) showAuthMessage(error.message);
+});
+
+signOut.addEventListener('click', async () => {
+    await supabaseClient.auth.signOut();
+    await refreshAuthState();
+});
+
+supabaseClient.auth.onAuthStateChange(() => refreshAuthState());
+refreshAuthState();
 
 const translations = {
     'pt-BR': {
