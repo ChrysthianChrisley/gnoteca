@@ -8,6 +8,21 @@ const btnSave = document.getElementById('btn-save');
 const feedbackMsg = document.getElementById('feedback-msg');
 const ideasList = document.getElementById('ideas-list');
 
+const charCounter = document.getElementById('char-counter');
+const maxLength = 280;
+
+ideaInput.addEventListener('input', () => {
+    const currentLength = ideaInput.value.length;
+    charCounter.textContent = `${currentLength} / ${maxLength}`;
+    
+    // Muda a cor para vermelho se chegar no limite
+    if (currentLength >= maxLength) {
+        charCounter.style.color = '#e74c3c';
+    } else {
+        charCounter.style.color = '#888';
+    }
+});
+
 // Navegação (Alternar entre Escrever e Ler)
 btnWrite.addEventListener('click', () => {
     writeSection.classList.remove('hidden');
