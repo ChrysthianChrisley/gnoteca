@@ -21,10 +21,6 @@ const deleteDialogCard = deleteDialog.querySelector('.delete-dialog-card');
 const cancelDelete = document.getElementById('cancel-delete');
 const confirmDelete = document.getElementById('confirm-delete');
 const btnHome = document.getElementById('btn-home');
-const accountSelect = document.getElementById('account-select');
-const newAccountName = document.getElementById('new-account-name');
-const createAccount = document.getElementById('create-account');
-const accountFeedback = document.getElementById('account-feedback');
 const profileName = document.getElementById('profile-name');
 const profileAvatars = document.querySelectorAll('[data-profile-avatar]');
 const feedFilter = document.getElementById('feed-filter');
@@ -48,10 +44,7 @@ let pendingDeleteId = null;
 let activeFeed = 'global';
 let selectedProfileId = null;
 const projectBasePath = window.location.pathname.startsWith('/gnoteca') ? '/gnoteca' : '';
-const defaultAccounts = [
-    { id: 'account-1', name: 'Chrysthian', createdAt: 0 },
-    { id: 'account-2', name: 'Conta de teste', createdAt: 0 }
-];
+let authenticatedUser = null;
 
 const supabaseUrl = 'https://vavitcyykwqqmjqkhyna.supabase.co';
 const supabasePublishableKey = 'sb_publishable_5hBpKXPuMB0HmAuyww6WcA_I7C55xwa';
@@ -63,14 +56,26 @@ function showAuthMessage(message) {
 
 async function refreshAuthState() {
     const { data: { user } } = await supabaseClient.auth.getUser();
+    authenticatedUser = user ? {
+        id: user.id,
+        name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'Usuário'
+    } : null;
     const authenticated = Boolean(user);
-    authStatus.textContent = authenticated ? user.email : 'Modo local';
+    authStatus.textContent = authenticated ? user.email : 'Não autenticado';
     emailSignIn.classList.toggle('hidden', authenticated);
     emailSignUp.classList.toggle('hidden', authenticated);
     googleSignIn.classList.toggle('hidden', authenticated);
     authEmail.classList.toggle('hidden', authenticated);
     authPassword.classList.toggle('hidden', authenticated);
     signOut.classList.toggle('hidden', !authenticated);
+    if (authenticatedUser) {
+        profileName.textContent = authenticatedUser.name;
+        profileAvatars.forEach(avatar => {
+            avatar.textContent = authenticatedUser.name.charAt(0).toUpperCase();
+        });
+    }
+    loadIdeas();
+    updateProfileStats();
 }
 
 emailSignIn.addEventListener('click', async () => {
@@ -99,7 +104,7 @@ refreshAuthState();
 
 const translations = {
     'pt-BR': {
-        profileTitle: 'Meu perfil', profileSubtitle: 'colecionador de ideias', testAccount: 'Conta de teste', add: 'Adicionar',
+        profileTitle: 'Meu perfil', profileSubtitle: 'colecionador de ideias',
         fragments: 'fragmentos', favorites: 'favoritos', overview: 'Visão geral', settings: 'Configurações', signOut: 'Sair da conta',
         language: 'Idioma', removeEntry: 'Remover entrada', deleteQuestion: 'Apagar este fragmento?', deleteWarning: 'Essa ação não poderá ser desfeita.',
         cancel: 'Cancelar', delete: 'Apagar', ideaPlaceholder: 'O que quer registrar?', backToFeed: 'Voltar ao acervo', publicCollection: 'Acervo público',
@@ -108,7 +113,7 @@ const translations = {
         authorOnly: 'Apenas o autor pode alterar esta entrada.', emptyEntry: 'A entrada não pode ficar vazia.'
     },
     'en-US': {
-        profileTitle: 'My profile', profileSubtitle: 'idea collector', testAccount: 'Test account', add: 'Add', fragments: 'fragments', favorites: 'favorites',
+        profileTitle: 'My profile', profileSubtitle: 'idea collector', fragments: 'fragments', favorites: 'favorites',
         overview: 'Overview', settings: 'Settings', signOut: 'Sign out', language: 'Language', removeEntry: 'Remove entry', deleteQuestion: 'Delete this fragment?',
         deleteWarning: 'This action cannot be undone.', cancel: 'Cancel', delete: 'Delete', ideaPlaceholder: 'What would you like to record?', backToFeed: 'Back to collection',
         publicCollection: 'Public collection', latestFragments: 'Latest fragments', sortBy: 'Sort by', newest: 'Newest', mostVoted: 'Most voted', mostFavorited: 'Most favorited',
@@ -116,7 +121,7 @@ const translations = {
         authorOnly: 'Only the author can change this entry.', emptyEntry: 'The entry cannot be empty.'
     },
     'es-ES': {
-        profileTitle: 'Mi perfil', profileSubtitle: 'coleccionista de ideas', testAccount: 'Cuenta de prueba', add: 'Añadir', fragments: 'fragmentos', favorites: 'favoritos',
+        profileTitle: 'Mi perfil', profileSubtitle: 'coleccionista de ideas', fragments: 'fragmentos', favorites: 'favoritos',
         overview: 'Vista general', settings: 'Configuración', signOut: 'Cerrar sesión', language: 'Idioma', removeEntry: 'Eliminar entrada', deleteQuestion: '¿Eliminar este fragmento?',
         deleteWarning: 'Esta acción no se puede deshacer.', cancel: 'Cancelar', delete: 'Eliminar', ideaPlaceholder: '¿Qué quieres registrar?', backToFeed: 'Volver al acervo',
         publicCollection: 'Acervo público', latestFragments: 'Últimos fragmentos', sortBy: 'Ordenar por', newest: 'Más nuevos', mostVoted: 'Más votados', mostFavorited: 'Más favoritos',
@@ -174,87 +179,12 @@ function getHomePath() {
 }
 
 function getAccounts() {
-    const accounts = JSON.parse(localStorage.getItem('gnoteca_accounts'));
-    if (accounts && accounts.length) {
-        const primaryAccount = accounts.find(account => account.id === 'account-1');
-        if (primaryAccount && primaryAccount.name === 'Você') {
-            primaryAccount.name = 'Chrysthian';
-            localStorage.setItem('gnoteca_accounts', JSON.stringify(accounts));
-        }
-        return accounts;
-    }
-    localStorage.setItem('gnoteca_accounts', JSON.stringify(defaultAccounts));
-    return defaultAccounts;
+    return authenticatedUser ? [authenticatedUser] : [];
 }
 
 function getCurrentAccount() {
-    const accounts = getAccounts();
-    const currentId = localStorage.getItem('gnoteca_current_account') || accounts[0].id;
-    return accounts.find(account => account.id === currentId) || accounts[0];
+    return authenticatedUser || { id: 'unauthenticated', name: 'Visitante' };
 }
-
-function migrateAuthorsOnce() {
-    const accounts = getAccounts();
-    const ideas = JSON.parse(localStorage.getItem('gnoteca_ideas')) || [];
-    const originalAccount = accounts[0];
-    let changed = false;
-
-    ideas.forEach(idea => {
-        const authorAccount = accounts.find(account => account.id === idea.authorId);
-        const isLegacyAssignment = authorAccount?.createdAt && idea.id < authorAccount.createdAt;
-        if (!idea.authorId || isLegacyAssignment) {
-            idea.authorId = originalAccount.id;
-            idea.authorName = originalAccount.name;
-            changed = true;
-        }
-    });
-
-    if (changed) localStorage.setItem('gnoteca_ideas', JSON.stringify(ideas));
-}
-
-migrateAuthorsOnce();
-
-function populateAccounts() {
-    const currentAccount = getCurrentAccount();
-    accountSelect.innerHTML = getAccounts().map(account =>
-        `<option value="${account.id}">${account.name}</option>`
-    ).join('');
-    accountSelect.value = currentAccount.id;
-    profileName.textContent = currentAccount.name;
-    profileAvatars.forEach(avatar => {
-        avatar.textContent = currentAccount.name.charAt(0).toUpperCase();
-    });
-}
-
-populateAccounts();
-accountSelect.addEventListener('change', () => {
-    localStorage.setItem('gnoteca_current_account', accountSelect.value);
-    populateAccounts();
-    loadIdeas();
-    updateProfileStats();
-});
-
-createAccount.addEventListener('click', () => {
-    const name = newAccountName.value.trim();
-    if (!name) return;
-    const accounts = getAccounts();
-    if (accounts.some(account => slugify(account.name) === slugify(name))) {
-        accountFeedback.textContent = currentLanguage === 'en-US'
-            ? 'This profile already exists.'
-            : currentLanguage === 'es-ES' ? 'Este perfil ya existe.' : 'Esse perfil já existe.';
-        accountFeedback.classList.remove('hidden');
-        return;
-    }
-    const account = { id: `account-${Date.now()}`, name, createdAt: Date.now() };
-    accounts.push(account);
-    localStorage.setItem('gnoteca_accounts', JSON.stringify(accounts));
-    localStorage.setItem('gnoteca_current_account', account.id);
-    newAccountName.value = '';
-    accountFeedback.classList.add('hidden');
-    populateAccounts();
-    loadIdeas();
-    updateProfileStats();
-});
 
 loadIdeas();
 updateProfileStats();
@@ -449,10 +379,8 @@ function loadIdeas() {
     const currentAccount = getCurrentAccount();
     const allIdeas = JSON.parse(localStorage.getItem('gnoteca_ideas')) || [];
     allIdeas.forEach(idea => {
-        idea.authorId = idea.authorId || defaultAccounts[0].id;
-        idea.authorName = idea.authorId === defaultAccounts[0].id
-            ? defaultAccounts[0].name
-            : (idea.authorName || defaultAccounts[0].name);
+        idea.authorId = idea.authorId || currentAccount.id;
+        idea.authorName = idea.authorName || currentAccount.name;
         idea.votesByAccount = idea.votesByAccount || {};
         idea.favoritesByAccount = idea.favoritesByAccount || {};
         if (idea.userVote && !idea.votesByAccount[currentAccount.id]) {

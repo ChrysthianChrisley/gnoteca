@@ -242,7 +242,6 @@ main {
     max-width: 760px;
 }
 
-.account-label,
 .filter-label,
 .section-kicker {
     color: var(--muted-color);
@@ -250,55 +249,6 @@ main {
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-}
-
-.account-label {
-    margin-top: 1.25rem;
-}
-
-.account-select,
-.feed-filter,
-.account-create input {
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    background: var(--surface-color);
-    color: var(--text-color);
-    font: inherit;
-}
-
-.account-select {
-    width: 100%;
-    margin-top: 0.4rem;
-    padding: 0.6rem;
-}
-
-.account-create {
-    display: flex;
-    gap: 0.4rem;
-    margin-top: 0.5rem;
-}
-
-.account-create input {
-    min-width: 0;
-    width: 100%;
-    padding: 0.55rem;
-}
-
-.account-create button {
-    padding: 0.55rem 0.65rem;
-    border: 0;
-    border-radius: 6px;
-    background: var(--soft-accent-color);
-    color: var(--accent-color);
-    cursor: pointer;
-    font-weight: 600;
-    white-space: nowrap;
-}
-
-.account-feedback {
-    margin-top: 0.45rem;
-    color: #e74c3c;
-    font-size: 0.78rem;
 }
 
 .language-panel {
