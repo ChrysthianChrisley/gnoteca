@@ -389,55 +389,27 @@ authGate.addEventListener('click', event => {
     if (event.target === authGate) hideAuthGate();
 });
 
-gateGoogleSignIn.addEventListener('click', () => googleSignIn.click());
+async function handleGoogleSignIn() {
+    const currentOrigin = window.location.origin;
+    const currentPath = window.location.pathname;
+    const redirectUrl = currentOrigin && currentOrigin !== 'null' && !currentOrigin.startsWith('file:')
+        ? `${currentOrigin}${currentPath}`
+        : 'http://127.0.0.1:5500/';
 
-gateEmailSignIn.addEventListener('click', async () => {
-    const email = gateEmail.value.trim();
-    const password = gatePassword.value;
-    if (!email || !password) return;
-    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-    gateAuthFeedback.textContent = error ? error.message : translate('loginSuccess') + '.';
-    if (!error) {
-        hideAuthGate();
-        await refreshAuthState();
-    }
-});
-
-gateEmailSignUp.addEventListener('click', async () => {
-    const email = gateEmail.value.trim();
-    const password = gatePassword.value;
-    if (!email || !password) return;
-    const { error } = await supabaseClient.auth.signUp({ email, password });
-    gateAuthFeedback.textContent = error ? error.message : translate('confirmEmail') + '.';
-});
-
-loadMoreFeed.addEventListener('click', showAuthGate);
-loginTrigger.addEventListener('click', showAuthGate);
-
-emailSignIn.addEventListener('click', async () => {
-    const email = authEmail.value.trim();
-    const password = authPassword.value;
-    if (!email || !password) return;
-    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-    showAuthMessage(error ? error.message : translate('loginSuccess'));
-    if (!error) await refreshAuthState();
-});
-
-emailSignUp.addEventListener('click', async () => {
-    const email = authEmail.value.trim();
-    const password = authPassword.value;
-    if (!email || !password) return;
-    const { error } = await supabaseClient.auth.signUp({ email, password });
-    showAuthMessage(error ? error.message : translate('confirmEmail'));
-});
-
-googleSignIn.addEventListener('click', async () => {
     const { error } = await supabaseClient.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: window.location.href }
+        options: {
+            redirectTo: redirectUrl
+        }
     });
-    if (error) showAuthMessage(error.message);
-});
+    if (error) {
+        showAuthMessage(error.message);
+        showActionFeedback(error.message);
+    }
+}
+
+googleSignIn.addEventListener('click', handleGoogleSignIn);
+gateGoogleSignIn.addEventListener('click', handleGoogleSignIn);
 
 async function handleSignOut() {
     await supabaseClient.auth.signOut();
