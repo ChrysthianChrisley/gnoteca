@@ -47,6 +47,7 @@ const gateEmailSignUp = document.getElementById('gate-email-sign-up');
 const gateEmail = document.getElementById('gate-email');
 const gatePassword = document.getElementById('gate-password');
 const gateAuthFeedback = document.getElementById('gate-auth-feedback');
+const profileConstellation = document.getElementById('profile-constellation');
 const loadMoreFeed = document.getElementById('load-more-feed');
 
 const charCounter = document.getElementById('char-counter');
@@ -76,7 +77,16 @@ const translations = {
         latestFragments: 'Últimos fragmentos', sortBy: 'Ordenar por', newest: 'Mais novas', mostVoted: 'Mais votadas', mostFavorited: 'Mais favoritas',
         nightMode: 'Modo noturno', lightMode: 'Modo claro', profile: 'Perfil', favoriteCollection: 'Meus favoritos', empty: 'Nenhum fragmento salvo ainda. Comece a escrever!',
         authorOnly: 'Apenas o autor pode alterar esta entrada.', emptyEntry: 'A entrada não pode ficar vazia.',
-        loading: 'Carregando fragmentos...', errorLoading: 'Erro ao carregar os fragmentos.', errorSaving: 'Erro ao salvar. Tente novamente.'
+        loading: 'Carregando fragmentos...', errorLoading: 'Erro ao carregar os fragmentos.', errorSaving: 'Erro ao salvar. Tente novamente.',
+        voteLimitReached: 'Você atingiu o limite de 5 votos por dia. Escolha com sabedoria quais ideias apoiar!',
+        favoriteLimitReached: 'Você só pode guardar 3 fragmentos favoritos por vez. Desmarque um para adicionar este.',
+        constellationTitle: 'Constelação de Pensamentos',
+        constellationSubtitle: 'Os 3 pilares filosóficos guardados por este pensador',
+        emptyConstellationSlot: 'Pilar',
+        emptyConstellationHelp: 'Escolha mais uma ideia favorita para completar sua tríade.',
+        emptyConstellationOther: 'Espaço aberto para uma nova ideia norteadora.',
+        pillar: 'Pilar',
+        pillars: 'Pilares'
     },
     'en-US': {
         profileTitle: 'My profile', profileSubtitle: 'idea collector', fragments: 'fragments', favorites: 'favorites',
@@ -88,19 +98,37 @@ const translations = {
         publicCollection: 'Public collection', latestFragments: 'Latest fragments', sortBy: 'Sort by', newest: 'Newest', mostVoted: 'Most voted', mostFavorited: 'Most favorited',
         nightMode: 'Dark mode', lightMode: 'Light mode', profile: 'Profile', favoriteCollection: 'My favorites', empty: 'No fragments saved yet. Start writing!',
         authorOnly: 'Only the author can change this entry.', emptyEntry: 'The entry cannot be empty.',
-        loading: 'Loading fragments...', errorLoading: 'Error loading fragments.', errorSaving: 'Error saving. Please try again.'
+        loading: 'Loading fragments...', errorLoading: 'Error loading fragments.', errorSaving: 'Error saving. Please try again.',
+        voteLimitReached: 'You have reached the limit of 5 votes per day. Choose wisely which ideas to support!',
+        favoriteLimitReached: 'You can only keep 3 favorite fragments at a time. Unfavorite one to add this.',
+        constellationTitle: 'Constellation of Thoughts',
+        constellationSubtitle: 'The 3 philosophical pillars kept by this thinker',
+        emptyConstellationSlot: 'Pillar',
+        emptyConstellationHelp: 'Choose another favorite idea to complete your triad.',
+        emptyConstellationOther: 'Open space for a new guiding idea.',
+        pillar: 'Pillar',
+        pillars: 'Pillars'
     },
     'es-ES': {
         profileTitle: 'Mi perfil', profileSubtitle: 'coleccionista de ideas', fragments: 'fragmentos', favorites: 'favoritos',
         newIdea: 'Nueva idea', myCollection: 'Mi acervo', notAuthenticated: 'No autenticado', emailPlaceholder: 'Tu correo', passwordPlaceholder: 'Tu contraseña',
-        signIn: 'Entrar', createAccount: 'Crear cuenta', continueGoogle: 'Continuar con Google', signOutShort: 'Salir', or: 'o', signInToContinue: 'Inicia sesión para continuar',
+        signIn: 'Entrar', createAccount: 'Crear cuenta', continueGoogle: 'Continuar com Google', signOutShort: 'Salir', or: 'o', signInToContinue: 'Inicia sesión para continuar',
         authDescription: 'Crea una cuenta o inicia sesión para publicar, votar y explorar todo el acervo.', loginSuccess: 'Sesión iniciada', confirmEmail: 'Confirma tu correo para continuar', save: 'Guardar', saveToGnoteca: 'Guardar en Gnoteca', signInToSeeMore: 'Inicia sesión para ver más', by: 'por', edit: 'Editar', delete: 'Eliminar',
         overview: 'Vista general', settings: 'Configuración', signOut: 'Cerrar sesión', language: 'Idioma', removeEntry: 'Eliminar entrada', deleteQuestion: '¿Eliminar este fragmento?',
         deleteWarning: 'Esta acción no se puede deshacer.', cancel: 'Cancelar', delete: 'Eliminar', ideaPlaceholder: '¿Qué quieres registrar?', backToFeed: 'Volver al acervo',
         publicCollection: 'Acervo público', latestFragments: 'Últimos fragmentos', sortBy: 'Ordenar por', newest: 'Más novos', mostVoted: 'Más votados', mostFavorited: 'Más favoritos',
         nightMode: 'Modo nocturno', lightMode: 'Modo claro', profile: 'Perfil', favoriteCollection: 'Mis favoritos', empty: 'Aún no hay fragmentos guardados. ¡Empieza a escribir!',
         authorOnly: 'Solo el autor puede modificar esta entrada.', emptyEntry: 'La entrada no puede estar vacía.',
-        loading: 'Cargando fragmentos...', errorLoading: 'Error al cargar los fragmentos.', errorSaving: 'Error al guardar. Inténtelo de nuevo.'
+        loading: 'Cargando fragmentos...', errorLoading: 'Error al cargar los fragmentos.', errorSaving: 'Error al guardar. Inténtelo de nuevo.',
+        voteLimitReached: 'Has alcanzado el límite de 5 votos por día. ¡Elige sabiamente qué ideas apoyar!',
+        favoriteLimitReached: 'Solo puedes guardar 3 fragmentos favoritos a la vez. Desmarca uno para añadir este.',
+        constellationTitle: 'Constelación de Pensamientos',
+        constellationSubtitle: 'Los 3 pilares filosóficos guardados por este pensador',
+        emptyConstellationSlot: 'Pilar',
+        emptyConstellationHelp: 'Elige otra idea favorita para completar tu tríada.',
+        emptyConstellationOther: 'Espacio abierto para una nueva idea guía.',
+        pillar: 'Pilar',
+        pillars: 'Pilares'
     }
 };
 
@@ -729,6 +757,9 @@ async function loadIdeas() {
             : activeFeed === 'favorites' ? translate('favoriteCollection') : translate('latestFragments');
         backToFeed.classList.toggle('hidden', activeFeed !== 'profile');
 
+        // Renderizar Constelação dos 3 Favoritos se for página de perfil
+        await renderProfileConstellation(selectedProfileId, profileAccount?.name);
+
         // Ordenação
         const filter = feedFilter.value;
         savedIdeas.sort((a, b) => {
@@ -783,11 +814,114 @@ async function loadIdeas() {
     }
 }
 
+// Renderizar a Constelação de 3 Favoritos no Perfil
+async function renderProfileConstellation(profileId, profileAccountName) {
+    if (!profileConstellation) return;
+
+    if (activeFeed !== 'profile' || !profileId) {
+        profileConstellation.classList.add('hidden');
+        profileConstellation.innerHTML = '';
+        return;
+    }
+
+    try {
+        const { data: favEntries, error } = await supabaseClient
+            .from('entries')
+            .select(`
+                id,
+                content,
+                created_at,
+                author_id,
+                profiles:author_id (
+                    id,
+                    username,
+                    display_name,
+                    avatar_url
+                ),
+                votes (
+                    user_id,
+                    vote_type
+                ),
+                favorites (
+                    user_id
+                ),
+                favorites!inner (
+                    user_id
+                )
+            `)
+            .eq('favorites.user_id', profileId)
+            .order('created_at', { ascending: false })
+            .limit(3);
+
+        if (error) {
+            console.error('Error fetching constellation favorites:', error);
+            profileConstellation.classList.add('hidden');
+            return;
+        }
+
+        const favs = favEntries || [];
+        const romanNumerals = ['I', 'II', 'III'];
+        const isOwnProfile = authenticatedUser && authenticatedUser.id === profileId;
+
+        let cardsHtml = '';
+        for (let i = 0; i < 3; i++) {
+            const entry = favs[i];
+            if (entry) {
+                const authorName = entry.profiles?.display_name || entry.profiles?.username || 'Anônimo';
+                const authorAvatar = entry.profiles?.avatar_url;
+                const authorBadge = authorAvatar
+                    ? `<img class="card-author-avatar" src="${escapeHTML(authorAvatar)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`
+                    : '';
+                cardsHtml += `
+                    <div class="constellation-card">
+                        <div class="constellation-card-header">
+                            <span class="constellation-roman">${romanNumerals[i]}</span>
+                            <span class="constellation-pill">✦ ${translate('pillar')}</span>
+                        </div>
+                        <p class="constellation-card-content">“${escapeHTML(entry.content)}”</p>
+                        <div class="constellation-card-author">
+                            <span>${translate('by')} <button class="author-link" type="button" data-action="profile" data-profile-id="${entry.author_id}">${authorBadge}${escapeHTML(authorName)}</button></span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                cardsHtml += `
+                    <div class="constellation-empty-slot">
+                        <span class="constellation-empty-icon">✦</span>
+                        <h4 class="constellation-empty-title">${translate('emptyConstellationSlot')} ${romanNumerals[i]}</h4>
+                        <p class="constellation-empty-desc">${isOwnProfile ? translate('emptyConstellationHelp') : translate('emptyConstellationOther')}</p>
+                    </div>
+                `;
+            }
+        }
+
+        profileConstellation.innerHTML = `
+            <div class="constellation-header">
+                <div class="constellation-title-group">
+                    <span class="constellation-icon">✦</span>
+                    <div>
+                        <h3 class="constellation-title">${translate('constellationTitle')}</h3>
+                        <p class="constellation-subtitle">${translate('constellationSubtitle')}</p>
+                    </div>
+                </div>
+                <span class="constellation-pill">${favs.length}/3 ${translate('pillars')}</span>
+            </div>
+            <div class="constellation-grid">
+                ${cardsHtml}
+            </div>
+        `;
+        profileConstellation.classList.remove('hidden');
+    } catch (err) {
+        console.error('renderProfileConstellation error:', err);
+        profileConstellation.classList.add('hidden');
+    }
+}
+
 // Atualizar Estatísticas de Perfil
 async function updateProfileStats() {
     if (!authenticatedUser) {
         ideasCount.textContent = '0';
-        favoritesCount.textContent = '0';
+        favoritesCount.textContent = '0/3';
         return;
     }
     try {
@@ -803,7 +937,7 @@ async function updateProfileStats() {
         ]);
 
         ideasCount.textContent = entriesRes.count !== null ? String(entriesRes.count) : '0';
-        favoritesCount.textContent = favsRes.count !== null ? String(favsRes.count) : '0';
+        favoritesCount.textContent = favsRes.count !== null ? `${favsRes.count}/3` : '0/3';
     } catch (err) {
         console.error('updateProfileStats error:', err);
     }
@@ -888,11 +1022,13 @@ ideasList.addEventListener('click', async event => {
     if (action === 'upvote' || action === 'downvote') {
         const targetType = action === 'upvote' ? 'up' : 'down';
         const isCurrentlySelected = button.classList.contains('selected');
+        const card = button.closest('.idea-card');
+        const hasOtherVoteSelected = card.querySelector(`.vote-button.selected:not([data-action="${action}"])`);
 
         button.disabled = true;
         try {
             if (isCurrentlySelected) {
-                // Remover voto existente
+                // Remover voto existente (não consome novo slot diário)
                 const { error } = await supabaseClient
                     .from('votes')
                     .delete()
@@ -900,6 +1036,24 @@ ideasList.addEventListener('click', async event => {
                     .eq('user_id', authenticatedUser.id);
                 if (error) throw error;
             } else {
+                // Se NÃO está apenas alternando um voto já existente nesta mesma entrada, verifica o limite de 5 votos por dia
+                if (!hasOtherVoteSelected) {
+                    const startOfDay = new Date();
+                    startOfDay.setHours(0, 0, 0, 0);
+                    const { count: dailyVotesCount, error: countErr } = await supabaseClient
+                        .from('votes')
+                        .select('entry_id', { count: 'exact', head: true })
+                        .eq('user_id', authenticatedUser.id)
+                        .gte('created_at', startOfDay.toISOString());
+
+                    if (countErr) console.warn('Count daily votes warning:', countErr);
+                    if (dailyVotesCount !== null && dailyVotesCount >= 5) {
+                        showActionFeedback(translate('voteLimitReached'));
+                        button.disabled = false;
+                        return;
+                    }
+                }
+
                 // Adicionar ou alternar voto
                 const { error } = await supabaseClient
                     .from('votes')
@@ -932,6 +1086,19 @@ ideasList.addEventListener('click', async event => {
                     .eq('user_id', authenticatedUser.id);
                 if (error) throw error;
             } else {
+                // Verifica limite de 3 favoritos
+                const { count: favCount, error: countErr } = await supabaseClient
+                    .from('favorites')
+                    .select('entry_id', { count: 'exact', head: true })
+                    .eq('user_id', authenticatedUser.id);
+
+                if (countErr) console.warn('Count favorites warning:', countErr);
+                if (favCount !== null && favCount >= 3) {
+                    showActionFeedback(translate('favoriteLimitReached'));
+                    button.disabled = false;
+                    return;
+                }
+
                 const { error } = await supabaseClient
                     .from('favorites')
                     .insert({

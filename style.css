@@ -1,36 +1,55 @@
 :root {
-    --bg-color: #f9f9f9;
-    --surface-color: #fff;
-    --text-color: #333;
-    --muted-color: #888;
-    --primary-color: #2c3e50;
-    --accent-color: #3498db;
-    --border-color: #e0e0e0;
-    --soft-accent-color: #eef7fc;
-    --bg-secondary-color: #eef4f7;
+    --bg-color: #f8fafc;
+    --surface-color: #ffffff;
+    --surface-glass: rgba(255, 255, 255, 0.88);
+    --text-color: #1e293b;
+    --muted-color: #64748b;
+    --primary-color: #0f172a;
+    --accent-color: #2563eb;
+    --accent-hover: #1d4ed8;
+    --border-color: #e2e8f0;
+    --soft-accent-color: #eff6ff;
+    --bg-secondary-color: #f1f5f9;
+    --gold-accent: #d97706;
+    --gold-soft: #fef3c7;
     --sidebar-width: 320px;
+    --font-ui: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-quote: 'Lora', 'Georgia', serif;
+    --font-brand: 'Cinzel', serif;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --shadow-subtle: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+    --shadow-hover: 0 10px 30px -4px rgba(15, 23, 42, 0.1);
 }
 
 body.dark-mode {
-    --bg-color: #17212b;
-    --surface-color: #22303d;
-    --text-color: #e7edf2;
-    --muted-color: #a9b7c3;
-    --primary-color: #dceaf4;
-    --border-color: #3b4b59;
-    --soft-accent-color: #29485c;
-    --bg-secondary-color: #111a22;
+    --bg-color: #090e17;
+    --surface-color: #111a28;
+    --surface-glass: rgba(17, 26, 40, 0.88);
+    --text-color: #e2e8f0;
+    --muted-color: #94a3b8;
+    --primary-color: #f8fafc;
+    --accent-color: #38bdf8;
+    --accent-hover: #7dd3fc;
+    --border-color: #1e293b;
+    --soft-accent-color: rgba(56, 189, 248, 0.12);
+    --bg-secondary-color: #0f172a;
+    --gold-accent: #fbbf24;
+    --gold-soft: rgba(251, 191, 36, 0.12);
+    --shadow-subtle: 0 4px 24px -2px rgba(0, 0, 0, 0.35);
+    --shadow-hover: 0 10px 34px -4px rgba(0, 0, 0, 0.5);
 }
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    font-family: var(--font-ui);
 }
 
 body {
-    background: linear-gradient(135deg, var(--bg-color), var(--bg-secondary-color));
+    background: radial-gradient(circle at top, var(--bg-secondary-color), var(--bg-color));
     color: var(--text-color);
     line-height: 1.6;
     display: flex;
@@ -254,14 +273,17 @@ h1 {
     background: transparent;
     color: var(--primary-color);
     cursor: pointer;
-    font: inherit;
-    font-size: 1.5rem;
+    font-family: var(--font-brand);
+    font-size: 1.6rem;
     font-weight: 700;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s ease, transform 0.2s ease;
 }
 
 .brand-button:hover {
     color: var(--accent-color);
+    transform: scale(1.02);
 }
 
 nav button {
@@ -434,11 +456,28 @@ textarea:focus {
 /* Lista de Ideias */
 .idea-card {
     background-color: var(--surface-color);
-    padding: 1.5rem;
-    border-radius: 12px;
+    padding: 1.6rem;
+    border-radius: var(--radius-lg);
     border: 1px solid var(--border-color);
-    margin-bottom: 1rem;
-    box-shadow: 0 8px 24px rgba(44, 62, 80, 0.06);
+    margin-bottom: 1.25rem;
+    box-shadow: var(--shadow-subtle);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    position: relative;
+}
+
+.idea-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+    border-color: rgba(56, 189, 248, 0.3);
+}
+
+.idea-content {
+    font-family: var(--font-quote);
+    font-size: 1.08rem;
+    line-height: 1.68;
+    color: var(--text-color);
+    letter-spacing: -0.01em;
+    margin: 0.4rem 0 0.8rem;
 }
 
 .idea-date {
@@ -879,4 +918,193 @@ textarea:focus {
     margin: 0.75rem 0 0 !important;
     color: #e67e22 !important;
     font-size: 0.8rem !important;
+}
+
+/* ==========================================================================
+   Constelação de 3 Favoritos (Tríptico Filosófico)
+   ========================================================================== */
+.profile-constellation {
+    background: linear-gradient(135deg, var(--surface-color), var(--soft-accent-color));
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-subtle);
+    position: relative;
+    overflow: hidden;
+}
+
+body.dark-mode .profile-constellation {
+    background: linear-gradient(135deg, #111a28, #162438);
+    border-color: rgba(56, 189, 248, 0.2);
+}
+
+.constellation-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px dashed var(--border-color);
+}
+
+.constellation-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.constellation-icon {
+    color: var(--gold-accent);
+    font-size: 1.25rem;
+    line-height: 1;
+    animation: pulseGlow 3s ease-in-out infinite alternate;
+}
+
+.constellation-title {
+    font-family: var(--font-brand);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    letter-spacing: 0.04em;
+}
+
+.constellation-subtitle {
+    font-size: 0.8rem;
+    color: var(--muted-color);
+    margin-top: 0.2rem;
+}
+
+.constellation-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.65rem;
+    background: var(--gold-soft);
+    color: var(--gold-accent);
+    border: 1px solid rgba(217, 119, 6, 0.25);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.constellation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 1rem;
+}
+
+.constellation-card {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.15rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 190px;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+}
+
+.constellation-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--gold-accent);
+    box-shadow: 0 8px 22px -4px rgba(217, 119, 6, 0.18);
+}
+
+.constellation-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.constellation-roman {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    background: var(--gold-soft);
+    color: var(--gold-accent);
+    font-family: var(--font-brand);
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.constellation-card-content {
+    font-family: var(--font-quote);
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--text-color);
+    font-style: italic;
+    margin-bottom: 0.85rem;
+    flex-grow: 1;
+}
+
+.constellation-card-author {
+    font-size: 0.75rem;
+    color: var(--muted-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.constellation-card-author .author-link {
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+.constellation-empty-slot {
+    background: rgba(0, 0, 0, 0.02);
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 190px;
+    color: var(--muted-color);
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+body.dark-mode .constellation-empty-slot {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.constellation-empty-slot:hover {
+    border-color: var(--accent-color);
+    background: var(--soft-accent-color);
+}
+
+.constellation-empty-icon {
+    font-size: 1.35rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.6;
+    color: var(--gold-accent);
+}
+
+.constellation-empty-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text-color);
+}
+
+.constellation-empty-desc {
+    font-size: 0.75rem;
+    line-height: 1.4;
+}
+
+@keyframes pulseGlow {
+    0% { transform: scale(1); opacity: 0.8; filter: drop-shadow(0 0 2px var(--gold-accent)); }
+    100% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 8px var(--gold-accent)); }
 }
