@@ -12,6 +12,7 @@ const sidebarOverlay = document.getElementById('sidebar-overlay');
 const btnProfile = document.getElementById('btn-profile');
 const loginTrigger = document.getElementById('login-trigger');
 const btnCloseSidebar = document.getElementById('btn-close-sidebar');
+const btnSignout = document.getElementById('btn-signout');
 const ideasCount = document.getElementById('ideas-count');
 const favoritesCount = document.getElementById('favorites-count');
 const actionFeedback = document.getElementById('action-feedback');
@@ -31,13 +32,13 @@ const backToFeed = document.getElementById('back-to-feed');
 const overviewMenu = document.getElementById('overview-menu');
 const favoritesMenu = document.getElementById('favorites-menu');
 const languageOptions = document.querySelectorAll('[data-language]');
+const authPanel = document.getElementById('auth-panel');
 const authStatus = document.getElementById('auth-status');
 const authEmail = document.getElementById('auth-email');
 const authPassword = document.getElementById('auth-password');
 const emailSignIn = document.getElementById('email-sign-in');
 const emailSignUp = document.getElementById('email-sign-up');
 const googleSignIn = document.getElementById('google-sign-in');
-const signOut = document.getElementById('sign-out');
 const authGate = document.getElementById('auth-gate');
 const closeAuthGate = document.getElementById('close-auth-gate');
 const gateGoogleSignIn = document.getElementById('gate-google-sign-in');
@@ -57,105 +58,12 @@ const projectBasePath = window.location.pathname.startsWith('/gnoteca') ? '/gnot
 let authenticatedUser = null;
 const publicFeedLimit = 10;
 
+// Configuração do Supabase Client
 const supabaseUrl = 'https://vavitcyykwqqmjqkhyna.supabase.co';
 const supabasePublishableKey = 'sb_publishable_5hBpKXPuMB0HmAuyww6WcA_I7C55xwa';
 const supabaseClient = window.supabase.createClient(supabaseUrl, supabasePublishableKey);
 
-function showAuthMessage(message) {
-    authStatus.textContent = message;
-}
-
-async function refreshAuthState() {
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    authenticatedUser = user ? {
-        id: user.id,
-        name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'Usuário'
-    } : null;
-    const authenticated = Boolean(user);
-    authStatus.textContent = authenticated ? user.email : translate('notAuthenticated');
-    emailSignIn.classList.toggle('hidden', authenticated);
-    emailSignUp.classList.toggle('hidden', authenticated);
-    googleSignIn.classList.toggle('hidden', authenticated);
-    authEmail.classList.toggle('hidden', authenticated);
-    authPassword.classList.toggle('hidden', authenticated);
-    signOut.classList.toggle('hidden', !authenticated);
-    btnWrite.classList.toggle('hidden', !authenticated);
-    btnRead.classList.toggle('hidden', !authenticated);
-    btnProfile.classList.toggle('hidden', !authenticated);
-    loginTrigger.classList.toggle('hidden', authenticated);
-    loadMoreFeed.classList.toggle('hidden', authenticated || activeFeed !== 'global');
-    if (authenticatedUser) {
-        hideAuthGate();
-        profileName.textContent = authenticatedUser.name;
-        profileAvatars.forEach(avatar => {
-            avatar.textContent = authenticatedUser.name.charAt(0).toUpperCase();
-        });
-    } else {
-        profileName.textContent = translate('notAuthenticated');
-        profileAvatars.forEach(avatar => {
-            avatar.textContent = '?';
-        });
-    }
-    loadIdeas();
-    updateProfileStats();
-}
-
-function showAuthGate() {
-    authGate.classList.remove('hidden');
-    closeAuthGate.focus();
-}
-
-function hideAuthGate() {
-    authGate.classList.add('hidden');
-}
-
-closeAuthGate.addEventListener('click', hideAuthGate);
-authGate.addEventListener('click', event => {
-    if (event.target === authGate) hideAuthGate();
-});
-gateGoogleSignIn.addEventListener('click', () => googleSignIn.click());
-gateEmailSignIn.addEventListener('click', async () => {
-    const { error } = await supabaseClient.auth.signInWithPassword({
-        email: gateEmail.value.trim(),
-        password: gatePassword.value
-    });
-    gateAuthFeedback.textContent = error ? error.message : translate('loginSuccess') + '.';
-    if (!error) hideAuthGate();
-});
-gateEmailSignUp.addEventListener('click', async () => {
-    const { error } = await supabaseClient.auth.signUp({
-        email: gateEmail.value.trim(),
-        password: gatePassword.value
-    });
-    gateAuthFeedback.textContent = error ? error.message : translate('confirmEmail') + '.';
-});
-loadMoreFeed.addEventListener('click', showAuthGate);
-loginTrigger.addEventListener('click', showAuthGate);
-
-emailSignIn.addEventListener('click', async () => {
-    const { error } = await supabaseClient.auth.signInWithPassword({ email: authEmail.value.trim(), password: authPassword.value });
-    showAuthMessage(error ? error.message : translate('loginSuccess'));
-    if (!error) await refreshAuthState();
-});
-
-emailSignUp.addEventListener('click', async () => {
-    const { error } = await supabaseClient.auth.signUp({ email: authEmail.value.trim(), password: authPassword.value });
-    showAuthMessage(error ? error.message : translate('confirmEmail'));
-});
-
-googleSignIn.addEventListener('click', async () => {
-    const { error } = await supabaseClient.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
-    if (error) showAuthMessage(error.message);
-});
-
-signOut.addEventListener('click', async () => {
-    await supabaseClient.auth.signOut();
-    await refreshAuthState();
-});
-
-supabaseClient.auth.onAuthStateChange(() => refreshAuthState());
-refreshAuthState();
-
+// Dicionário de Traduções
 const translations = {
     'pt-BR': {
         profileTitle: 'Meu perfil', profileSubtitle: 'colecionador de ideias',
@@ -167,7 +75,8 @@ const translations = {
         cancel: 'Cancelar', delete: 'Apagar', ideaPlaceholder: 'O que quer registrar?', backToFeed: 'Voltar ao acervo', publicCollection: 'Acervo público',
         latestFragments: 'Últimos fragmentos', sortBy: 'Ordenar por', newest: 'Mais novas', mostVoted: 'Mais votadas', mostFavorited: 'Mais favoritas',
         nightMode: 'Modo noturno', lightMode: 'Modo claro', profile: 'Perfil', favoriteCollection: 'Meus favoritos', empty: 'Nenhum fragmento salvo ainda. Comece a escrever!',
-        authorOnly: 'Apenas o autor pode alterar esta entrada.', emptyEntry: 'A entrada não pode ficar vazia.'
+        authorOnly: 'Apenas o autor pode alterar esta entrada.', emptyEntry: 'A entrada não pode ficar vazia.',
+        loading: 'Carregando fragmentos...', errorLoading: 'Erro ao carregar os fragmentos.', errorSaving: 'Erro ao salvar. Tente novamente.'
     },
     'en-US': {
         profileTitle: 'My profile', profileSubtitle: 'idea collector', fragments: 'fragments', favorites: 'favorites',
@@ -178,7 +87,8 @@ const translations = {
         deleteWarning: 'This action cannot be undone.', cancel: 'Cancel', delete: 'Delete', ideaPlaceholder: 'What would you like to record?', backToFeed: 'Back to collection',
         publicCollection: 'Public collection', latestFragments: 'Latest fragments', sortBy: 'Sort by', newest: 'Newest', mostVoted: 'Most voted', mostFavorited: 'Most favorited',
         nightMode: 'Dark mode', lightMode: 'Light mode', profile: 'Profile', favoriteCollection: 'My favorites', empty: 'No fragments saved yet. Start writing!',
-        authorOnly: 'Only the author can change this entry.', emptyEntry: 'The entry cannot be empty.'
+        authorOnly: 'Only the author can change this entry.', emptyEntry: 'The entry cannot be empty.',
+        loading: 'Loading fragments...', errorLoading: 'Error loading fragments.', errorSaving: 'Error saving. Please try again.'
     },
     'es-ES': {
         profileTitle: 'Mi perfil', profileSubtitle: 'coleccionista de ideas', fragments: 'fragmentos', favorites: 'favoritos',
@@ -187,16 +97,27 @@ const translations = {
         authDescription: 'Crea una cuenta o inicia sesión para publicar, votar y explorar todo el acervo.', loginSuccess: 'Sesión iniciada', confirmEmail: 'Confirma tu correo para continuar', save: 'Guardar', saveToGnoteca: 'Guardar en Gnoteca', signInToSeeMore: 'Inicia sesión para ver más', by: 'por', edit: 'Editar', delete: 'Eliminar',
         overview: 'Vista general', settings: 'Configuración', signOut: 'Cerrar sesión', language: 'Idioma', removeEntry: 'Eliminar entrada', deleteQuestion: '¿Eliminar este fragmento?',
         deleteWarning: 'Esta acción no se puede deshacer.', cancel: 'Cancelar', delete: 'Eliminar', ideaPlaceholder: '¿Qué quieres registrar?', backToFeed: 'Volver al acervo',
-        publicCollection: 'Acervo público', latestFragments: 'Últimos fragmentos', sortBy: 'Ordenar por', newest: 'Más nuevos', mostVoted: 'Más votados', mostFavorited: 'Más favoritos',
+        publicCollection: 'Acervo público', latestFragments: 'Últimos fragmentos', sortBy: 'Ordenar por', newest: 'Más novos', mostVoted: 'Más votados', mostFavorited: 'Más favoritos',
         nightMode: 'Modo nocturno', lightMode: 'Modo claro', profile: 'Perfil', favoriteCollection: 'Mis favoritos', empty: 'Aún no hay fragmentos guardados. ¡Empieza a escribir!',
-        authorOnly: 'Solo el autor puede modificar esta entrada.', emptyEntry: 'La entrada no puede estar vacía.'
+        authorOnly: 'Solo el autor puede modificar esta entrada.', emptyEntry: 'La entrada no puede estar vacía.',
+        loading: 'Cargando fragmentos...', errorLoading: 'Error al cargar los fragmentos.', errorSaving: 'Error al guardar. Inténtelo de nuevo.'
     }
 };
 
 let currentLanguage = localStorage.getItem('gnoteca_language') || 'pt-BR';
 
 function translate(key) {
-    return translations[currentLanguage][key] || translations['pt-BR'][key] || key;
+    return translations[currentLanguage]?.[key] || translations['pt-BR']?.[key] || key;
+}
+
+function escapeHTML(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 }
 
 function applyLanguage(language) {
@@ -219,7 +140,7 @@ languageOptions.forEach(option => option.addEventListener('click', () => {
 }));
 
 function slugify(name) {
-    return name
+    return (name || '')
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
         .toLowerCase()
@@ -227,16 +148,42 @@ function slugify(name) {
         .replace(/^-|-$/g, '');
 }
 
-function getAccountBySlug(slug) {
-    const knownAccount = getAccounts().find(account => slugify(account.name) === slug);
-    if (knownAccount) return knownAccount;
-    const ideas = JSON.parse(localStorage.getItem('gnoteca_ideas')) || [];
-    const idea = ideas.find(item => slugify(item.authorName || '') === slug);
-    return idea ? { id: idea.authorId, name: idea.authorName } : null;
+function extractUserMetadata(user) {
+    const meta = user.user_metadata || {};
+    const identityData = user.identities?.[0]?.identity_data || {};
+    const avatarUrl = meta.avatar_url || meta.picture || identityData.avatar_url || identityData.picture || null;
+    const name = meta.full_name || meta.name || identityData.full_name || identityData.name || user.email?.split('@')[0] || 'Usuário';
+    const username = meta.user_name || meta.preferred_username || identityData.user_name || slugify(name) || user.id.slice(0, 8);
+    return { avatarUrl, name, username };
+}
+
+async function getAccountBySlug(slug) {
+    if (authenticatedUser && (slugify(authenticatedUser.name) === slug || authenticatedUser.username === slug)) {
+        return authenticatedUser;
+    }
+    try {
+        const { data: profile } = await supabaseClient
+            .from('profiles')
+            .select('id, username, display_name, avatar_url')
+            .or(`username.eq.${slug},id.eq.${slug}`)
+            .maybeSingle();
+
+        if (profile) {
+            return {
+                id: profile.id,
+                name: profile.display_name || profile.username,
+                username: profile.username,
+                avatar_url: profile.avatar_url
+            };
+        }
+    } catch (err) {
+        console.error('getAccountBySlug error:', err);
+    }
+    return null;
 }
 
 function getProfilePath(account) {
-    const profileSlug = slugify(account.name);
+    const profileSlug = slugify(account.username || account.name || '');
     return window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
         ? `${projectBasePath}/#/${profileSlug}`
         : `${projectBasePath}/${profileSlug}`;
@@ -246,16 +193,9 @@ function getHomePath() {
     return `${projectBasePath}/`;
 }
 
-function getAccounts() {
-    return authenticatedUser ? [authenticatedUser] : [];
+function showAuthMessage(message) {
+    authStatus.textContent = message;
 }
-
-function getCurrentAccount() {
-    return authenticatedUser || { id: 'unauthenticated', name: 'Visitante' };
-}
-
-loadIdeas();
-updateProfileStats();
 
 function setDarkMode(isDark) {
     document.body.classList.toggle('dark-mode', isDark);
@@ -269,8 +209,164 @@ themeToggle.addEventListener('click', () => {
     setDarkMode(!document.body.classList.contains('dark-mode'));
 });
 
-applyLanguage(currentLanguage);
+// Gestão de Estado de Autenticação
+async function refreshAuthState() {
+    try {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (user) {
+            const { avatarUrl, name, username } = extractUserMetadata(user);
 
+            // Garante que o perfil existe em public.profiles
+            const { data: profile } = await supabaseClient
+                .from('profiles')
+                .select('id, username, display_name, avatar_url')
+                .eq('id', user.id)
+                .maybeSingle();
+
+            let finalDisplayName = profile?.display_name || name;
+            let finalUsername = profile?.username || username;
+            let finalAvatarUrl = avatarUrl || profile?.avatar_url || null;
+
+            if (!profile) {
+                await supabaseClient.from('profiles').upsert({
+                    id: user.id,
+                    username: finalUsername,
+                    display_name: finalDisplayName,
+                    avatar_url: finalAvatarUrl
+                }, { onConflict: 'id' });
+            } else if (avatarUrl && profile.avatar_url !== avatarUrl) {
+                // Mantém o avatar atualizado caso o login Google tenha imagem recente
+                await supabaseClient.from('profiles').update({
+                    avatar_url: avatarUrl
+                }).eq('id', user.id);
+                finalAvatarUrl = avatarUrl;
+            }
+
+            authenticatedUser = {
+                id: user.id,
+                email: user.email,
+                name: finalDisplayName,
+                username: finalUsername,
+                avatar_url: finalAvatarUrl
+            };
+        } else {
+            authenticatedUser = null;
+        }
+
+        const authenticated = Boolean(authenticatedUser);
+
+        // Oculta o formulário de login na sidebar quando o usuário está logado
+        if (authPanel) authPanel.classList.toggle('hidden', authenticated);
+
+        authStatus.textContent = authenticated ? authenticatedUser.email : translate('notAuthenticated');
+        btnWrite.classList.toggle('hidden', !authenticated);
+        btnRead.classList.toggle('hidden', !authenticated);
+        btnProfile.classList.toggle('hidden', !authenticated);
+        if (btnSignout) btnSignout.classList.toggle('hidden', !authenticated);
+        loginTrigger.classList.toggle('hidden', authenticated);
+        loadMoreFeed.classList.toggle('hidden', authenticated || activeFeed !== 'global');
+
+        if (authenticatedUser) {
+            hideAuthGate();
+            profileName.textContent = authenticatedUser.name;
+            profileAvatars.forEach(avatar => {
+                if (authenticatedUser.avatar_url) {
+                    avatar.innerHTML = `<img src="${escapeHTML(authenticatedUser.avatar_url)}" alt="${escapeHTML(authenticatedUser.name)}" referrerpolicy="no-referrer" onerror="this.remove()">`;
+                } else {
+                    avatar.textContent = authenticatedUser.name.charAt(0).toUpperCase();
+                }
+            });
+        } else {
+            profileName.textContent = translate('notAuthenticated');
+            profileAvatars.forEach(avatar => {
+                avatar.textContent = '?';
+            });
+        }
+
+        await loadIdeas();
+        await updateProfileStats();
+    } catch (err) {
+        console.error('refreshAuthState error:', err);
+    }
+}
+
+function showAuthGate() {
+    authGate.classList.remove('hidden');
+    gateAuthFeedback.textContent = '';
+    closeAuthGate.focus();
+}
+
+function hideAuthGate() {
+    authGate.classList.add('hidden');
+    gateAuthFeedback.textContent = '';
+}
+
+closeAuthGate.addEventListener('click', hideAuthGate);
+authGate.addEventListener('click', event => {
+    if (event.target === authGate) hideAuthGate();
+});
+
+gateGoogleSignIn.addEventListener('click', () => googleSignIn.click());
+
+gateEmailSignIn.addEventListener('click', async () => {
+    const email = gateEmail.value.trim();
+    const password = gatePassword.value;
+    if (!email || !password) return;
+    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    gateAuthFeedback.textContent = error ? error.message : translate('loginSuccess') + '.';
+    if (!error) {
+        hideAuthGate();
+        await refreshAuthState();
+    }
+});
+
+gateEmailSignUp.addEventListener('click', async () => {
+    const email = gateEmail.value.trim();
+    const password = gatePassword.value;
+    if (!email || !password) return;
+    const { error } = await supabaseClient.auth.signUp({ email, password });
+    gateAuthFeedback.textContent = error ? error.message : translate('confirmEmail') + '.';
+});
+
+loadMoreFeed.addEventListener('click', showAuthGate);
+loginTrigger.addEventListener('click', showAuthGate);
+
+emailSignIn.addEventListener('click', async () => {
+    const email = authEmail.value.trim();
+    const password = authPassword.value;
+    if (!email || !password) return;
+    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    showAuthMessage(error ? error.message : translate('loginSuccess'));
+    if (!error) await refreshAuthState();
+});
+
+emailSignUp.addEventListener('click', async () => {
+    const email = authEmail.value.trim();
+    const password = authPassword.value;
+    if (!email || !password) return;
+    const { error } = await supabaseClient.auth.signUp({ email, password });
+    showAuthMessage(error ? error.message : translate('confirmEmail'));
+});
+
+googleSignIn.addEventListener('click', async () => {
+    const { error } = await supabaseClient.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: window.location.href }
+    });
+    if (error) showAuthMessage(error.message);
+});
+
+async function handleSignOut() {
+    await supabaseClient.auth.signOut();
+    toggleSidebar(false);
+    await refreshAuthState();
+}
+
+if (btnSignout) btnSignout.addEventListener('click', handleSignOut);
+
+supabaseClient.auth.onAuthStateChange(() => refreshAuthState());
+
+// Diálogo de Confirmação de Exclusão
 function openDeleteDialog(ideaId, card) {
     pendingDeleteId = ideaId;
     const cardRect = card.getBoundingClientRect();
@@ -300,16 +396,33 @@ document.addEventListener('keydown', event => {
     }
 });
 
-confirmDelete.addEventListener('click', () => {
-    if (pendingDeleteId === null) return;
-    const savedIdeas = JSON.parse(localStorage.getItem('gnoteca_ideas')) || [];
-    const remainingIdeas = savedIdeas.filter(idea => idea.id !== pendingDeleteId);
-    localStorage.setItem('gnoteca_ideas', JSON.stringify(remainingIdeas));
-    closeDeleteDialog();
-    loadIdeas();
-    updateProfileStats();
+confirmDelete.addEventListener('click', async () => {
+    if (pendingDeleteId === null || !authenticatedUser) return;
+    confirmDelete.disabled = true;
+    try {
+        const { error } = await supabaseClient
+            .from('entries')
+            .delete()
+            .eq('id', pendingDeleteId)
+            .eq('author_id', authenticatedUser.id);
+
+        if (error) {
+            showActionFeedback(error.message || 'Erro ao apagar fragmento.');
+        } else {
+            showActionFeedback('Fragmento apagado com sucesso.');
+        }
+        closeDeleteDialog();
+        await loadIdeas();
+        await updateProfileStats();
+    } catch (err) {
+        console.error('confirmDelete error:', err);
+        showActionFeedback('Erro ao apagar entrada');
+    } finally {
+        confirmDelete.disabled = false;
+    }
 });
 
+// Navegação e Barra Lateral
 function toggleSidebar(isOpen) {
     profileSidebar.classList.toggle('open', isOpen);
     sidebarOverlay.classList.toggle('hidden', !isOpen);
@@ -320,7 +433,7 @@ function toggleSidebar(isOpen) {
     }
 }
 
-function showFeed(feedType) {
+async function showFeed(feedType) {
     if (feedType !== 'global' && !authenticatedUser) {
         showAuthGate();
         return;
@@ -332,46 +445,62 @@ function showFeed(feedType) {
     readSection.classList.remove('hidden');
     btnWrite.classList.remove('active');
     btnRead.classList.toggle('active', feedType === 'mine');
-    loadIdeas();
+    await loadIdeas();
 }
 
-function showProfile(profileId) {
-    if (!authenticatedUser) {
-        showAuthGate();
-        return;
-    }
-    const account = getAccounts().find(item => item.id === profileId);
-    if (!account) return;
+async function showProfile(profileId) {
+    if (!profileId) return;
     activeFeed = 'profile';
     selectedProfileId = profileId;
-    window.history.pushState({ feedType: 'profile', profileId }, '', getProfilePath(account));
+
+    let account = null;
+    if (authenticatedUser && authenticatedUser.id === profileId) {
+        account = authenticatedUser;
+    } else {
+        const { data: prof } = await supabaseClient
+            .from('profiles')
+            .select('id, username, display_name, avatar_url')
+            .eq('id', profileId)
+            .maybeSingle();
+        if (prof) {
+            account = { id: prof.id, name: prof.display_name || prof.username, username: prof.username, avatar_url: prof.avatar_url };
+        }
+    }
+
+    if (account) {
+        window.history.pushState({ feedType: 'profile', profileId }, '', getProfilePath(account));
+    }
     writeSection.classList.add('hidden');
     readSection.classList.remove('hidden');
     btnWrite.classList.remove('active');
     btnRead.classList.remove('active');
-    loadIdeas();
+    await loadIdeas();
 }
 
-function loadRouteFromUrl() {
+async function loadRouteFromUrl() {
     const pathWithoutBase = window.location.pathname.slice(projectBasePath.length);
     const hashSlug = window.location.hash.startsWith('#/') ? window.location.hash.slice(2).split('/')[0] : '';
     const slug = hashSlug || pathWithoutBase.split('/').filter(Boolean)[0];
-    const account = slug ? getAccountBySlug(slug) : null;
 
-    if (account) {
-        activeFeed = 'profile';
-        selectedProfileId = account.id;
-        writeSection.classList.add('hidden');
-        readSection.classList.remove('hidden');
-        btnWrite.classList.remove('active');
-        btnRead.classList.remove('active');
-    } else if (slug) {
-        window.history.replaceState({ feedType: 'global' }, '', getHomePath());
-        activeFeed = 'global';
-        selectedProfileId = null;
+    if (slug) {
+        const account = await getAccountBySlug(slug);
+        if (account) {
+            activeFeed = 'profile';
+            selectedProfileId = account.id;
+            writeSection.classList.add('hidden');
+            readSection.classList.remove('hidden');
+            btnWrite.classList.remove('active');
+            btnRead.classList.remove('active');
+            await loadIdeas();
+            return;
+        } else {
+            window.history.replaceState({ feedType: 'global' }, '', getHomePath());
+            activeFeed = 'global';
+            selectedProfileId = null;
+        }
     }
 
-    loadIdeas();
+    await loadIdeas();
 }
 
 btnProfile.addEventListener('click', () => toggleSidebar(true));
@@ -386,19 +515,16 @@ favoritesMenu.addEventListener('click', () => {
     toggleSidebar(false);
     showFeed('favorites');
 });
-feedFilter.addEventListener('change', loadIdeas);
+feedFilter.addEventListener('change', () => loadIdeas());
 backToFeed.addEventListener('click', () => showFeed('global'));
 window.addEventListener('popstate', () => loadRouteFromUrl());
 
 ideaInput.addEventListener('input', () => {
     const currentLength = ideaInput.value.length;
     charCounter.textContent = `${currentLength} / ${maxLength}`;
-    
-    // Muda a cor para vermelho se chegar no limite
     charCounter.classList.toggle('limit-reached', currentLength >= maxLength);
 });
 
-// Navegação (Alternar entre Escrever e Ler)
 btnWrite.addEventListener('click', () => {
     if (!authenticatedUser) {
         showAuthGate();
@@ -408,6 +534,7 @@ btnWrite.addEventListener('click', () => {
     readSection.classList.add('hidden');
     btnWrite.classList.add('active');
     btnRead.classList.remove('active');
+    ideaInput.focus();
 });
 
 btnRead.addEventListener('click', () => {
@@ -418,247 +545,412 @@ btnRead.addEventListener('click', () => {
     showFeed('mine');
 });
 
-loadRouteFromUrl();
-
-// Salvar a Ideia
-btnSave.addEventListener('click', () => {
+// Salvar Ideia / Fragmento no Supabase
+btnSave.addEventListener('click', async () => {
     if (!authenticatedUser) {
         showAuthGate();
         return;
     }
     const text = ideaInput.value.trim();
-    if (!text) return; // Não salva se estiver vazio
+    if (!text) return;
 
-    // Cria o objeto da ideia
-    const newIdea = {
-        id: Date.now(),
-        content: text,
-        authorId: getCurrentAccount().id,
-        authorName: getCurrentAccount().name,
-        upvotes: 0,
-        downvotes: 0,
-        userVote: null,
-        favorite: false,
-        favoritesByAccount: {},
-        date: new Date().toLocaleDateString('pt-BR', {
-            day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute:'2-digit'
-        })
-    };
+    btnSave.disabled = true;
+    try {
+        const { error } = await supabaseClient
+            .from('entries')
+            .insert([{
+                content: text,
+                author_id: authenticatedUser.id
+            }]);
 
-    // Busca ideias antigas ou cria um array vazio
-    const savedIdeas = JSON.parse(localStorage.getItem('gnoteca_ideas')) || [];
-    
-    // Adiciona a nova ideia no topo da lista
-    savedIdeas.unshift(newIdea);
+        if (error) {
+            console.error('Error saving entry:', error);
+            showActionFeedback(error.message || translate('errorSaving'));
+            return;
+        }
 
-    // Salva no LocalStorage (FUTURO: Aqui enviaremos para o Firebase/Firestore)
-    localStorage.setItem('gnoteca_ideas', JSON.stringify(savedIdeas));
+        ideaInput.value = '';
+        charCounter.textContent = `0 / ${maxLength}`;
+        charCounter.classList.remove('limit-reached');
+        feedbackMsg.classList.remove('hidden');
+        setTimeout(() => {
+            feedbackMsg.classList.add('hidden');
+        }, 2000);
 
-    // Limpa o campo e dá feedback
-    ideaInput.value = '';
-    feedbackMsg.classList.remove('hidden');
-    setTimeout(() => {
-        feedbackMsg.classList.add('hidden');
-    }, 2000);
+        await loadIdeas();
+        await updateProfileStats();
+        // Leva o usuário de volta ao feed
+        showFeed('global');
+    } catch (err) {
+        console.error('Save idea error:', err);
+        showActionFeedback(translate('errorSaving'));
+    } finally {
+        btnSave.disabled = false;
+    }
 });
 
-// Carregar e exibir as Ideias
-function loadIdeas() {
-    ideasList.innerHTML = ''; // Limpa a lista atual
-    const currentAccount = getCurrentAccount();
-    const allIdeas = JSON.parse(localStorage.getItem('gnoteca_ideas')) || [];
-    allIdeas.forEach(idea => {
-        idea.authorId = idea.authorId || currentAccount.id;
-        idea.authorName = idea.authorName || currentAccount.name;
-        idea.votesByAccount = idea.votesByAccount || {};
-        idea.favoritesByAccount = idea.favoritesByAccount || {};
-        if (idea.userVote && !idea.votesByAccount[currentAccount.id]) {
-            idea.votesByAccount[currentAccount.id] = idea.userVote;
-        }
-        if (idea.favorite && !idea.favoritesByAccount[currentAccount.id]) {
-            idea.favoritesByAccount[currentAccount.id] = true;
-        }
-        delete idea.userVote;
-        delete idea.favorite;
-    });
-    localStorage.setItem('gnoteca_ideas', JSON.stringify(allIdeas));
-    let savedIdeas = activeFeed === 'mine'
-        ? allIdeas.filter(idea => idea.authorId === currentAccount.id)
-        : activeFeed === 'profile'
-            ? allIdeas.filter(idea => idea.authorId === selectedProfileId)
-        : activeFeed === 'favorites'
-            ? allIdeas.filter(idea => idea.favoritesByAccount[currentAccount.id])
-            : allIdeas;
-    const isPublicVisitor = !authenticatedUser && activeFeed === 'global';
-    if (isPublicVisitor) savedIdeas = savedIdeas.slice(0, publicFeedLimit);
-    const profileAccount = getAccounts().find(account => account.id === selectedProfileId);
-    feedKicker.textContent = activeFeed === 'profile' ? translate('profile') : translate('publicCollection');
-    feedTitle.textContent = activeFeed === 'profile'
-        ? `${translate('fragments')} de ${profileAccount?.name || translate('profile')}`
-        : activeFeed === 'favorites' ? translate('favoriteCollection') : translate('latestFragments');
-    backToFeed.classList.toggle('hidden', activeFeed !== 'profile');
-    const filter = feedFilter.value;
-    savedIdeas = [...savedIdeas].sort((firstIdea, secondIdea) => {
-        if (filter === 'voted') {
-            return (secondIdea.upvotes || 0) + (secondIdea.downvotes || 0) - ((firstIdea.upvotes || 0) + (firstIdea.downvotes || 0));
-        }
-        if (filter === 'favorite') {
-            return favoriteCount(secondIdea) - favoriteCount(firstIdea) || secondIdea.id - firstIdea.id;
-        }
-        return secondIdea.id - firstIdea.id;
-    });
+// Carregar e Exibir Fragmentos do Supabase
+async function loadIdeas() {
+    ideasList.innerHTML = `<p class="empty-state">${translate('loading')}</p>`;
 
-    if (savedIdeas.length === 0) {
-        ideasList.innerHTML = `<p class="empty-state">${translate('empty')}</p>`;
+    try {
+        let query;
+
+        if (activeFeed === 'favorites') {
+            if (!authenticatedUser) {
+                ideasList.innerHTML = `<p class="empty-state">${translate('empty')}</p>`;
+                ideasCount.textContent = '0';
+                return;
+            }
+            query = supabaseClient
+                .from('entries')
+                .select(`
+                    id,
+                    content,
+                    created_at,
+                    author_id,
+                    profiles:author_id (
+                        id,
+                        username,
+                        display_name,
+                        avatar_url
+                    ),
+                    votes (
+                        user_id,
+                        vote_type
+                    ),
+                    favorites!inner (
+                        user_id
+                    )
+                `)
+                .eq('favorites.user_id', authenticatedUser.id);
+        } else {
+            query = supabaseClient
+                .from('entries')
+                .select(`
+                    id,
+                    content,
+                    created_at,
+                    author_id,
+                    profiles:author_id (
+                        id,
+                        username,
+                        display_name,
+                        avatar_url
+                    ),
+                    votes (
+                        user_id,
+                        vote_type
+                    ),
+                    favorites (
+                        user_id
+                    )
+                `);
+
+            if (activeFeed === 'mine') {
+                if (!authenticatedUser) {
+                    ideasList.innerHTML = `<p class="empty-state">${translate('empty')}</p>`;
+                    ideasCount.textContent = '0';
+                    return;
+                }
+                query = query.eq('author_id', authenticatedUser.id);
+            } else if (activeFeed === 'profile' && selectedProfileId) {
+                query = query.eq('author_id', selectedProfileId);
+            }
+        }
+
+        const isPublicVisitor = !authenticatedUser && activeFeed === 'global';
+        if (isPublicVisitor) {
+            query = query.limit(publicFeedLimit);
+        }
+
+        query = query.order('created_at', { ascending: false });
+
+        const { data: entries, error } = await query;
+
+        if (error) {
+            console.error('Error fetching entries:', error);
+            ideasList.innerHTML = `<p class="empty-state">${translate('errorLoading')}</p>`;
+            return;
+        }
+
+        let savedIdeas = (entries || []).map(entry => {
+            const upvotes = (entry.votes || []).filter(v => v.vote_type === 'up').length;
+            const downvotes = (entry.votes || []).filter(v => v.vote_type === 'down').length;
+            const userVote = authenticatedUser
+                ? (entry.votes || []).find(v => v.user_id === authenticatedUser.id)?.vote_type || null
+                : null;
+            const favorite = authenticatedUser
+                ? (entry.favorites || []).some(f => f.user_id === authenticatedUser.id)
+                : false;
+            const totalFavorites = (entry.favorites || []).length;
+            const authorName = entry.profiles?.display_name || entry.profiles?.username || 'Anônimo';
+            const authorAvatarUrl = entry.profiles?.avatar_url || null;
+
+            return {
+                id: entry.id,
+                content: entry.content,
+                authorId: entry.author_id,
+                authorName: authorName,
+                authorUsername: entry.profiles?.username,
+                authorAvatarUrl: authorAvatarUrl,
+                upvotes,
+                downvotes,
+                userVote,
+                favorite,
+                favoritesCount: totalFavorites,
+                created_at: entry.created_at,
+                date: new Date(entry.created_at).toLocaleDateString(currentLanguage, {
+                    day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                })
+            };
+        });
+
+        // Configuração dos Títulos do Feed
+        let profileAccount = null;
+        if (activeFeed === 'profile' && selectedProfileId) {
+            if (authenticatedUser && authenticatedUser.id === selectedProfileId) {
+                profileAccount = authenticatedUser;
+            } else if (savedIdeas.length > 0) {
+                profileAccount = { id: selectedProfileId, name: savedIdeas[0].authorName };
+            } else {
+                const { data: prof } = await supabaseClient
+                    .from('profiles')
+                    .select('id, display_name, username, avatar_url')
+                    .eq('id', selectedProfileId)
+                    .maybeSingle();
+                if (prof) profileAccount = { id: prof.id, name: prof.display_name || prof.username, avatar_url: prof.avatar_url };
+            }
+        }
+
+        feedKicker.textContent = activeFeed === 'profile' ? translate('profile') : translate('publicCollection');
+        feedTitle.textContent = activeFeed === 'profile'
+            ? `${translate('fragments')} de ${profileAccount?.name || translate('profile')}`
+            : activeFeed === 'favorites' ? translate('favoriteCollection') : translate('latestFragments');
+        backToFeed.classList.toggle('hidden', activeFeed !== 'profile');
+
+        // Ordenação
+        const filter = feedFilter.value;
+        savedIdeas.sort((a, b) => {
+            if (filter === 'voted') {
+                return (b.upvotes + b.downvotes) - (a.upvotes + a.downvotes);
+            }
+            if (filter === 'favorite') {
+                return b.favoritesCount - a.favoritesCount;
+            }
+            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        });
+
+        if (savedIdeas.length === 0) {
+            ideasList.innerHTML = `<p class="empty-state">${translate('empty')}</p>`;
+            ideasCount.textContent = '0';
+            loadMoreFeed.classList.add('hidden');
+            return;
+        }
+
+        ideasCount.textContent = savedIdeas.length;
+        loadMoreFeed.classList.toggle('hidden', !isPublicVisitor || savedIdeas.length < publicFeedLimit);
+
+        // Renderizar Lista
+        ideasList.innerHTML = '';
+        savedIdeas.forEach(idea => {
+            const card = document.createElement('div');
+            card.className = 'idea-card';
+            const isAuthor = authenticatedUser && idea.authorId === authenticatedUser.id;
+            const authorImgBadge = idea.authorAvatarUrl
+                ? `<img class="card-author-avatar" src="${escapeHTML(idea.authorAvatarUrl)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`
+                : '';
+            card.innerHTML = `
+                <div class="idea-header">
+                    <span class="idea-date">${idea.date}<span class="idea-author">${translate('by')} <button class="author-link" type="button" data-action="profile" data-profile-id="${idea.authorId}">${authorImgBadge}${escapeHTML(idea.authorName)}</button></span></span>
+                    <div class="entry-actions${isAuthor ? '' : ' hidden'}">
+                        <button class="entry-action" type="button" data-action="edit" data-idea-id="${idea.id}" aria-label="${translate('edit')} entrada">${translate('edit')}</button>
+                        <button class="entry-action delete-action" type="button" data-action="delete" data-idea-id="${idea.id}" aria-label="${translate('delete')} entrada">${translate('delete')}</button>
+                    </div>
+                </div>
+                <p class="idea-content">${escapeHTML(idea.content).replace(/\n/g, '<br>')}</p>
+                <div class="idea-actions">
+                    <button class="vote-button${idea.userVote === 'up' ? ' selected' : ''}" type="button" data-action="upvote" data-idea-id="${idea.id}" aria-label="Dar upvote" title="Dar upvote"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" /></svg><span class="action-count">${idea.upvotes || 0}</span></button>
+                    <button class="vote-button${idea.userVote === 'down' ? ' selected' : ''}" type="button" data-action="downvote" data-idea-id="${idea.id}" aria-label="Dar downvote" title="Dar downvote"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m6-6-6 6-6-6" /></svg><span class="action-count">${idea.downvotes || 0}</span></button>
+                    <button class="favorite-button${idea.favorite ? ' selected' : ''}" type="button" data-action="favorite" data-idea-id="${idea.id}" aria-label="${idea.favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}" title="${idea.favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.6l6.2-.9L12 3Z" /></svg><span class="action-count">${idea.favoritesCount}</span></button>
+                </div>
+            `;
+            ideasList.appendChild(card);
+        });
+    } catch (err) {
+        console.error('loadIdeas exception:', err);
+        ideasList.innerHTML = `<p class="empty-state">${translate('errorLoading')}</p>`;
+    }
+}
+
+// Atualizar Estatísticas de Perfil
+async function updateProfileStats() {
+    if (!authenticatedUser) {
         ideasCount.textContent = '0';
+        favoritesCount.textContent = '0';
+        return;
+    }
+    try {
+        const [entriesRes, favsRes] = await Promise.all([
+            supabaseClient
+                .from('entries')
+                .select('id', { count: 'exact', head: true })
+                .eq('author_id', authenticatedUser.id),
+            supabaseClient
+                .from('favorites')
+                .select('entry_id', { count: 'exact', head: true })
+                .eq('user_id', authenticatedUser.id)
+        ]);
+
+        ideasCount.textContent = entriesRes.count !== null ? String(entriesRes.count) : '0';
+        favoritesCount.textContent = favsRes.count !== null ? String(favsRes.count) : '0';
+    } catch (err) {
+        console.error('updateProfileStats error:', err);
+    }
+}
+
+function showActionFeedback(message) {
+    actionFeedback.textContent = message;
+    actionFeedback.classList.remove('hidden');
+    setTimeout(() => actionFeedback.classList.add('hidden'), 3000);
+}
+
+// Interações no Feed (Votos, Favoritos, Edição, Deleção)
+ideasList.addEventListener('click', async event => {
+    const button = event.target.closest('button[data-action]');
+    if (!button) return;
+
+    if (button.dataset.action === 'profile') {
+        showProfile(button.dataset.profileId);
         return;
     }
 
-    ideasCount.textContent = savedIdeas.length;
-    loadMoreFeed.classList.toggle('hidden', !isPublicVisitor || allIdeas.length <= publicFeedLimit);
+    const ideaId = Number(button.dataset.ideaId);
+    const action = button.dataset.action;
 
-    // Renderiza cada ideia na tela
-    savedIdeas.forEach(idea => {
-        const card = document.createElement('div');
-        card.className = 'idea-card';
-        const userVote = idea.votesByAccount[currentAccount.id] || null;
-        const favorite = Boolean(idea.favoritesByAccount[currentAccount.id]);
-        const isAuthor = idea.authorId === currentAccount.id;
-        card.innerHTML = `
-            <div class="idea-header">
-                <span class="idea-date">${idea.date}<span class="idea-author">${translate('by')} <button class="author-link" type="button" data-action="profile" data-profile-id="${idea.authorId}">${idea.authorName}</button></span></span>
-                <div class="entry-actions${isAuthor ? '' : ' hidden'}">
-                    <button class="entry-action" type="button" data-action="edit" data-idea-id="${idea.id}" aria-label="${translate('edit')} entrada">${translate('edit')}</button>
-                    <button class="entry-action delete-action" type="button" data-action="delete" data-idea-id="${idea.id}" aria-label="${translate('delete')} entrada">${translate('delete')}</button>
-                </div>
-            </div>
-            <p class="idea-content">${idea.content.replace(/\n/g, '<br>')}</p>
-            <div class="idea-actions">
-                <button class="vote-button${userVote === 'up' ? ' selected' : ''}" type="button" data-action="upvote" data-idea-id="${idea.id}" aria-label="Dar upvote" title="Dar upvote"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" /></svg><span class="action-count">${idea.upvotes || 0}</span></button>
-                <button class="vote-button${userVote === 'down' ? ' selected' : ''}" type="button" data-action="downvote" data-idea-id="${idea.id}" aria-label="Dar downvote" title="Dar downvote"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m6-6-6 6-6-6" /></svg><span class="action-count">${idea.downvotes || 0}</span></button>
-                <button class="favorite-button${favorite ? ' selected' : ''}" type="button" data-action="favorite" data-idea-id="${idea.id}" aria-label="${favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}" title="${favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.6l6.2-.9L12 3Z" /></svg><span class="action-count">${favoriteCount(idea)}</span></button>
-            </div>
-        `;
-        ideasList.appendChild(card);
-    });
-}
-
-    function getDailyUsage() {
-        const today = new Date().toISOString().slice(0, 10);
-        const storedUsage = JSON.parse(localStorage.getItem('gnoteca_daily_usage')) || {};
-
-        if (storedUsage.date !== today) {
-            return { date: today, votes: 0, favorites: 0 };
-        }
-
-        return storedUsage;
+    if (!authenticatedUser && ['upvote', 'downvote', 'favorite', 'edit', 'delete', 'save-edit'].includes(action)) {
+        showAuthGate();
+        return;
     }
 
-    function saveDailyUsage(usage) {
-        localStorage.setItem('gnoteca_daily_usage', JSON.stringify(usage));
+    if (action === 'edit') {
+        const card = button.closest('.idea-card');
+        const contentEl = card.querySelector('.idea-content');
+        const rawContent = contentEl.innerText || contentEl.textContent;
+        enterEditMode(card, { id: ideaId, content: rawContent });
+        return;
     }
 
-    function favoriteCount(idea) {
-        return Object.values(idea.favoritesByAccount || {}).filter(Boolean).length;
+    if (action === 'cancel-edit') {
+        await loadIdeas();
+        return;
     }
 
-    function updateProfileStats() {
-        const savedIdeas = JSON.parse(localStorage.getItem('gnoteca_ideas')) || [];
-        const currentAccount = getCurrentAccount();
-        ideasCount.textContent = savedIdeas.length;
-        favoritesCount.textContent = savedIdeas.filter(idea => idea.favoritesByAccount?.[currentAccount.id]).length;
-    }
-
-    function showActionFeedback(message) {
-        actionFeedback.textContent = message;
-        actionFeedback.classList.remove('hidden');
-        setTimeout(() => actionFeedback.classList.add('hidden'), 3000);
-    }
-
-    ideasList.addEventListener('click', event => {
-        const button = event.target.closest('button[data-action]');
-        if (!button) return;
-
-        if (button.dataset.action === 'profile') {
-            showProfile(button.dataset.profileId);
+    if (action === 'save-edit') {
+        const card = button.closest('.idea-card');
+        const editField = card.querySelector('.idea-edit-field');
+        const trimmedContent = editField.value.trim();
+        if (!trimmedContent) {
+            showActionFeedback(translate('emptyEntry'));
+            editField.focus();
             return;
         }
 
-        const ideaId = Number(button.dataset.ideaId);
-        const action = button.dataset.action;
-        const currentAccount = getCurrentAccount();
-        const savedIdeas = JSON.parse(localStorage.getItem('gnoteca_ideas')) || [];
-        const idea = savedIdeas.find(savedIdea => savedIdea.id === ideaId);
-        if (!idea) return;
+        button.disabled = true;
+        try {
+            const { error } = await supabaseClient
+                .from('entries')
+                .update({ content: trimmedContent })
+                .eq('id', ideaId)
+                .eq('author_id', authenticatedUser.id);
 
-        if ((action === 'edit' || action === 'delete' || action === 'save-edit') && idea.authorId !== currentAccount.id) {
-            showActionFeedback(translate('authorOnly'));
-            return;
-        }
-
-        if (action === 'edit') {
-            if (idea.authorId && idea.authorId !== currentAccount.id) {
-                showActionFeedback(translate('authorOnly'));
+            if (error) {
+                showActionFeedback(error.message || translate('errorSaving'));
+                button.disabled = false;
                 return;
             }
-            enterEditMode(button.closest('.idea-card'), idea);
-            return;
-        } else if (action === 'save-edit') {
-            const editField = button.closest('.idea-card').querySelector('.idea-edit-field');
-            const trimmedContent = editField.value.trim();
-            if (!trimmedContent) {
-                showActionFeedback(translate('emptyEntry'));
-                editField.focus();
-                return;
-            }
-            idea.content = trimmedContent;
-            idea.date = new Date().toLocaleDateString('pt-BR', {
-                day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
-            });
-        } else if (action === 'delete') {
-            if (idea.authorId && idea.authorId !== currentAccount.id) {
-                showActionFeedback(translate('authorOnly'));
-                return;
-            }
-            openDeleteDialog(ideaId, button.closest('.idea-card'));
-            return;
-        } else if (action === 'cancel-edit') {
-            loadIdeas();
-            return;
-        } else {
-            idea.upvotes = idea.upvotes || 0;
-            idea.downvotes = idea.downvotes || 0;
-            idea.favorite = Boolean(idea.favorite);
-            idea.votesByAccount = idea.votesByAccount || {};
-            idea.favoritesByAccount = idea.favoritesByAccount || {};
-        }
 
-        if (action === 'edit' || action === 'delete') {
-            localStorage.setItem('gnoteca_ideas', JSON.stringify(savedIdeas));
-            loadIdeas();
-            updateProfileStats();
-            return;
-        } else if (action === 'favorite') {
-            const isFavorite = Boolean(idea.favoritesByAccount[currentAccount.id]);
-            idea.favoritesByAccount[currentAccount.id] = !isFavorite;
-        } else {
-            const nextVote = action === 'upvote' ? 'up' : 'down';
-            idea.votesByAccount = idea.votesByAccount || {};
-            const currentVote = idea.votesByAccount[currentAccount.id] || null;
-            if (!currentVote) {
-                idea.votesByAccount[currentAccount.id] = nextVote;
-                idea[nextVote === 'up' ? 'upvotes' : 'downvotes'] += 1;
-            } else if (currentVote !== nextVote) {
-                idea[currentVote === 'up' ? 'upvotes' : 'downvotes'] -= 1;
-                idea[nextVote === 'up' ? 'upvotes' : 'downvotes'] += 1;
-                idea.votesByAccount[currentAccount.id] = nextVote;
-            }
+            await loadIdeas();
+        } catch (err) {
+            console.error('save-edit error:', err);
+            showActionFeedback(translate('errorSaving'));
+        } finally {
+            button.disabled = false;
         }
+        return;
+    }
 
-        localStorage.setItem('gnoteca_ideas', JSON.stringify(savedIdeas));
-        loadIdeas();
-        updateProfileStats();
-    });
+    if (action === 'delete') {
+        openDeleteDialog(ideaId, button.closest('.idea-card'));
+        return;
+    }
+
+    if (action === 'upvote' || action === 'downvote') {
+        const targetType = action === 'upvote' ? 'up' : 'down';
+        const isCurrentlySelected = button.classList.contains('selected');
+
+        button.disabled = true;
+        try {
+            if (isCurrentlySelected) {
+                // Remover voto existente
+                const { error } = await supabaseClient
+                    .from('votes')
+                    .delete()
+                    .eq('entry_id', ideaId)
+                    .eq('user_id', authenticatedUser.id);
+                if (error) throw error;
+            } else {
+                // Adicionar ou alternar voto
+                const { error } = await supabaseClient
+                    .from('votes')
+                    .upsert({
+                        entry_id: ideaId,
+                        user_id: authenticatedUser.id,
+                        vote_type: targetType
+                    });
+                if (error) throw error;
+            }
+            await loadIdeas();
+        } catch (err) {
+            console.error('Vote error:', err);
+            showActionFeedback(err.message || 'Erro ao registrar voto.');
+        } finally {
+            button.disabled = false;
+        }
+        return;
+    }
+
+    if (action === 'favorite') {
+        const isCurrentlyFavorite = button.classList.contains('selected');
+        button.disabled = true;
+        try {
+            if (isCurrentlyFavorite) {
+                const { error } = await supabaseClient
+                    .from('favorites')
+                    .delete()
+                    .eq('entry_id', ideaId)
+                    .eq('user_id', authenticatedUser.id);
+                if (error) throw error;
+            } else {
+                const { error } = await supabaseClient
+                    .from('favorites')
+                    .insert({
+                        entry_id: ideaId,
+                        user_id: authenticatedUser.id
+                    });
+                if (error) throw error;
+            }
+            await loadIdeas();
+            await updateProfileStats();
+        } catch (err) {
+            console.error('Favorite error:', err);
+            showActionFeedback(err.message || 'Erro ao atualizar favoritos.');
+        } finally {
+            button.disabled = false;
+        }
+        return;
+    }
+});
 
 function enterEditMode(card, idea) {
     const content = card.querySelector('.idea-content');
@@ -682,3 +974,8 @@ function enterEditMode(card, idea) {
     actions.classList.add('editing-actions');
     editField.focus();
 }
+
+// Inicialização
+applyLanguage(currentLanguage);
+loadRouteFromUrl();
+refreshAuthState();

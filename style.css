@@ -90,12 +90,37 @@ header {
     background-color: var(--accent-color);
     color: #fff;
     font-weight: bold;
+    overflow: hidden;
+    position: relative;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 50%;
 }
 
 .profile-avatar-large {
     width: 4.5rem;
     height: 4.5rem;
     font-size: 1.5rem;
+    margin: 0 auto;
+    border: 2px solid var(--accent-color);
+}
+
+.card-author-avatar {
+    display: inline-block;
+    width: 1.15rem;
+    height: 1.15rem;
+    border-radius: 50%;
+    vertical-align: -0.18rem;
+    margin-right: 0.3rem;
+    object-fit: cover;
+    border: 1px solid var(--border-color);
 }
 
 .sidebar-overlay {

@@ -70,13 +70,16 @@ language plpgsql
 security definer set search_path = public
 as $$
 begin
-    insert into public.profiles (id, username, display_name)
+    insert into public.profiles (id, username, display_name, avatar_url)
     values (
         new.id,
         lower(regexp_replace(coalesce(new.raw_user_meta_data->>'user_name', split_part(new.email, '@', 1)), '[^a-zA-Z0-9]+', '-', 'g')),
-        coalesce(new.raw_user_meta_data->>'full_name', new.email)
+        coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name', new.email),
+        coalesce(new.raw_user_meta_data->>'avatar_url', new.raw_user_meta_data->>'picture')
     )
-    on conflict (id) do nothing;
+    on conflict (id) do update set
+        avatar_url = coalesce(excluded.avatar_url, profiles.avatar_url),
+        display_name = coalesce(excluded.display_name, profiles.display_name);
     return new;
 end;
 $$;
