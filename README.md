@@ -49,7 +49,9 @@ Diferente das redes sociais convencionais que priorizam o engajamento desenfread
 
 ### 2. Gestao de Fragmentos (Pensamentos)
 - Publicacao de fragmentos em tempo real diretamente na tabela `entries` do Supabase.
-- Feed publico aberto para visualizacao mesmo sem autenticacao.
+- Visualizacao inicial para visitantes: exibicao dos 3 ultimos fragmentos com banner convidativo de autenticacao ao rolar a pagina.
+- Rolagem infinita (`IntersectionObserver`) para usuarios autenticados, com carregamento sob demanda em lotes paginados (`range`).
+- Sistema de cache em memoria com TTL (Time-To-Live) e invalidacao inteligente para economizar chamadas ao banco de dados e poupar recursos do servidor.
 - Modos de visualizacao do feed:
   - **Acervo Publico**: Ultimos fragmentos publicados por toda a comunidade.
   - **Meu Acervo**: Fragmentos publicados pelo proprio usuario autenticado.
@@ -70,10 +72,13 @@ Diferente das redes sociais convencionais que priorizam o engajamento desenfread
 - Slots vazios estilizados informam quando a constelacao do pensador ainda possui vagas abertas.
 - Indicador de progresso na barra lateral (exemplo: `2/3 favoritos`).
 
-### 5. Design e Experiencia de Usuario
+### 5. Design, Modernizacao e Experiencia de Usuario
+- Hero banner de boas-vindas para visitantes apresentando a proposta filosofica da plataforma.
+- Skeleton loaders animados com efeito shimmer durante o carregamento de novas paginas.
+- Banner de bloqueio elegante posicionado abaixo da 3a postagem para visitantes deslogados com acoes diretas de login e Google OAuth.
+- Botao flutuante para retorno suave ao topo da pagina ao rolar a navegacao.
 - Alternancia de Modo Claro (Light Mode) e Modo Noturno (Dark Mode) com persistencia local via `localStorage`.
-- Tipografia serifada de alta legibilidade para o texto dos pensamentos.
-- Microinteracoes, elevacao suave de cartoes ao passar o cursor e notificacoes contextuais integradas.
+- Tipografia editorial (Cinzel, Lora, Plus Jakarta Sans) para conforto em leituras reflexivas.
 
 ---
 

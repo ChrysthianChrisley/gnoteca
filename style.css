@@ -1108,3 +1108,221 @@ body.dark-mode .constellation-empty-slot {
     0% { transform: scale(1); opacity: 0.8; filter: drop-shadow(0 0 2px var(--gold-accent)); }
     100% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 8px var(--gold-accent)); }
 }
+
+/* ==========================================================================
+   Hero de Boas-Vindas para Visitantes
+   ========================================================================== */
+.visitor-hero {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    padding: 2rem 1.5rem;
+    background: linear-gradient(180deg, var(--surface-color), var(--surface-glass));
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-subtle);
+}
+
+.visitor-hero-pill {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: var(--soft-accent-color);
+    color: var(--accent-color);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+}
+
+.visitor-hero-title {
+    font-family: var(--font-brand);
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    color: var(--primary-color);
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.6rem;
+}
+
+.visitor-hero-subtitle {
+    font-size: 0.95rem;
+    color: var(--muted-color);
+    max-width: 540px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* ==========================================================================
+   Skeleton Loading Shimmer
+   ========================================================================== */
+.feed-loader {
+    display: grid;
+    gap: 1.25rem;
+    margin-top: 1rem;
+}
+
+.skeleton-card {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.6rem;
+    box-shadow: var(--shadow-subtle);
+}
+
+.skeleton-line {
+    background: linear-gradient(90deg, rgba(150, 150, 150, 0.08) 25%, rgba(150, 150, 150, 0.18) 50%, rgba(150, 150, 150, 0.08) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+}
+
+.skeleton-header {
+    width: 35%;
+    height: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.skeleton-text-lg {
+    width: 95%;
+    height: 1.2rem;
+    margin-bottom: 0.6rem;
+}
+
+.skeleton-text-md {
+    width: 70%;
+    height: 1.2rem;
+    margin-bottom: 1.2rem;
+}
+
+.skeleton-actions {
+    width: 40%;
+    height: 1.8rem;
+    border-radius: 6px;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ==========================================================================
+   Banner de Bloqueio para Visitantes (Abaixo do 3o Fragmento)
+   ========================================================================== */
+.unauth-gate-banner {
+    margin: 2.5rem 0 1.5rem;
+}
+
+.unauth-gate-card {
+    background: linear-gradient(135deg, var(--surface-color), var(--soft-accent-color));
+    border: 1px solid var(--accent-color);
+    border-radius: var(--radius-lg);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    box-shadow: var(--shadow-hover);
+    position: relative;
+}
+
+.unauth-gate-pill {
+    display: inline-block;
+    padding: 0.25rem 0.7rem;
+    background: var(--soft-accent-color);
+    color: var(--accent-color);
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+}
+
+.unauth-gate-title {
+    font-family: var(--font-brand);
+    font-size: 1.35rem;
+    color: var(--primary-color);
+    margin-bottom: 0.6rem;
+}
+
+.unauth-gate-text {
+    font-size: 0.9rem;
+    color: var(--muted-color);
+    max-width: 500px;
+    margin: 0 auto 1.5rem;
+    line-height: 1.6;
+}
+
+.unauth-gate-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.gate-banner-primary,
+.gate-banner-google {
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.gate-banner-primary {
+    border: 0;
+    background: var(--accent-color);
+    color: #fff;
+}
+
+.gate-banner-primary:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+}
+
+.gate-banner-google {
+    border: 1px solid var(--border-color);
+    background: var(--surface-color);
+    color: var(--text-color);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.gate-banner-google:hover {
+    border-color: var(--accent-color);
+    transform: translateY(-1px);
+}
+
+/* Sentinela de Rolagem Infinita */
+.feed-sentinel {
+    width: 100%;
+    height: 20px;
+    pointer-events: none;
+}
+
+/* Botão Voltar ao Topo */
+.back-to-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    background: var(--surface-color);
+    color: var(--accent-color);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, opacity 0.2s ease, background-color 0.2s ease;
+    z-index: 10;
+}
+
+.back-to-top:hover {
+    transform: translateY(-3px);
+    background: var(--soft-accent-color);
+    border-color: var(--accent-color);
+}

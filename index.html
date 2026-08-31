@@ -97,6 +97,14 @@
 
     <main>
         <p id="action-feedback" class="action-feedback hidden" role="status"></p>
+
+        <!-- Hero de Boas-Vindas para Visitantes Deslogados -->
+        <div id="visitor-hero" class="visitor-hero hidden">
+            <span class="visitor-hero-pill" data-i18n="heroBadge">Acervo Filosofico</span>
+            <h1 class="visitor-hero-title" data-i18n="heroTitle">Onde as ideias ganham forma</h1>
+            <p class="visitor-hero-subtitle" data-i18n="heroSubtitle">Uma biblioteca viva de pensamentos e aforismos. Leia, reflita e guarde os pilares que guiam a sua mente.</p>
+        </div>
+
         <!-- Tela de Registro -->
         <section id="write-section" class="hidden">
             <textarea id="idea-input" maxlength="280" placeholder="O que quer registrar?" data-i18n-placeholder="ideaPlaceholder"></textarea>
@@ -124,7 +132,38 @@
             <div id="ideas-list">
                 <!-- As ideias salvas aparecerão aqui -->
             </div>
-            <button id="load-more-feed" class="load-more-button hidden" type="button" data-i18n="signInToSeeMore">Entrar para ver mais</button>
+
+            <!-- Skeleton Loaders de Carregamento Fluido -->
+            <div id="feed-loader" class="feed-loader hidden">
+                <div class="skeleton-card">
+                    <div class="skeleton-line skeleton-header"></div>
+                    <div class="skeleton-line skeleton-text-lg"></div>
+                    <div class="skeleton-line skeleton-text-md"></div>
+                    <div class="skeleton-line skeleton-actions"></div>
+                </div>
+                <div class="skeleton-card">
+                    <div class="skeleton-line skeleton-header"></div>
+                    <div class="skeleton-line skeleton-text-lg"></div>
+                    <div class="skeleton-line skeleton-text-md"></div>
+                    <div class="skeleton-line skeleton-actions"></div>
+                </div>
+            </div>
+
+            <!-- Banner de Bloqueio para Visitantes Deslogados (Abaixo da 3a Postagem) -->
+            <div id="unauth-gate-banner" class="unauth-gate-banner hidden">
+                <div class="unauth-gate-card">
+                    <span class="unauth-gate-pill" data-i18n="unauthGateBadge">Acervo Restrito a Visitantes</span>
+                    <h3 class="unauth-gate-title" data-i18n="unauthGateTitle">Deseja continuar explorando?</h3>
+                    <p class="unauth-gate-text" data-i18n="unauthGateText">Voce visualizou os 3 ultimos fragmentos. Faca login ou crie sua conta gratuita para desbloquear o acervo infinito, publicar suas ideias e votar.</p>
+                    <div class="unauth-gate-actions">
+                        <button id="gate-banner-auth" class="gate-banner-primary" type="button" data-i18n="signInToContinue">Entrar ou Criar Conta</button>
+                        <button id="gate-banner-google" class="gate-banner-google" type="button"><span class="google-mark" aria-hidden="true">G</span> <span data-i18n="continueGoogle">Continuar com Google</span></button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="feed-sentinel" class="feed-sentinel"></div>
+            <button id="btn-back-to-top" class="back-to-top hidden" type="button" aria-label="Voltar ao topo" title="Voltar ao topo">^</button>
         </section>
     </main>
 

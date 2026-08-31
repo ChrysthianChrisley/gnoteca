@@ -50,6 +50,15 @@ const gateAuthFeedback = document.getElementById('gate-auth-feedback');
 const profileConstellation = document.getElementById('profile-constellation');
 const loadMoreFeed = document.getElementById('load-more-feed');
 
+// Novos Elementos para Feed Moderno e Rolagem Infinita
+const visitorHero = document.getElementById('visitor-hero');
+const feedLoader = document.getElementById('feed-loader');
+const unauthGateBanner = document.getElementById('unauth-gate-banner');
+const gateBannerAuth = document.getElementById('gate-banner-auth');
+const gateBannerGoogle = document.getElementById('gate-banner-google');
+const feedSentinel = document.getElementById('feed-sentinel');
+const btnBackToTop = document.getElementById('btn-back-to-top');
+
 const charCounter = document.getElementById('char-counter');
 const maxLength = 280;
 let pendingDeleteId = null;
@@ -57,7 +66,35 @@ let activeFeed = 'global';
 let selectedProfileId = null;
 const projectBasePath = window.location.pathname.startsWith('/gnoteca') ? '/gnoteca' : '';
 let authenticatedUser = null;
-const publicFeedLimit = 10;
+
+// Configuracoes de Paginacao e Cache para Economia de Recursos
+const publicFeedLimit = 3;
+const PAGE_SIZE = 6;
+let currentPage = 0;
+let hasMorePages = true;
+let isFetchingPage = false;
+const queryCache = new Map();
+const CACHE_TTL_MS = 60 * 1000; // 1 minuto de cache em memoria
+
+function getCacheKey(feedType, profileId, filter, page) {
+    return `${feedType}_${profileId || 'all'}_${filter}_p${page}_${authenticatedUser ? authenticatedUser.id : 'anon'}`;
+}
+
+function getCachedData(key) {
+    const cached = queryCache.get(key);
+    if (cached && (Date.now() - cached.timestamp < CACHE_TTL_MS)) {
+        return cached.data;
+    }
+    return null;
+}
+
+function setCachedData(key, data) {
+    queryCache.set(key, { timestamp: Date.now(), data });
+}
+
+function invalidateCache() {
+    queryCache.clear();
+}
 
 // Configuração do Supabase Client
 const supabaseUrl = 'https://vavitcyykwqqmjqkhyna.supabase.co';
@@ -86,7 +123,13 @@ const translations = {
         emptyConstellationHelp: 'Escolha mais uma ideia favorita para completar sua tríade.',
         emptyConstellationOther: 'Espaço aberto para uma nova ideia norteadora.',
         pillar: 'Pilar',
-        pillars: 'Pilares'
+        pillars: 'Pilares',
+        heroBadge: 'Acervo Filosofico',
+        heroTitle: 'Onde as ideias ganham forma',
+        heroSubtitle: 'Uma biblioteca viva de pensamentos e aforismos. Leia, reflita e guarde os pilares que guiam a sua mente.',
+        unauthGateBadge: 'Acervo Restrito a Visitantes',
+        unauthGateTitle: 'Deseja continuar explorando?',
+        unauthGateText: 'Voce visualizou os 3 ultimos fragmentos. Faca login ou crie sua conta gratuita para desbloquear o acervo infinito, publicar suas ideias e votar.'
     },
     'en-US': {
         profileTitle: 'My profile', profileSubtitle: 'idea collector', fragments: 'fragments', favorites: 'favorites',
@@ -107,7 +150,13 @@ const translations = {
         emptyConstellationHelp: 'Choose another favorite idea to complete your triad.',
         emptyConstellationOther: 'Open space for a new guiding idea.',
         pillar: 'Pillar',
-        pillars: 'Pillars'
+        pillars: 'Pillars',
+        heroBadge: 'Philosophical Collection',
+        heroTitle: 'Where ideas take shape',
+        heroSubtitle: 'A living library of thoughts and aphorisms. Read, reflect, and keep the pillars that guide your mind.',
+        unauthGateBadge: 'Collection Restricted for Visitors',
+        unauthGateTitle: 'Want to keep exploring?',
+        unauthGateText: 'You have viewed the last 3 fragments. Sign in or create a free account to unlock the infinite collection, publish your ideas, and vote.'
     },
     'es-ES': {
         profileTitle: 'Mi perfil', profileSubtitle: 'coleccionista de ideas', fragments: 'fragmentos', favorites: 'favoritos',
@@ -117,7 +166,7 @@ const translations = {
         overview: 'Vista general', settings: 'Configuración', signOut: 'Cerrar sesión', language: 'Idioma', removeEntry: 'Eliminar entrada', deleteQuestion: '¿Eliminar este fragmento?',
         deleteWarning: 'Esta acción no se puede deshacer.', cancel: 'Cancelar', delete: 'Eliminar', ideaPlaceholder: '¿Qué quieres registrar?', backToFeed: 'Volver al acervo',
         publicCollection: 'Acervo público', latestFragments: 'Últimos fragmentos', sortBy: 'Ordenar por', newest: 'Más novos', mostVoted: 'Más votados', mostFavorited: 'Más favoritos',
-        nightMode: 'Modo nocturno', lightMode: 'Modo claro', profile: 'Perfil', favoriteCollection: 'Mis favoritos', empty: 'Aún no hay fragmentos guardados. ¡Empieza a escribir!',
+        nightMode: 'Modo nocturno', lightMode: 'Modo claro', profile: 'Perfil', favoriteCollection: 'Mis favoritos', empty: 'Aún no hay fragmentos guardados. ¡Empieza a escrever!',
         authorOnly: 'Solo el autor puede modificar esta entrada.', emptyEntry: 'La entrada no puede estar vacía.',
         loading: 'Cargando fragmentos...', errorLoading: 'Error al cargar los fragmentos.', errorSaving: 'Error al guardar. Inténtelo de nuevo.',
         voteLimitReached: 'Has alcanzado el límite de 5 votos por día. ¡Elige sabiamente qué ideas apoyar!',
@@ -128,7 +177,13 @@ const translations = {
         emptyConstellationHelp: 'Elige otra idea favorita para completar tu tríada.',
         emptyConstellationOther: 'Espacio abierto para una nueva idea guía.',
         pillar: 'Pilar',
-        pillars: 'Pilares'
+        pillars: 'Pilares',
+        heroBadge: 'Acervo Filosofico',
+        heroTitle: 'Donde las ideas toman forma',
+        heroSubtitle: 'Una biblioteca viva de pensamientos y aforismos. Lee, reflexiona y guarda los pilares que guian tu mente.',
+        unauthGateBadge: 'Acervo Restringido para Visitantes',
+        unauthGateTitle: 'Deseas continuar explorando?',
+        unauthGateText: 'Has visualizado los ultimos 3 fragmentos. Inicia sesion o crea tu cuenta gratuita para desbloquear el acervo infinito, publicar tus ideas y votar.'
     }
 };
 
@@ -440,6 +495,7 @@ confirmDelete.addEventListener('click', async () => {
             showActionFeedback('Fragmento apagado com sucesso.');
         }
         closeDeleteDialog();
+        invalidateCache();
         await loadIdeas();
         await updateProfileStats();
     } catch (err) {
@@ -605,6 +661,7 @@ btnSave.addEventListener('click', async () => {
             feedbackMsg.classList.add('hidden');
         }, 2000);
 
+        invalidateCache();
         await loadIdeas();
         await updateProfileStats();
         // Leva o usuário de volta ao feed
@@ -617,19 +674,78 @@ btnSave.addEventListener('click', async () => {
     }
 });
 
-// Carregar e Exibir Fragmentos do Supabase
-async function loadIdeas() {
-    ideasList.innerHTML = `<p class="empty-state">${translate('loading')}</p>`;
+// Formatacao de Entradas para Objeto Estruturado
+function formatIdeaEntry(entry) {
+    const upvotes = (entry.votes || []).filter(v => v.vote_type === 'up').length;
+    const downvotes = (entry.votes || []).filter(v => v.vote_type === 'down').length;
+    const userVote = authenticatedUser
+        ? (entry.votes || []).find(v => v.user_id === authenticatedUser.id)?.vote_type || null
+        : null;
+    const favorite = authenticatedUser
+        ? (entry.favorites || []).some(f => f.user_id === authenticatedUser.id)
+        : false;
+    const totalFavorites = (entry.favorites || []).length;
+    const authorName = entry.profiles?.display_name || entry.profiles?.username || 'Anônimo';
+    const authorAvatarUrl = entry.profiles?.avatar_url || null;
+
+    return {
+        id: entry.id,
+        content: entry.content,
+        authorId: entry.author_id,
+        authorName: authorName,
+        authorUsername: entry.profiles?.username,
+        authorAvatarUrl: authorAvatarUrl,
+        upvotes,
+        downvotes,
+        userVote,
+        favorite,
+        favoritesCount: totalFavorites,
+        created_at: entry.created_at,
+        date: new Date(entry.created_at).toLocaleDateString(currentLanguage, {
+            day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+        })
+    };
+}
+
+// Renderizacao do Elemento de Card de Fragmento
+function renderIdeaCard(idea) {
+    const card = document.createElement('div');
+    card.className = 'idea-card';
+    const isAuthor = authenticatedUser && idea.authorId === authenticatedUser.id;
+    const authorImgBadge = idea.authorAvatarUrl
+        ? `<img class="card-author-avatar" src="${escapeHTML(idea.authorAvatarUrl)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`
+        : '';
+    card.innerHTML = `
+        <div class="idea-header">
+            <span class="idea-date">${idea.date}<span class="idea-author">${translate('by')} <button class="author-link" type="button" data-action="profile" data-profile-id="${idea.authorId}">${authorImgBadge}${escapeHTML(idea.authorName)}</button></span></span>
+            <div class="entry-actions${isAuthor ? '' : ' hidden'}">
+                <button class="entry-action" type="button" data-action="edit" data-idea-id="${idea.id}" aria-label="${translate('edit')} entrada">${translate('edit')}</button>
+                <button class="entry-action delete-action" type="button" data-action="delete" data-idea-id="${idea.id}" aria-label="${translate('delete')} entrada">${translate('delete')}</button>
+            </div>
+        </div>
+        <p class="idea-content">${escapeHTML(idea.content).replace(/\n/g, '<br>')}</p>
+        <div class="idea-actions">
+            <button class="vote-button${idea.userVote === 'up' ? ' selected' : ''}" type="button" data-action="upvote" data-idea-id="${idea.id}" aria-label="Dar upvote" title="Dar upvote"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" /></svg><span class="action-count">${idea.upvotes || 0}</span></button>
+            <button class="vote-button${idea.userVote === 'down' ? ' selected' : ''}" type="button" data-action="downvote" data-idea-id="${idea.id}" aria-label="Dar downvote" title="Dar downvote"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m6-6-6 6-6-6" /></svg><span class="action-count">${idea.downvotes || 0}</span></button>
+            <button class="favorite-button${idea.favorite ? ' selected' : ''}" type="button" data-action="favorite" data-idea-id="${idea.id}" aria-label="${idea.favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}" title="${idea.favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.6l6.2-.9L12 3Z" /></svg><span class="action-count">${idea.favoritesCount}</span></button>
+        </div>
+    `;
+    return card;
+}
+
+// Busca Paginada de Fragmentos com Cache em Memoria
+async function fetchEntriesPage(page = 0) {
+    const filter = feedFilter?.value || 'newest';
+    const cacheKey = getCacheKey(activeFeed, selectedProfileId, filter, page);
+    const cached = getCachedData(cacheKey);
+    if (cached) {
+        return cached;
+    }
 
     try {
         let query;
-
         if (activeFeed === 'favorites') {
-            if (!authenticatedUser) {
-                ideasList.innerHTML = `<p class="empty-state">${translate('empty')}</p>`;
-                ideasCount.textContent = '0';
-                return;
-            }
+            if (!authenticatedUser) return [];
             query = supabaseClient
                 .from('entries')
                 .select(`
@@ -646,6 +762,9 @@ async function loadIdeas() {
                     votes (
                         user_id,
                         vote_type
+                    ),
+                    favorites (
+                        user_id
                     ),
                     favorites!inner (
                         user_id
@@ -676,11 +795,7 @@ async function loadIdeas() {
                 `);
 
             if (activeFeed === 'mine') {
-                if (!authenticatedUser) {
-                    ideasList.innerHTML = `<p class="empty-state">${translate('empty')}</p>`;
-                    ideasCount.textContent = '0';
-                    return;
-                }
+                if (!authenticatedUser) return [];
                 query = query.eq('author_id', authenticatedUser.id);
             } else if (activeFeed === 'profile' && selectedProfileId) {
                 query = query.eq('author_id', selectedProfileId);
@@ -690,128 +805,135 @@ async function loadIdeas() {
         const isPublicVisitor = !authenticatedUser && activeFeed === 'global';
         if (isPublicVisitor) {
             query = query.limit(publicFeedLimit);
+        } else {
+            const from = page * PAGE_SIZE;
+            const to = from + PAGE_SIZE - 1;
+            query = query.range(from, to);
         }
 
         query = query.order('created_at', { ascending: false });
 
         const { data: entries, error } = await query;
-
         if (error) {
-            console.error('Error fetching entries:', error);
-            ideasList.innerHTML = `<p class="empty-state">${translate('errorLoading')}</p>`;
-            return;
+            console.error('Error fetching entries page:', error);
+            return null;
         }
 
-        let savedIdeas = (entries || []).map(entry => {
-            const upvotes = (entry.votes || []).filter(v => v.vote_type === 'up').length;
-            const downvotes = (entry.votes || []).filter(v => v.vote_type === 'down').length;
-            const userVote = authenticatedUser
-                ? (entry.votes || []).find(v => v.user_id === authenticatedUser.id)?.vote_type || null
-                : null;
-            const favorite = authenticatedUser
-                ? (entry.favorites || []).some(f => f.user_id === authenticatedUser.id)
-                : false;
-            const totalFavorites = (entry.favorites || []).length;
-            const authorName = entry.profiles?.display_name || entry.profiles?.username || 'Anônimo';
-            const authorAvatarUrl = entry.profiles?.avatar_url || null;
+        const formatted = (entries || []).map(formatIdeaEntry);
 
-            return {
-                id: entry.id,
-                content: entry.content,
-                authorId: entry.author_id,
-                authorName: authorName,
-                authorUsername: entry.profiles?.username,
-                authorAvatarUrl: authorAvatarUrl,
-                upvotes,
-                downvotes,
-                userVote,
-                favorite,
-                favoritesCount: totalFavorites,
-                created_at: entry.created_at,
-                date: new Date(entry.created_at).toLocaleDateString(currentLanguage, {
-                    day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
-                })
-            };
-        });
-
-        // Configuração dos Títulos do Feed
-        let profileAccount = null;
-        if (activeFeed === 'profile' && selectedProfileId) {
-            if (authenticatedUser && authenticatedUser.id === selectedProfileId) {
-                profileAccount = authenticatedUser;
-            } else if (savedIdeas.length > 0) {
-                profileAccount = { id: selectedProfileId, name: savedIdeas[0].authorName };
-            } else {
-                const { data: prof } = await supabaseClient
-                    .from('profiles')
-                    .select('id, display_name, username, avatar_url')
-                    .eq('id', selectedProfileId)
-                    .maybeSingle();
-                if (prof) profileAccount = { id: prof.id, name: prof.display_name || prof.username, avatar_url: prof.avatar_url };
-            }
+        if (filter === 'voted') {
+            formatted.sort((a, b) => (b.upvotes + b.downvotes) - (a.upvotes + a.downvotes));
+        } else if (filter === 'favorite') {
+            formatted.sort((a, b) => b.favoritesCount - a.favoritesCount);
         }
 
-        feedKicker.textContent = activeFeed === 'profile' ? translate('profile') : translate('publicCollection');
-        feedTitle.textContent = activeFeed === 'profile'
-            ? `${translate('fragments')} de ${profileAccount?.name || translate('profile')}`
-            : activeFeed === 'favorites' ? translate('favoriteCollection') : translate('latestFragments');
-        backToFeed.classList.toggle('hidden', activeFeed !== 'profile');
-
-        // Renderizar Constelação dos 3 Favoritos se for página de perfil
-        await renderProfileConstellation(selectedProfileId, profileAccount?.name);
-
-        // Ordenação
-        const filter = feedFilter.value;
-        savedIdeas.sort((a, b) => {
-            if (filter === 'voted') {
-                return (b.upvotes + b.downvotes) - (a.upvotes + a.downvotes);
-            }
-            if (filter === 'favorite') {
-                return b.favoritesCount - a.favoritesCount;
-            }
-            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-        });
-
-        if (savedIdeas.length === 0) {
-            ideasList.innerHTML = `<p class="empty-state">${translate('empty')}</p>`;
-            ideasCount.textContent = '0';
-            loadMoreFeed.classList.add('hidden');
-            return;
-        }
-
-        ideasCount.textContent = savedIdeas.length;
-        loadMoreFeed.classList.toggle('hidden', !isPublicVisitor || savedIdeas.length < publicFeedLimit);
-
-        // Renderizar Lista
-        ideasList.innerHTML = '';
-        savedIdeas.forEach(idea => {
-            const card = document.createElement('div');
-            card.className = 'idea-card';
-            const isAuthor = authenticatedUser && idea.authorId === authenticatedUser.id;
-            const authorImgBadge = idea.authorAvatarUrl
-                ? `<img class="card-author-avatar" src="${escapeHTML(idea.authorAvatarUrl)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`
-                : '';
-            card.innerHTML = `
-                <div class="idea-header">
-                    <span class="idea-date">${idea.date}<span class="idea-author">${translate('by')} <button class="author-link" type="button" data-action="profile" data-profile-id="${idea.authorId}">${authorImgBadge}${escapeHTML(idea.authorName)}</button></span></span>
-                    <div class="entry-actions${isAuthor ? '' : ' hidden'}">
-                        <button class="entry-action" type="button" data-action="edit" data-idea-id="${idea.id}" aria-label="${translate('edit')} entrada">${translate('edit')}</button>
-                        <button class="entry-action delete-action" type="button" data-action="delete" data-idea-id="${idea.id}" aria-label="${translate('delete')} entrada">${translate('delete')}</button>
-                    </div>
-                </div>
-                <p class="idea-content">${escapeHTML(idea.content).replace(/\n/g, '<br>')}</p>
-                <div class="idea-actions">
-                    <button class="vote-button${idea.userVote === 'up' ? ' selected' : ''}" type="button" data-action="upvote" data-idea-id="${idea.id}" aria-label="Dar upvote" title="Dar upvote"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" /></svg><span class="action-count">${idea.upvotes || 0}</span></button>
-                    <button class="vote-button${idea.userVote === 'down' ? ' selected' : ''}" type="button" data-action="downvote" data-idea-id="${idea.id}" aria-label="Dar downvote" title="Dar downvote"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m6-6-6 6-6-6" /></svg><span class="action-count">${idea.downvotes || 0}</span></button>
-                    <button class="favorite-button${idea.favorite ? ' selected' : ''}" type="button" data-action="favorite" data-idea-id="${idea.id}" aria-label="${idea.favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}" title="${idea.favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.6l6.2-.9L12 3Z" /></svg><span class="action-count">${idea.favoritesCount}</span></button>
-                </div>
-            `;
-            ideasList.appendChild(card);
-        });
+        setCachedData(cacheKey, formatted);
+        return formatted;
     } catch (err) {
-        console.error('loadIdeas exception:', err);
-        ideasList.innerHTML = `<p class="empty-state">${translate('errorLoading')}</p>`;
+        console.error('fetchEntriesPage exception:', err);
+        return null;
     }
+}
+
+// Carregar e Exibir Fragmentos do Supabase
+async function loadIdeas(reset = true) {
+    if (reset) {
+        currentPage = 0;
+        hasMorePages = true;
+        isFetchingPage = false;
+        ideasList.innerHTML = '';
+    }
+
+    const isPublicVisitor = !authenticatedUser && activeFeed === 'global';
+
+    // Exibir Hero de Boas-Vindas se for visitante nao logado
+    if (visitorHero) {
+        visitorHero.classList.toggle('hidden', !isPublicVisitor);
+    }
+
+    // Identificar Conta do Perfil se aplicavel
+    let profileAccount = null;
+    if (activeFeed === 'profile' && selectedProfileId) {
+        if (authenticatedUser && authenticatedUser.id === selectedProfileId) {
+            profileAccount = authenticatedUser;
+        } else {
+            const { data: prof } = await supabaseClient
+                .from('profiles')
+                .select('id, display_name, username, avatar_url')
+                .eq('id', selectedProfileId)
+                .maybeSingle();
+            if (prof) profileAccount = { id: prof.id, name: prof.display_name || prof.username, avatar_url: prof.avatar_url };
+        }
+    }
+
+    feedKicker.textContent = activeFeed === 'profile' ? translate('profile') : translate('publicCollection');
+    feedTitle.textContent = activeFeed === 'profile'
+        ? `${translate('fragments')} de ${profileAccount?.name || translate('profile')}`
+        : activeFeed === 'favorites' ? translate('favoriteCollection') : translate('latestFragments');
+    backToFeed.classList.toggle('hidden', activeFeed !== 'profile');
+
+    // Renderizar Constelação dos 3 Favoritos se for página de perfil
+    await renderProfileConstellation(selectedProfileId, profileAccount?.name);
+
+    if (reset) {
+        feedLoader?.classList.remove('hidden');
+    }
+
+    const firstPage = await fetchEntriesPage(0);
+    feedLoader?.classList.add('hidden');
+
+    if (firstPage === null) {
+        ideasList.innerHTML = `<p class="empty-state">${translate('errorLoading')}</p>`;
+        return;
+    }
+
+    if (firstPage.length === 0) {
+        ideasList.innerHTML = `<p class="empty-state">${translate('empty')}</p>`;
+        ideasCount.textContent = '0';
+        hasMorePages = false;
+        unauthGateBanner?.classList.add('hidden');
+        return;
+    }
+
+    ideasCount.textContent = firstPage.length;
+
+    firstPage.forEach(idea => {
+        ideasList.appendChild(renderIdeaCard(idea));
+    });
+
+    if (isPublicVisitor) {
+        hasMorePages = false;
+        unauthGateBanner?.classList.remove('hidden');
+    } else {
+        unauthGateBanner?.classList.add('hidden');
+        if (firstPage.length < PAGE_SIZE) {
+            hasMorePages = false;
+        }
+    }
+}
+
+// Carregar Proxima Pagina (Rolagem Infinita)
+async function loadNextPage() {
+    if (!authenticatedUser || !hasMorePages || isFetchingPage) return;
+    isFetchingPage = true;
+    currentPage++;
+
+    feedLoader?.classList.remove('hidden');
+    const nextPageEntries = await fetchEntriesPage(currentPage);
+    feedLoader?.classList.add('hidden');
+
+    if (!nextPageEntries || nextPageEntries.length === 0) {
+        hasMorePages = false;
+    } else {
+        nextPageEntries.forEach(idea => {
+            ideasList.appendChild(renderIdeaCard(idea));
+        });
+        if (nextPageEntries.length < PAGE_SIZE) {
+            hasMorePages = false;
+        }
+        ideasCount.textContent = ideasList.children.length;
+    }
+    isFetchingPage = false;
 }
 
 // Renderizar a Constelação de 3 Favoritos no Perfil
@@ -1004,6 +1126,7 @@ ideasList.addEventListener('click', async event => {
                 return;
             }
 
+            invalidateCache();
             await loadIdeas();
         } catch (err) {
             console.error('save-edit error:', err);
@@ -1064,6 +1187,7 @@ ideasList.addEventListener('click', async event => {
                     });
                 if (error) throw error;
             }
+            invalidateCache();
             await loadIdeas();
         } catch (err) {
             console.error('Vote error:', err);
@@ -1107,6 +1231,7 @@ ideasList.addEventListener('click', async event => {
                     });
                 if (error) throw error;
             }
+            invalidateCache();
             await loadIdeas();
             await updateProfileStats();
         } catch (err) {
@@ -1141,6 +1266,44 @@ function enterEditMode(card, idea) {
     actions.classList.add('editing-actions');
     editField.focus();
 }
+
+// Banners e Botoes de Acesso para Visitantes
+gateBannerAuth?.addEventListener('click', () => {
+    showAuthGate();
+});
+
+gateBannerGoogle?.addEventListener('click', () => {
+    handleGoogleSignIn();
+});
+
+// Observador de Rolagem Infinita para Usuarios Autenticados
+if (feedSentinel && 'IntersectionObserver' in window) {
+    const infiniteScrollObserver = new IntersectionObserver(entries => {
+        const [entry] = entries;
+        if (entry.isIntersecting) {
+            if (authenticatedUser && hasMorePages && !isFetchingPage) {
+                loadNextPage();
+            }
+        }
+    }, { rootMargin: '250px' });
+
+    infiniteScrollObserver.observe(feedSentinel);
+}
+
+// Botao Voltar ao Topo Flutuante
+window.addEventListener('scroll', () => {
+    if (btnBackToTop) {
+        if (window.scrollY > 400) {
+            btnBackToTop.classList.remove('hidden');
+        } else {
+            btnBackToTop.classList.add('hidden');
+        }
+    }
+}, { passive: true });
+
+btnBackToTop?.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});
 
 // Inicialização
 applyLanguage(currentLanguage);
