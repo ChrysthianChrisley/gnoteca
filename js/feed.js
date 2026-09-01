@@ -6,7 +6,6 @@ import { showAuthGate } from './auth.js';
 import { getMaxFavorites, getNextFavoriteMilestoneInfo, renderProfileConstellation, updateProfileStats } from './favorites.js';
 
 import { openShareModal } from './share.js';
-import { trackInteraction, publishMetrics } from './metrics.js';
 
 // Formatação de Entradas do Supabase
 export function formatIdeaEntry(entry, commentsCount = 0) {
