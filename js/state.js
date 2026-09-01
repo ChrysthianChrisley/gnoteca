@@ -5,6 +5,7 @@ export const state = {
     authenticatedUser: null,
     activeFeed: 'global', // 'global' | 'mine' | 'favorites' | 'profile'
     selectedProfileId: null,
+    selectedTag: 'Todos',
     pendingDeleteId: null,
     currentPage: 0,
     hasMorePages: true,
@@ -14,9 +15,9 @@ export const state = {
 // Gerenciamento de Cache em Memória
 const queryCache = new Map();
 
-export function getCacheKey(feedType, profileId, filter, page) {
+export function getCacheKey(feedType, profileId, filter, page, tag = 'Todos') {
     const userIdentifier = state.authenticatedUser ? state.authenticatedUser.id : 'anon';
-    return `${feedType}_${profileId || 'all'}_${filter}_p${page}_${userIdentifier}`;
+    return `${feedType}_${profileId || 'all'}_${filter}_${tag}_p${page}_${userIdentifier}`;
 }
 
 export function getCachedData(key) {

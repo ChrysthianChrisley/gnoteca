@@ -24,6 +24,7 @@ export function formatIdeaEntry(entry) {
     return {
         id: entry.id,
         content: entry.content,
+        tag: entry.tag || 'Geral',
         authorId: entry.author_id,
         authorName: authorName,
         authorUsername: entry.profiles?.username,
@@ -52,9 +53,12 @@ export function renderIdeaCard(idea) {
     card.innerHTML = `
         <div class="idea-header">
             <span class="idea-date">${idea.date}<span class="idea-author">${translate('by')} <button class="author-link" type="button" data-action="profile" data-profile-id="${idea.authorId}">${authorImgBadge}${escapeHTML(idea.authorName)}</button></span></span>
-            <div class="entry-actions${isAuthor ? '' : ' hidden'}">
-                <button class="entry-action" type="button" data-action="edit" data-idea-id="${idea.id}" aria-label="${translate('edit')} entrada">${translate('edit')}</button>
-                <button class="entry-action delete-action" type="button" data-action="delete" data-idea-id="${idea.id}" aria-label="${translate('delete')} entrada">${translate('delete')}</button>
+            <div style="display: flex; align-items: center; gap: 0.25rem;">
+                <button class="card-tag-pill" type="button" data-action="tag" data-tag="${escapeHTML(idea.tag)}">#${escapeHTML(idea.tag)}</button>
+                <div class="entry-actions${isAuthor ? '' : ' hidden'}">
+                    <button class="entry-action" type="button" data-action="edit" data-idea-id="${idea.id}" aria-label="${translate('edit')} entrada">${translate('edit')}</button>
+                    <button class="entry-action delete-action" type="button" data-action="delete" data-idea-id="${idea.id}" aria-label="${translate('delete')} entrada">${translate('delete')}</button>
+                </div>
             </div>
         </div>
         <p class="idea-content">${escapeHTML(idea.content).replace(/\n/g, '<br>')}</p>
@@ -72,7 +76,8 @@ export function renderIdeaCard(idea) {
 export async function fetchEntriesPage(page = 0) {
     const feedFilter = document.getElementById('feed-filter');
     const filter = feedFilter?.value || 'newest';
-    const cacheKey = getCacheKey(state.activeFeed, state.selectedProfileId, filter, page);
+    const tag = state.selectedTag || 'Todos';
+    const cacheKey = getCacheKey(state.activeFeed, state.selectedProfileId, filter, page, tag);
     const cached = getCachedData(cacheKey);
     if (cached) return cached;
 
@@ -85,6 +90,7 @@ export async function fetchEntriesPage(page = 0) {
                 .select(`
                     id,
                     content,
+                    tag,
                     created_at,
                     author_id,
                     profiles:author_id (
@@ -108,6 +114,7 @@ export async function fetchEntriesPage(page = 0) {
                 .select(`
                     id,
                     content,
+                    tag,
                     created_at,
                     author_id,
                     profiles:author_id (
@@ -131,6 +138,10 @@ export async function fetchEntriesPage(page = 0) {
             } else if (state.activeFeed === 'profile' && state.selectedProfileId) {
                 query = query.eq('author_id', state.selectedProfileId);
             }
+        }
+
+        if (tag && tag !== 'Todos') {
+            query = query.eq('tag', tag);
         }
 
         const isPublicVisitor = !state.authenticatedUser && state.activeFeed === 'global';
@@ -370,6 +381,18 @@ export async function handleFeedClick(event, onNavigateProfile) {
     if (action === 'profile') {
         if (typeof onNavigateProfile === 'function') {
             onNavigateProfile(button.dataset.profileId);
+        }
+        return;
+    }
+
+    if (action === 'tag') {
+        const clickedTag = button.dataset.tag;
+        if (clickedTag) {
+            state.selectedTag = clickedTag;
+            document.querySelectorAll('.topic-pill').forEach(pill => {
+                pill.classList.toggle('active', pill.dataset.tag === clickedTag);
+            });
+            await loadIdeas();
         }
         return;
     }

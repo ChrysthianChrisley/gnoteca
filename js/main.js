@@ -309,12 +309,16 @@ function setupEventListeners() {
         const text = ideaInput?.value.trim();
         if (!text) return;
 
+        const tagSelect = document.getElementById('write-tag-select');
+        const selectedTag = tagSelect?.value || 'Geral';
+
         btnSave.disabled = true;
         try {
             const { error } = await supabaseClient
                 .from('entries')
                 .insert([{
                     content: text,
+                    tag: selectedTag,
                     author_id: state.authenticatedUser.id
                 }]);
 
@@ -344,6 +348,19 @@ function setupEventListeners() {
         } finally {
             btnSave.disabled = false;
         }
+    });
+
+    // Barra de Filtro de Tópicos
+    const topicFilterBar = document.getElementById('topic-filter-bar');
+    topicFilterBar?.addEventListener('click', async event => {
+        const pill = event.target.closest('.topic-pill');
+        if (!pill) return;
+        const tag = pill.dataset.tag || 'Todos';
+        state.selectedTag = tag;
+        topicFilterBar.querySelectorAll('.topic-pill').forEach(p => {
+            p.classList.toggle('active', p === pill);
+        });
+        await loadIdeas();
     });
 
     // Feed Event Delegation

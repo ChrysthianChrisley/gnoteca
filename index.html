@@ -133,7 +133,23 @@
         <!-- Tela de Registro -->
         <section id="write-section" class="hidden">
             <textarea id="idea-input" maxlength="280" placeholder="Qual conceito, hipótese ou insight deseja registrar?" data-i18n-placeholder="ideaPlaceholder"></textarea>
-            <div id="char-counter">0 / 280</div><button id="btn-save" data-i18n="saveToGnoteca">Salvar na Gnoteca</button>
+            <div class="write-meta-bar">
+                <div class="tag-selector-wrapper">
+                    <label for="write-tag-select" class="tag-select-label">Tópico:</label>
+                    <select id="write-tag-select" class="tag-select-input">
+                        <option value="Geral">#Geral</option>
+                        <option value="Ciência">#Ciência</option>
+                        <option value="Filosofia">#Filosofia</option>
+                        <option value="Tecnologia">#Tecnologia</option>
+                        <option value="Neurociência">#Neurociência</option>
+                        <option value="Física">#Física</option>
+                        <option value="Psicologia">#Psicologia</option>
+                        <option value="Sociedade">#Sociedade</option>
+                    </select>
+                </div>
+                <div id="char-counter">0 / 280</div>
+            </div>
+            <button id="btn-save" data-i18n="saveToGnoteca">Salvar na Gnoteca</button>
             <p id="feedback-msg" class="hidden">Ideia salva com sucesso!</p>
         </section>
 
@@ -152,6 +168,19 @@
                         <option value="favorite" data-i18n="mostFavorited">Mais favoritas</option>
                     </select>
                 </label>
+            </div>
+
+            <!-- Barra de Filtro de Tópicos / Tags -->
+            <div id="topic-filter-bar" class="topic-filter-bar" role="tablist" aria-label="Filtrar por tópico">
+                <button class="topic-pill active" data-tag="Todos" type="button">Todos</button>
+                <button class="topic-pill" data-tag="Ciência" type="button">#Ciência</button>
+                <button class="topic-pill" data-tag="Filosofia" type="button">#Filosofia</button>
+                <button class="topic-pill" data-tag="Tecnologia" type="button">#Tecnologia</button>
+                <button class="topic-pill" data-tag="Neurociência" type="button">#Neurociência</button>
+                <button class="topic-pill" data-tag="Física" type="button">#Física</button>
+                <button class="topic-pill" data-tag="Psicologia" type="button">#Psicologia</button>
+                <button class="topic-pill" data-tag="Sociedade" type="button">#Sociedade</button>
+                <button class="topic-pill" data-tag="Geral" type="button">#Geral</button>
             </div>
             <div id="profile-constellation" class="profile-constellation hidden"></div>
             <div id="ideas-list">
