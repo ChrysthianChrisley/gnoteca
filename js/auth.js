@@ -2,6 +2,7 @@ import { supabaseClient } from './config.js';
 import { state, invalidateCache } from './state.js';
 import { translate, getTranslatedTitle } from './i18n.js';
 import { slugify, updateAvatarDisplay, showActionFeedback, getHomePath } from './utils.js';
+import { fetchUserNotifications, updateNotificationsBadge } from './notifications.js';
 
 // Extração de Metadados do Usuário do Provedor de Autenticação
 export function extractUserMetadata(user) {
@@ -172,19 +173,26 @@ export async function refreshAuthState(incomingUser = undefined, onStateRefreshe
 
         if (user) {
             const { avatarUrl, name, username } = extractUserMetadata(user);
+            let cachedProfile = null;
+            try {
+                const rawCache = localStorage.getItem('gnoteca_profile_cache_' + user.id);
+                if (rawCache) cachedProfile = JSON.parse(rawCache);
+            } catch (e) {}
 
             state.authenticatedUser = {
                 id: user.id,
                 email: user.email,
-                name: name || user.email?.split('@')[0] || 'Pensador',
-                username: username || slugify(name) || user.id.slice(0, 8),
-                avatar_url: avatarUrl || null,
-                title: 'Explorador de Conhecimento'
+                name: cachedProfile?.display_name || name || user.email?.split('@')[0] || 'Pensador',
+                username: cachedProfile?.username || username || slugify(name) || user.id.slice(0, 8),
+                avatar_url: cachedProfile?.avatar_url !== undefined ? cachedProfile.avatar_url : (avatarUrl || null),
+                title: cachedProfile?.current_title || 'Explorador de Conhecimento'
             };
 
-            // Atualiza o DOM imediatamente
+            // Atualiza o DOM imediatamente com os dados cacheados (Zero Flicker)
             if (profileName) profileName.textContent = state.authenticatedUser.name;
             if (headerUserName) headerUserName.textContent = state.authenticatedUser.name;
+            if (profileUsername) profileUsername.textContent = '@' + state.authenticatedUser.username;
+            if (profileSubtitle) profileSubtitle.textContent = getTranslatedTitle(state.authenticatedUser.title);
             profileAvatars.forEach(avatar => {
                 updateAvatarDisplay(avatar, state.authenticatedUser.avatar_url, state.authenticatedUser.name);
             });
@@ -198,14 +206,14 @@ export async function refreshAuthState(incomingUser = undefined, onStateRefreshe
                     .maybeSingle();
 
                 if (profile) {
-                    if (profile.display_name) state.authenticatedUser.name = profile.display_name;
-                    if (profile.avatar_url) state.authenticatedUser.avatar_url = profile.avatar_url;
-                    if (profile.username) state.authenticatedUser.username = profile.username;
-                    if (profile.current_title) {
-                        state.authenticatedUser.title = profile.current_title;
-                    } else {
-                        state.authenticatedUser.title = 'Explorador de Conhecimento';
-                    }
+                    state.authenticatedUser.name = profile.display_name || state.authenticatedUser.name;
+                    state.authenticatedUser.avatar_url = profile.avatar_url || state.authenticatedUser.avatar_url;
+                    state.authenticatedUser.username = profile.username || state.authenticatedUser.username;
+                    state.authenticatedUser.title = profile.current_title || 'Explorador de Conhecimento';
+
+                    try {
+                        localStorage.setItem('gnoteca_profile_cache_' + user.id, JSON.stringify(profile));
+                    } catch (e) {}
                 } else {
                     await supabaseClient.from('profiles').upsert({
                         id: user.id,
@@ -233,6 +241,7 @@ export async function refreshAuthState(incomingUser = undefined, onStateRefreshe
 
         const authenticated = Boolean(state.authenticatedUser);
         const writeSection = document.getElementById('write-section');
+        const btnNotifications = document.getElementById('btn-notifications');
 
         if (authPanel) authPanel.classList.toggle('hidden', authenticated);
         if (authStatus) authStatus.textContent = authenticated ? (state.authenticatedUser.email || state.authenticatedUser.name) : translate('notAuthenticated');
@@ -240,6 +249,7 @@ export async function refreshAuthState(incomingUser = undefined, onStateRefreshe
         if (btnRead) btnRead.classList.toggle('hidden', !authenticated);
         if (btnProfile) btnProfile.classList.toggle('hidden', !authenticated);
         if (btnSignout) btnSignout.classList.toggle('hidden', !authenticated);
+        if (btnNotifications) btnNotifications.classList.toggle('hidden', !authenticated);
         if (loginTrigger) loginTrigger.classList.toggle('hidden', authenticated);
         if (loadMoreFeed) loadMoreFeed.classList.toggle('hidden', authenticated || state.activeFeed !== 'global');
         if (writeSection) writeSection.classList.toggle('hidden', !authenticated);
@@ -251,12 +261,14 @@ export async function refreshAuthState(incomingUser = undefined, onStateRefreshe
             profileAvatars.forEach(avatar => {
                 updateAvatarDisplay(avatar, state.authenticatedUser.avatar_url, state.authenticatedUser.name);
             });
+            fetchUserNotifications();
         } else {
             if (profileName) profileName.textContent = translate('notAuthenticated');
             if (headerUserName) headerUserName.textContent = '';
             profileAvatars.forEach(avatar => {
                 avatar.textContent = '?';
             });
+            updateNotificationsBadge();
         }
 
         if (typeof onStateRefreshed === 'function') {

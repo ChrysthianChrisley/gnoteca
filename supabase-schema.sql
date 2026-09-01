@@ -188,3 +188,107 @@ drop trigger if exists enforce_max_daily_votes on public.votes;
 create trigger enforce_max_daily_votes
 before insert on public.votes
 for each row execute procedure public.check_max_daily_votes();
+
+-- ==============================================================================
+-- 7. TABELA DE NOTIFICAÇÕES (NOTIFICATIONS) E GATILHOS AUTOMÁTICOS
+-- ==============================================================================
+
+create table if not exists public.notifications (
+    id bigint generated always as identity primary key,
+    user_id uuid not null references auth.users(id) on delete cascade,
+    actor_id uuid not null references auth.users(id) on delete cascade,
+    type text not null check (type in ('vote_up', 'favorite', 'comment', 'reply')),
+    entry_id bigint references public.entries(id) on delete cascade,
+    read boolean not null default false,
+    created_at timestamptz not null default now()
+);
+
+create index if not exists notifications_user_id_idx on public.notifications(user_id, read, created_at desc);
+create index if not exists notifications_entry_id_idx on public.notifications(entry_id);
+
+alter table public.notifications enable row level security;
+
+create policy "Usuários podem ver suas próprias notificações"
+on public.notifications for select
+using (auth.uid() = user_id);
+
+create policy "Usuários podem atualizar suas próprias notificações"
+on public.notifications for update
+using (auth.uid() = user_id)
+with check (auth.uid() = user_id);
+
+create policy "Usuários autenticados podem criar notificações"
+on public.notifications for insert
+with check (auth.uid() = actor_id);
+
+-- Gatilho de Voto (Upvote)
+create or replace function public.handle_vote_notification()
+returns trigger as $$
+declare
+    target_author_id uuid;
+begin
+    if new.vote_type = 'up' then
+        select author_id into target_author_id from public.entries where id = new.entry_id;
+        if target_author_id is not null and target_author_id <> new.user_id then
+            insert into public.notifications (user_id, actor_id, type, entry_id)
+            values (target_author_id, new.user_id, 'vote_up', new.entry_id);
+        end if;
+    end if;
+    return new;
+end;
+$$ language plpgsql security definer;
+
+drop trigger if exists trigger_notify_vote on public.votes;
+create trigger trigger_notify_vote
+after insert on public.votes
+for each row
+execute function public.handle_vote_notification();
+
+-- Gatilho de Favorito
+create or replace function public.handle_favorite_notification()
+returns trigger as $$
+declare
+    target_author_id uuid;
+begin
+    select author_id into target_author_id from public.entries where id = new.entry_id;
+    if target_author_id is not null and target_author_id <> new.user_id then
+        insert into public.notifications (user_id, actor_id, type, entry_id)
+        values (target_author_id, new.user_id, 'favorite', new.entry_id);
+    end if;
+    return new;
+end;
+$$ language plpgsql security definer;
+
+drop trigger if exists trigger_notify_favorite on public.favorites;
+create trigger trigger_notify_favorite
+after insert on public.favorites
+for each row
+execute function public.handle_favorite_notification();
+
+-- Gatilho de Comentário / Resposta
+create or replace function public.handle_entry_notification()
+returns trigger as $$
+declare
+    target_author_id uuid;
+    parent_has_parent bigint;
+    notif_type text;
+begin
+    if new.parent_id is not null then
+        select author_id, parent_id into target_author_id, parent_has_parent 
+        from public.entries where id = new.parent_id;
+
+        if target_author_id is not null and target_author_id <> new.author_id then
+            notif_type := case when parent_has_parent is not null then 'reply' else 'comment' end;
+            insert into public.notifications (user_id, actor_id, type, entry_id)
+            values (target_author_id, new.author_id, notif_type, new.id);
+        end if;
+    end if;
+    return new;
+end;
+$$ language plpgsql security definer;
+
+drop trigger if exists trigger_notify_entry on public.entries;
+create trigger trigger_notify_entry
+after insert on public.entries
+for each row
+execute function public.handle_entry_notification();

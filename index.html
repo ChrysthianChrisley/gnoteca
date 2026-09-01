@@ -14,14 +14,18 @@
     <header>
         <button id="btn-home" class="brand-button" type="button">Gnoteca</button>
         <div class="header-right-actions">
-            <button id="btn-theme-quick-toggle" class="theme-quick-toggle" type="button" aria-label="Alternar modo noturno" title="Alternar modo noturno">
-                <svg id="theme-icon-sun" class="theme-quick-icon hidden" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-                <svg id="theme-icon-moon" class="theme-quick-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            <button id="btn-notifications" class="theme-quick-toggle notif-bell-btn hidden" type="button" aria-label="Notificações" title="Notificações">
+                <svg class="theme-quick-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                <span id="notifications-badge" class="notifications-badge hidden"></span>
             </button>
             <button id="login-trigger" class="login-trigger" type="button" data-i18n="signIn">Entrar</button>
             <button id="btn-profile" class="profile-trigger hidden" aria-label="Abrir perfil" aria-expanded="false">
                 <span class="profile-avatar" data-profile-avatar>?</span>
                 <span id="header-user-name" class="header-user-name"></span>
+            </button>
+            <button id="btn-theme-quick-toggle" class="theme-quick-toggle theme-isolated-toggle" type="button" aria-label="Alternar modo noturno" title="Alternar modo noturno">
+                <svg id="theme-icon-sun" class="theme-quick-icon hidden" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                <svg id="theme-icon-moon" class="theme-quick-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
             </button>
         </div>
     </header>
@@ -78,6 +82,7 @@
         <nav class="sidebar-menu" aria-label="Opções do perfil">
                 <button id="overview-menu" class="menu-item active" type="button" data-i18n="overview">Visão geral</button>
                 <button id="favorites-menu" class="menu-item" type="button" data-i18n="favorites">Favoritos</button>
+                <button id="notifications-menu" class="menu-item" type="button" data-i18n="notifications">Notificações</button>
                 <button class="menu-item" type="button" data-i18n="settings">Configurações</button>
                 <button id="theme-toggle" class="menu-item" type="button" aria-pressed="false"><span id="theme-label">Modo noturno</span></button>
         </nav>
@@ -271,6 +276,22 @@
 
             <div class="dialog-actions">
                 <button id="btn-share-copy" class="gate-primary-button" type="button" data-i18n="copyQuote">Copiar Citação com Link</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal / Painel de Notificações -->
+    <div id="notifications-dialog" class="auth-gate hidden" role="dialog" aria-modal="true" aria-labelledby="notifications-dialog-title">
+        <div class="auth-gate-card notifications-card">
+            <div class="notifications-card-header">
+                <h2 id="notifications-dialog-title" class="dialog-eyebrow" data-i18n="notifications">Notificações</h2>
+                <div class="notif-header-actions">
+                    <button id="btn-mark-all-read" class="btn-text-action" type="button" data-i18n="markAllRead">Marcar todas como lidas</button>
+                    <button id="close-notifications-dialog" class="auth-gate-close" type="button" aria-label="Fechar">x</button>
+                </div>
+            </div>
+            <div id="notifications-list-container" class="notifications-list-container">
+                <!-- Preenchido dinamicamente pelo JS -->
             </div>
         </div>
     </div>

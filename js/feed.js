@@ -45,6 +45,7 @@ export function formatIdeaEntry(entry) {
 export function renderIdeaCard(idea) {
     const card = document.createElement('div');
     card.className = 'idea-card';
+    card.dataset.authorId = idea.authorId || '';
     const isAuthor = state.authenticatedUser && idea.authorId === state.authenticatedUser.id;
     const authorImgBadge = idea.authorAvatarUrl
         ? `<img class="card-author-avatar" src="${escapeHTML(idea.authorAvatarUrl)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`
@@ -567,6 +568,10 @@ export async function handleFeedClick(event, onNavigateProfile) {
     const ideaId = Number(button.dataset.ideaId);
 
     if (action === 'toggle-comments') {
+        if (!state.authenticatedUser) {
+            showAuthGate();
+            return;
+        }
         const card = button.closest('.idea-card');
         const container = card.querySelector(`#comments-thread-${ideaId}`);
         if (!container) return;
@@ -603,13 +608,15 @@ export async function handleFeedClick(event, onNavigateProfile) {
 
         button.disabled = true;
         try {
-            const { error } = await supabaseClient
+            const { data: insertedComment, error } = await supabaseClient
                 .from('entries')
                 .insert([{
                     author_id: state.authenticatedUser.id,
                     parent_id: parentId,
                     content: content
-                }]);
+                }])
+                .select('id')
+                .single();
 
             if (error) {
                 console.error('Error inserting comment:', error);
@@ -618,6 +625,38 @@ export async function handleFeedClick(event, onNavigateProfile) {
             }
 
             showActionFeedback(translate('commentPublished'));
+
+            // Notificação direta para o autor do post
+            const card = form.closest('.idea-card');
+            let targetAuthorId = card?.dataset.authorId;
+            if (!targetAuthorId) {
+                try {
+                    const { data: parentEntry } = await supabaseClient
+                        .from('entries')
+                        .select('author_id')
+                        .eq('id', parentId)
+                        .maybeSingle();
+                    targetAuthorId = parentEntry?.author_id;
+                } catch (peErr) {
+                    console.warn('fetch parent author warn:', peErr);
+                }
+            }
+
+            if (targetAuthorId && targetAuthorId !== state.authenticatedUser.id) {
+                try {
+                    await supabaseClient
+                        .from('notifications')
+                        .insert({
+                            user_id: targetAuthorId,
+                            actor_id: state.authenticatedUser.id,
+                            type: 'comment',
+                            entry_id: insertedComment?.id || parentId
+                        });
+                } catch (notifErr) {
+                    console.warn('notif comment warn:', notifErr);
+                }
+            }
+
             const container = form.closest('.comments-thread-container');
             const comments = await fetchComments(parentId);
             renderCommentsContent(container, parentId, comments);
@@ -767,6 +806,7 @@ export async function handleFeedClick(event, onNavigateProfile) {
                 .eq('author_id', state.authenticatedUser.id);
 
             if (error) {
+                console.error('Error updating entry:', error);
                 showActionFeedback(error.message || translate('errorSaving'));
                 button.disabled = false;
                 return;
@@ -789,15 +829,59 @@ export async function handleFeedClick(event, onNavigateProfile) {
         return;
     }
 
+    // Votação Otimista em Tempo Real (Sem Recarregar a Tela)
     if (action === 'upvote' || action === 'downvote') {
         const targetType = action === 'upvote' ? 'up' : 'down';
-        const isCurrentlySelected = button.classList.contains('selected');
         const card = button.closest('.idea-card');
-        const hasOtherVoteSelected = card.querySelector(`.vote-button.selected:not([data-action="${action}"])`);
+        const upBtn = card?.querySelector('[data-action="upvote"]');
+        const downBtn = card?.querySelector('[data-action="downvote"]');
+        const upCountEl = upBtn?.querySelector('.action-count');
+        const downCountEl = downBtn?.querySelector('.action-count');
 
-        button.disabled = true;
+        const prevUpSelected = upBtn?.classList.contains('selected') || false;
+        const prevDownSelected = downBtn?.classList.contains('selected') || false;
+        const prevUpCount = parseInt(upCountEl?.textContent || '0', 10);
+        const prevDownCount = parseInt(downCountEl?.textContent || '0', 10);
+
+        let newUpSelected = prevUpSelected;
+        let newDownSelected = prevDownSelected;
+        let newUpCount = prevUpCount;
+        let newDownCount = prevDownCount;
+
+        if (action === 'upvote') {
+            if (prevUpSelected) {
+                newUpSelected = false;
+                newUpCount = Math.max(0, prevUpCount - 1);
+            } else {
+                newUpSelected = true;
+                newUpCount = prevUpCount + 1;
+                if (prevDownSelected) {
+                    newDownSelected = false;
+                    newDownCount = Math.max(0, prevDownCount - 1);
+                }
+            }
+        } else {
+            if (prevDownSelected) {
+                newDownSelected = false;
+                newDownCount = Math.max(0, prevDownCount - 1);
+            } else {
+                newDownSelected = true;
+                newDownCount = prevDownCount + 1;
+                if (prevUpSelected) {
+                    newUpSelected = false;
+                    newUpCount = Math.max(0, prevUpCount - 1);
+                }
+            }
+        }
+
+        // Aplicação Otimista Imediata na Interface
+        upBtn?.classList.toggle('selected', newUpSelected);
+        downBtn?.classList.toggle('selected', newDownSelected);
+        if (upCountEl) upCountEl.textContent = newUpCount;
+        if (downCountEl) downCountEl.textContent = newDownCount;
+
         try {
-            if (isCurrentlySelected) {
+            if ((action === 'upvote' && prevUpSelected) || (action === 'downvote' && prevDownSelected)) {
                 const { error } = await supabaseClient
                     .from('votes')
                     .delete()
@@ -805,7 +889,7 @@ export async function handleFeedClick(event, onNavigateProfile) {
                     .eq('user_id', state.authenticatedUser.id);
                 if (error) throw error;
             } else {
-                if (!hasOtherVoteSelected) {
+                if (!prevUpSelected && !prevDownSelected) {
                     const startOfDay = new Date();
                     startOfDay.setHours(0, 0, 0, 0);
                     const { count: dailyVotesCount, error: countErr } = await supabaseClient
@@ -814,10 +898,13 @@ export async function handleFeedClick(event, onNavigateProfile) {
                         .eq('user_id', state.authenticatedUser.id)
                         .gte('created_at', startOfDay.toISOString());
 
-                    if (countErr) console.warn('Count daily votes warning:', countErr);
-                    if (dailyVotesCount !== null && dailyVotesCount >= 5) {
+                    if (!countErr && dailyVotesCount !== null && dailyVotesCount >= 5) {
+                        // Reverte a interface caso exceda o limite diário
+                        upBtn?.classList.toggle('selected', prevUpSelected);
+                        downBtn?.classList.toggle('selected', prevDownSelected);
+                        if (upCountEl) upCountEl.textContent = prevUpCount;
+                        if (downCountEl) downCountEl.textContent = prevDownCount;
                         showActionFeedback(translate('voteLimitReached'));
-                        button.disabled = false;
                         return;
                     }
                 }
@@ -830,21 +917,63 @@ export async function handleFeedClick(event, onNavigateProfile) {
                         vote_type: targetType
                     });
                 if (error) throw error;
+
+                // Notificação direta para o autor do post
+                if (targetType === 'up') {
+                    let targetAuthorId = card?.dataset.authorId;
+                    if (!targetAuthorId) {
+                        try {
+                            const { data: targetEntry } = await supabaseClient
+                                .from('entries')
+                                .select('author_id')
+                                .eq('id', ideaId)
+                                .maybeSingle();
+                            targetAuthorId = targetEntry?.author_id;
+                        } catch (e) {
+                            console.warn('target author warn:', e);
+                        }
+                    }
+
+                    if (targetAuthorId && targetAuthorId !== state.authenticatedUser.id) {
+                        try {
+                            await supabaseClient
+                                .from('notifications')
+                                .insert({
+                                    user_id: targetAuthorId,
+                                    actor_id: state.authenticatedUser.id,
+                                    type: 'vote_up',
+                                    entry_id: ideaId
+                                });
+                        } catch (notifErr) {
+                            console.warn('notif vote warn:', notifErr);
+                        }
+                    }
+                }
             }
             invalidateCache();
-            await loadIdeas();
         } catch (err) {
             console.error('Vote error:', err);
+            upBtn?.classList.toggle('selected', prevUpSelected);
+            downBtn?.classList.toggle('selected', prevDownSelected);
+            if (upCountEl) upCountEl.textContent = prevUpCount;
+            if (downCountEl) downCountEl.textContent = prevDownCount;
             showActionFeedback(err.message || 'Erro ao registrar voto.');
-        } finally {
-            button.disabled = false;
         }
         return;
     }
 
+    // Favoritos Otimista em Tempo Real
     if (action === 'favorite') {
         const isCurrentlyFavorite = button.classList.contains('selected');
-        button.disabled = true;
+        const card = button.closest('.idea-card');
+        const favCountEl = button.querySelector('.action-count');
+        const prevFavCount = parseInt(favCountEl?.textContent || '0', 10);
+
+        // Aplicação Otimista Imediata
+        const nextFavorite = !isCurrentlyFavorite;
+        button.classList.toggle('selected', nextFavorite);
+        if (favCountEl) favCountEl.textContent = nextFavorite ? prevFavCount + 1 : Math.max(0, prevFavCount - 1);
+
         try {
             if (isCurrentlyFavorite) {
                 const { error } = await supabaseClient
@@ -867,8 +996,9 @@ export async function handleFeedClick(event, onNavigateProfile) {
 
                 const maxAllowed = getMaxFavorites(entryCount || 0);
                 if (favCount !== null && favCount >= maxAllowed) {
+                    button.classList.toggle('selected', isCurrentlyFavorite);
+                    if (favCountEl) favCountEl.textContent = prevFavCount;
                     showActionFeedback(getNextFavoriteMilestoneInfo(entryCount || 0));
-                    button.disabled = false;
                     return;
                 }
 
@@ -879,15 +1009,47 @@ export async function handleFeedClick(event, onNavigateProfile) {
                         user_id: state.authenticatedUser.id
                     });
                 if (error) throw error;
+
+                // Notificação direta para o autor do post
+                let targetAuthorId = card?.dataset.authorId;
+                if (!targetAuthorId) {
+                    try {
+                        const { data: targetEntry } = await supabaseClient
+                            .from('entries')
+                            .select('author_id')
+                            .eq('id', ideaId)
+                            .maybeSingle();
+                        targetAuthorId = targetEntry?.author_id;
+                    } catch (e) {
+                        console.warn('target author fav warn:', e);
+                    }
+                }
+
+                if (targetAuthorId && targetAuthorId !== state.authenticatedUser.id) {
+                    try {
+                        await supabaseClient
+                            .from('notifications')
+                            .insert({
+                                user_id: targetAuthorId,
+                                actor_id: state.authenticatedUser.id,
+                                type: 'favorite',
+                                entry_id: ideaId
+                            });
+                    } catch (notifErr) {
+                        console.warn('notif fav warn:', notifErr);
+                    }
+                }
             }
             invalidateCache();
-            await loadIdeas();
             await updateProfileStats();
+            if (state.activeFeed === 'favorites') {
+                await loadIdeas();
+            }
         } catch (err) {
             console.error('Favorite error:', err);
+            button.classList.toggle('selected', isCurrentlyFavorite);
+            if (favCountEl) favCountEl.textContent = prevFavCount;
             showActionFeedback(err.message || 'Erro ao atualizar favoritos.');
-        } finally {
-            button.disabled = false;
         }
     }
 }

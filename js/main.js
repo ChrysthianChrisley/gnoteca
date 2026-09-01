@@ -7,6 +7,7 @@ import { updateProfileStats } from './favorites.js';
 import { openEditNameDialog, openEditAvatarDialog, openSelectTitleDialog, saveProfileEdits, closeProfileEditDialog } from './profile.js';
 import { loadIdeas, loadNextPage, handleFeedClick, confirmDeleteEntry, closeDeleteDialog } from './feed.js';
 import { setupShareListeners } from './share.js';
+import { initNotifications, openNotificationsDialog, closeNotificationsDialog, markAllNotificationsAsRead, markNotificationAsRead } from './notifications.js';
 
 // Elementos Principais do DOM
 const btnHome = document.getElementById('btn-home');
@@ -443,6 +444,63 @@ function setupEventListeners() {
     // Modal de Compartilhamento Direto
     setupShareListeners();
 
+    // Notificações
+    const btnNotifications = document.getElementById('btn-notifications');
+    const notificationsMenu = document.getElementById('notifications-menu');
+    const closeNotificationsDialogBtn = document.getElementById('close-notifications-dialog');
+    const btnMarkAllRead = document.getElementById('btn-mark-all-read');
+    const notificationsDialog = document.getElementById('notifications-dialog');
+    const notificationsListContainer = document.getElementById('notifications-list-container');
+
+    btnNotifications?.addEventListener('click', openNotificationsDialog);
+    notificationsMenu?.addEventListener('click', () => {
+        toggleSidebar(false);
+        openNotificationsDialog();
+    });
+    closeNotificationsDialogBtn?.addEventListener('click', closeNotificationsDialog);
+    btnMarkAllRead?.addEventListener('click', markAllNotificationsAsRead);
+    notificationsDialog?.addEventListener('click', event => {
+        if (event.target === notificationsDialog) closeNotificationsDialog();
+    });
+
+    notificationsListContainer?.addEventListener('click', async event => {
+        const item = event.target.closest('.notification-item');
+        if (!item) return;
+
+        const notifId = Number(item.dataset.notifId);
+        const entryId = item.dataset.entryId ? Number(item.dataset.entryId) : null;
+        const notifType = item.dataset.type || '';
+
+        if (notifId) await markNotificationAsRead(notifId);
+        closeNotificationsDialog();
+
+        if (entryId) {
+            let targetCard = document.querySelector(`.idea-card [data-idea-id="${entryId}"]`)?.closest('.idea-card')
+                || document.getElementById(`comment-${entryId}`);
+
+            if (!targetCard && state.activeFeed !== 'global') {
+                await showFeed('global');
+                targetCard = document.querySelector(`.idea-card [data-idea-id="${entryId}"]`)?.closest('.idea-card')
+                    || document.getElementById(`comment-${entryId}`);
+            }
+
+            if (notifType === 'comment' || notifType === 'reply') {
+                const commentBtn = targetCard?.querySelector('[data-action="toggle-comments"]');
+                if (commentBtn && !commentBtn.classList.contains('open')) {
+                    commentBtn.click();
+                }
+            }
+
+            if (targetCard) {
+                targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                targetCard.classList.remove('notif-target-pulse');
+                void targetCard.offsetWidth;
+                targetCard.classList.add('notif-target-pulse');
+                setTimeout(() => { targetCard.classList.remove('notif-target-pulse'); }, 2800);
+            }
+        }
+    });
+
     // Escuta mudanças na autenticação do Supabase
     supabaseClient.auth.onAuthStateChange(async (event, session) => {
         if (event === 'SIGNED_OUT') {
@@ -452,8 +510,10 @@ function setupEventListeners() {
             await handleSignOut(async () => {
                 await showFeed('global');
             });
+            initNotifications();
         } else if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED') {
             await refreshAuthState(session?.user || undefined);
+            initNotifications();
         }
     });
 }
@@ -465,6 +525,7 @@ export async function initApp() {
     setupEventListeners();
     await refreshAuthState(undefined, async () => {
         await loadRouteFromUrl();
+        initNotifications();
     });
 }
 

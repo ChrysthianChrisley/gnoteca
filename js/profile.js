@@ -138,6 +138,14 @@ export async function saveProfileEdits() {
         if (mode === 'avatar') state.authenticatedUser.avatar_url = updateData.avatar_url;
         if (mode === 'title') state.authenticatedUser.title = updateData.current_title;
 
+        try {
+            const cached = JSON.parse(localStorage.getItem('gnoteca_profile_cache_' + state.authenticatedUser.id) || '{}');
+            localStorage.setItem('gnoteca_profile_cache_' + state.authenticatedUser.id, JSON.stringify({
+                ...cached,
+                ...updateData
+            }));
+        } catch (e) {}
+
         setTimeout(async () => {
             closeProfileEditDialog();
             await refreshAuthState();

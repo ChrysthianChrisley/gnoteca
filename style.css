@@ -138,6 +138,10 @@ header {
     transform: scale(1.05);
 }
 
+.theme-isolated-toggle {
+    margin-left: 0.5rem;
+}
+
 .theme-quick-icon {
     width: 17px;
     height: 17px;
@@ -755,7 +759,7 @@ body.dark-mode #btn-save {
 .auth-gate {
     position: fixed;
     inset: 0;
-    z-index: 20;
+    z-index: 100;
     display: grid;
     place-items: center;
     padding: 1rem;
@@ -2091,4 +2095,188 @@ body.dark-mode .comment-submit-btn {
     max-width: 320px;
     line-height: 1.4;
     margin: 0;
+}
+
+/* Sistema de Notificações Reddit-Style */
+.notif-bell-btn {
+    position: relative;
+}
+
+.notifications-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: #ff4500;
+    color: #ffffff;
+    font-size: 0.68rem;
+    font-weight: 800;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--surface-color);
+    box-shadow: 0 2px 4px rgba(255, 69, 0, 0.35);
+    transition: transform 0.2s ease;
+}
+
+.notifications-badge:not(.hidden) {
+    animation: notifBadgePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes notifBadgePop {
+    0% { transform: scale(0.4); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.notifications-card {
+    max-width: 460px;
+    width: 100%;
+    padding: 1.25rem;
+    border-radius: 14px;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+}
+
+.notifications-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.85rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.75rem;
+}
+
+.notif-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.btn-text-action {
+    background: none;
+    border: none;
+    color: #ff4500;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+}
+
+.btn-text-action:hover {
+    background: rgba(255, 69, 0, 0.1);
+    text-decoration: underline;
+}
+
+.notifications-list-container {
+    max-height: 400px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.notification-item {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.85rem 1rem;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: var(--surface-color);
+    cursor: pointer;
+    transition: all 0.18s ease;
+    position: relative;
+}
+
+.notification-item:hover {
+    background: var(--surface-glass);
+    border-color: var(--border-color);
+    transform: translateY(-1px);
+}
+
+.notification-item.unread {
+    background: rgba(255, 69, 0, 0.08);
+    border-color: rgba(255, 69, 0, 0.25);
+}
+
+.notif-actor-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 1px solid var(--border-color);
+}
+
+.notif-actor-avatar.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--border-color);
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.notif-body {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+    min-width: 0;
+}
+
+.notif-text {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--text-color);
+    line-height: 1.35;
+}
+
+.notif-time {
+    font-size: 0.72rem;
+    color: var(--muted-color);
+}
+
+.notif-unread-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ff4500;
+    flex-shrink: 0;
+}
+
+.notifications-empty {
+    font-size: 0.88rem;
+    color: var(--muted-color);
+    font-style: italic;
+    text-align: center;
+    padding: 2.5rem 1rem;
+    margin: 0;
+}
+
+.notif-target-pulse {
+    animation: notifTargetGlow 2.8s ease forwards;
+}
+
+@keyframes notifTargetGlow {
+    0% {
+        box-shadow: 0 0 0 4px #ff4500, 0 8px 24px rgba(255, 69, 0, 0.35);
+        transform: scale(1.01);
+    }
+    40% {
+        box-shadow: 0 0 0 5px #ff4500, 0 12px 28px rgba(255, 69, 0, 0.45);
+        transform: scale(1.01);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 69, 0, 0);
+        transform: scale(1);
+    }
 }

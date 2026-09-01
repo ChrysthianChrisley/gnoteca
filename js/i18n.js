@@ -106,6 +106,15 @@ export const translations = {
         copyQuote: 'Copiar Citação com Link',
         quoteCopied: 'Citação copiada para a área de transferência!',
 
+        // Notificações
+        notifications: 'Notificações',
+        notifVoteUp: 'votou no seu fragmento',
+        notifFavorite: 'guardou seu fragmento nos favoritos',
+        notifComment: 'comentou no seu fragmento',
+        notifReply: 'respondeu ao seu comentário',
+        markAllRead: 'Marcar todas como lidas',
+        noNotifications: 'Nenhuma notificação no momento.',
+
         // Teaser de Visitantes
         exclusiveAccess: 'Acesso Exclusivo',
         teaserMessage: 'Desbloqueie o acervo completo para ler este e mais centenas de fragmentos',
@@ -230,6 +239,15 @@ export const translations = {
         shareTitle: 'Share Fragment',
         copyQuote: 'Copy Quote with Link',
         quoteCopied: 'Quote copied to clipboard!',
+
+        // Notifications
+        notifications: 'Notifications',
+        notifVoteUp: 'upvoted your fragment',
+        notifFavorite: 'added your fragment to favorites',
+        notifComment: 'commented on your fragment',
+        notifReply: 'replied to your comment',
+        markAllRead: 'Mark all as read',
+        noNotifications: 'No notifications at the moment.',
 
         // Visitor Teaser
         exclusiveAccess: 'Exclusive Access',
@@ -358,6 +376,15 @@ export const translations = {
         copyQuote: 'Copiar Cita con Enlace',
         quoteCopied: '¡Cita copiada al portapapeles!',
 
+        // Notificaciones
+        notifications: 'Notificaciones',
+        notifVoteUp: 'votó en tu fragmento',
+        notifFavorite: 'guardó tu fragmento en favoritos',
+        notifComment: 'comentó en tu fragmento',
+        notifReply: 'respondió a tu comentario',
+        markAllRead: 'Marcar todas como leídas',
+        noNotifications: 'Sin notificaciones en este momento.',
+
         // Teaser de Visitantes
         exclusiveAccess: 'Acceso Exclusivo',
         teaserMessage: 'Desbloquea el acervo completo para leer este y cientos de fragmentos más',
@@ -484,6 +511,15 @@ export const translations = {
         shareTitle: 'Partager le Fragment',
         copyQuote: 'Copier la Citation avec Lien',
         quoteCopied: 'Citation copiée dans le presse-papiers !',
+
+        // Notifications
+        notifications: 'Notifications',
+        notifVoteUp: 'a voté pour votre fragment',
+        notifFavorite: 'a ajouté votre fragment à ses favoris',
+        notifComment: 'a commenté votre fragment',
+        notifReply: 'a répondu à votre commentaire',
+        markAllRead: 'Tout marquer comme lu',
+        noNotifications: 'Aucune notification pour le moment.',
 
         // Teaser des Visiteurs
         exclusiveAccess: 'Accès Exclusif',
