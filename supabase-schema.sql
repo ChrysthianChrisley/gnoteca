@@ -292,3 +292,148 @@ create trigger trigger_notify_entry
 after insert on public.entries
 for each row
 execute function public.handle_entry_notification();
+
+-- ==============================================================================
+-- Migração Fase 2: Escalabilidade e Velocidade (Zero JS Sorting)
+-- ==============================================================================
+
+-- 1. Criação da Tabela de Contagem de Tópicos
+CREATE TABLE IF NOT EXISTS public.topic_counts (
+    tag text primary key,
+    entry_count integer not null default 0,
+    updated_at timestamptz not null default now()
+);
+
+-- Habilitar RLS na nova tabela
+ALTER TABLE public.topic_counts ENABLE ROW LEVEL SECURITY;
+
+-- Política de leitura pública para topic_counts
+DROP POLICY IF EXISTS "Topic counts are public" ON public.topic_counts;
+CREATE POLICY "Topic counts are public" ON public.topic_counts FOR SELECT USING (true);
+
+-- 2. Adição de Colunas de Contagem Desnormalizadas na tabela `entries`
+ALTER TABLE public.entries ADD COLUMN IF NOT EXISTS upvotes_count integer not null default 0;
+ALTER TABLE public.entries ADD COLUMN IF NOT EXISTS downvotes_count integer not null default 0;
+ALTER TABLE public.entries ADD COLUMN IF NOT EXISTS favorites_count integer not null default 0;
+
+-- 3. Índices para ordenação no Banco de Dados
+CREATE INDEX IF NOT EXISTS entries_upvotes_count_idx ON public.entries (upvotes_count DESC);
+CREATE INDEX IF NOT EXISTS entries_favorites_count_idx ON public.entries (favorites_count DESC);
+CREATE INDEX IF NOT EXISTS topic_counts_count_idx ON public.topic_counts (entry_count DESC);
+
+-- ==============================================================================
+-- Triggers e Funções de Sincronização
+-- ==============================================================================
+
+-- 4. Função para manter a contagem de Tópicos
+CREATE OR REPLACE FUNCTION public.sync_topic_counts()
+RETURNS trigger AS $$
+BEGIN
+    -- Se for INSERT e for um post raiz (não for comentário)
+    IF TG_OP = 'INSERT' AND NEW.parent_id IS NULL THEN
+        INSERT INTO public.topic_counts (tag, entry_count)
+        VALUES (NEW.tag, 1)
+        ON CONFLICT (tag) DO UPDATE 
+        SET entry_count = public.topic_counts.entry_count + 1,
+            updated_at = now();
+    
+    -- Se for DELETE e for um post raiz
+    ELSIF TG_OP = 'DELETE' AND OLD.parent_id IS NULL THEN
+        UPDATE public.topic_counts 
+        SET entry_count = entry_count - 1,
+            updated_at = now()
+        WHERE tag = OLD.tag;
+
+        -- Limpa tópicos vazios (opcional)
+        DELETE FROM public.topic_counts WHERE entry_count <= 0;
+        
+    -- Se a tag mudou (UPDATE)
+    ELSIF TG_OP = 'UPDATE' AND NEW.parent_id IS NULL AND OLD.tag IS DISTINCT FROM NEW.tag THEN
+        -- Subtrai da antiga
+        UPDATE public.topic_counts 
+        SET entry_count = entry_count - 1,
+            updated_at = now()
+        WHERE tag = OLD.tag;
+        
+        -- Soma na nova
+        INSERT INTO public.topic_counts (tag, entry_count)
+        VALUES (NEW.tag, 1)
+        ON CONFLICT (tag) DO UPDATE 
+        SET entry_count = public.topic_counts.entry_count + 1,
+            updated_at = now();
+            
+        -- Limpa tópicos vazios
+        DELETE FROM public.topic_counts WHERE entry_count <= 0;
+    END IF;
+
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS trigger_sync_topic_counts ON public.entries;
+CREATE TRIGGER trigger_sync_topic_counts
+AFTER INSERT OR UPDATE OR DELETE ON public.entries
+FOR EACH ROW EXECUTE FUNCTION public.sync_topic_counts();
+
+-- 5. Função para manter a contagem de Votos (Upvotes / Downvotes)
+CREATE OR REPLACE FUNCTION public.sync_vote_counts()
+RETURNS trigger AS $$
+BEGIN
+    -- INSERT
+    IF TG_OP = 'INSERT' THEN
+        IF NEW.vote_type = 'up' THEN
+            UPDATE public.entries SET upvotes_count = upvotes_count + 1 WHERE id = NEW.entry_id;
+        ELSIF NEW.vote_type = 'down' THEN
+            UPDATE public.entries SET downvotes_count = downvotes_count + 1 WHERE id = NEW.entry_id;
+        END IF;
+        
+    -- DELETE
+    ELSIF TG_OP = 'DELETE' THEN
+        IF OLD.vote_type = 'up' THEN
+            UPDATE public.entries SET upvotes_count = upvotes_count - 1 WHERE id = OLD.entry_id;
+        ELSIF OLD.vote_type = 'down' THEN
+            UPDATE public.entries SET downvotes_count = downvotes_count - 1 WHERE id = OLD.entry_id;
+        END IF;
+        
+    -- UPDATE (usuário mudou de UP para DOWN ou vice-versa)
+    ELSIF TG_OP = 'UPDATE' AND OLD.vote_type IS DISTINCT FROM NEW.vote_type THEN
+        IF NEW.vote_type = 'up' THEN
+            UPDATE public.entries SET 
+                upvotes_count = upvotes_count + 1,
+                downvotes_count = downvotes_count - 1
+            WHERE id = NEW.entry_id;
+        ELSIF NEW.vote_type = 'down' THEN
+            UPDATE public.entries SET 
+                upvotes_count = upvotes_count - 1,
+                downvotes_count = downvotes_count + 1
+            WHERE id = NEW.entry_id;
+        END IF;
+    END IF;
+
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS trigger_sync_vote_counts ON public.votes;
+CREATE TRIGGER trigger_sync_vote_counts
+AFTER INSERT OR UPDATE OR DELETE ON public.votes
+FOR EACH ROW EXECUTE FUNCTION public.sync_vote_counts();
+
+
+-- 6. Função para manter a contagem de Favoritos
+CREATE OR REPLACE FUNCTION public.sync_favorite_counts()
+RETURNS trigger AS $$
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        UPDATE public.entries SET favorites_count = favorites_count + 1 WHERE id = NEW.entry_id;
+    ELSIF TG_OP = 'DELETE' THEN
+        UPDATE public.entries SET favorites_count = favorites_count - 1 WHERE id = OLD.entry_id;
+    END IF;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS trigger_sync_favorite_counts ON public.favorites;
+CREATE TRIGGER trigger_sync_favorite_counts
+AFTER INSERT OR DELETE ON public.favorites
+FOR EACH ROW EXECUTE FUNCTION public.sync_favorite_counts();

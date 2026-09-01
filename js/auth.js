@@ -2,7 +2,7 @@ import { supabaseClient, STORAGE_KEYS } from './config.js';
 import { state, invalidateCache } from './state.js';
 import { translate, getTranslatedTitle } from './i18n.js';
 import { slugify, updateAvatarDisplay, showActionFeedback, getHomePath } from './utils.js';
-import { fetchUserNotifications, updateNotificationsBadge } from './notifications.js';
+import { fetchUserNotifications, updateNotificationsBadge, setupNotificationsRealtime } from './notifications.js';
 
 // Extração de Metadados do Usuário do Provedor de Autenticação
 /**
@@ -503,6 +503,7 @@ export async function handleSignOut(onAfterSignOut = null) {
     try {
         state.authenticatedUser = null;
         invalidateCache();
+        setupNotificationsRealtime(); // Desliga o WebSocket de notificações da sessão atual
         state.activeFeed = 'global';
         state.selectedProfileId = null;
         window.history.replaceState({ feedType: 'global' }, '', getHomePath());

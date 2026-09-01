@@ -395,8 +395,13 @@ export async function fetchEntriesPage(page = 0) {
             const to = from + PAGE_SIZE - 1;
             query = query.range(from, to);
         }
-
-        query = query.order('created_at', { ascending: false });
+        if (filter === 'voted') {
+            query = query.order('upvotes_count', { ascending: false }).order('created_at', { ascending: false });
+        } else if (filter === 'favorite') {
+            query = query.order('favorites_count', { ascending: false }).order('created_at', { ascending: false });
+        } else {
+            query = query.order('created_at', { ascending: false });
+        }
 
         const { data: entries, error } = await query;
         if (error) {
@@ -425,11 +430,8 @@ export async function fetchEntriesPage(page = 0) {
 
         let formatted = (entries || []).map(e => formatIdeaEntry(e, commentCounts[e.id] || 0));
 
-        if (filter === 'voted') {
-            formatted.sort((a, b) => (b.upvotes + b.downvotes) - (a.upvotes + a.downvotes));
-        } else if (filter === 'favorite') {
-            formatted.sort((a, b) => b.favoritesCount - a.favoritesCount);
-        } else if (filter === 'most_commented') {
+        // Ordenação por comentários ainda fica no cliente pois não há coluna de count no banco para isso
+        if (filter === 'most_commented') {
             formatted.sort((a, b) => (b.commentsCount || 0) - (a.commentsCount || 0));
         }
 

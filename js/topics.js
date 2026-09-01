@@ -115,10 +115,9 @@ export function normalizeTagName(rawTag) {
 export async function fetchCommunityTopics() {
     try {
         const { data, error } = await supabaseClient
-            .from('entries')
-            .select('tag')
-            .is('parent_id', null)
-            .not('tag', 'is', null);
+            .from('topic_counts')
+            .select('tag, entry_count')
+            .order('entry_count', { ascending: false });
 
         const counts = {};
 
@@ -131,7 +130,7 @@ export async function fetchCommunityTopics() {
             data.forEach(row => {
                 if (row.tag) {
                     const normalized = normalizeTagName(row.tag);
-                    counts[normalized] = (counts[normalized] || 0) + 1;
+                    counts[normalized] = (counts[normalized] || 0) + row.entry_count;
                 }
             });
         }
