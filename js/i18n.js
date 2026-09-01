@@ -47,6 +47,8 @@ export const translations = {
         notificationsCleared: 'Notificações limpas!',
         cookieBannerText: 'Utilizamos cookies essenciais e armazenamento local para autenticação, segurança e personalização da sua experiência.',
         cookieAccept: 'Aceitar e Continuar',
+        onlineNow: 'online',
+        thinkers: 'pensadores',
 
         // Menus e Estatísticas
         fragments: 'fragmentos',
@@ -255,6 +257,8 @@ export const translations = {
         notificationsCleared: 'Notifications cleared!',
         cookieBannerText: 'We use essential cookies and local storage for authentication, security, and personalizing your experience.',
         cookieAccept: 'Accept and Continue',
+        onlineNow: 'online',
+        thinkers: 'thinkers',
 
         // Menus & Statistics
         fragments: 'fragments',
@@ -463,6 +467,8 @@ export const translations = {
         notificationsCleared: '¡Notificaciones eliminadas!',
         cookieBannerText: 'Utilizamos cookies esenciales y almacenamiento local para autenticación, seguridad y personalización de tu experiencia.',
         cookieAccept: 'Aceptar y Continuar',
+        onlineNow: 'en línea',
+        thinkers: 'pensadores',
 
         // Menús y Navegación
         menuOverview: 'General',
@@ -666,6 +672,8 @@ export const translations = {
         notificationsCleared: 'Notifications effacées !',
         cookieBannerText: 'Nous utilisons des cookies essentiels et le stockage local pour l\'authentification, la sécurité et la personnalisation de votre expérience.',
         cookieAccept: 'Accepter et Continuer',
+        onlineNow: 'en ligne',
+        thinkers: 'penseurs',
 
         // Menus et Navigation
         menuOverview: 'Vue d\'ensemble',
