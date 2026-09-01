@@ -34,6 +34,14 @@ export const translations = {
         newest: 'Mais novas',
         mostVoted: 'Mais votadas',
         mostFavorited: 'Mais favoritas',
+        mostCommented: 'Mais comentadas',
+        communityPulse: 'Pulso da Comunidade',
+        communityActive: 'Gnoteca: Comunidade de pensamento crítico ativa',
+        joinedCommunity: 'entrou para a Gnoteca',
+        likedFragment: 'curtiu um fragmento',
+        savedFundamental: 'guardou um pilar fundamental',
+        publishedIdea: 'publicou uma nova reflexão',
+        commentedOnIdea: 'comentou em um fragmento',
         backToFeed: 'Voltar ao acervo',
 
         // Escrita e Ações
@@ -132,7 +140,28 @@ export const translations = {
         heroTitle: 'Pense. Escreva. Questione.',
         heroSubtitle: 'A micro-rede feita para quem valoriza a profundidade em um mundo distraído.',
         voteLimitReached: 'Você atingiu o limite de 5 votos por dia. Escolha com critério quais ideias validar!',
-        favoriteLimitReached: 'Você só pode guardar 3 fragmentos fundamentais por vez. Desmarque um para adicionar este.'
+        favoriteLimitReached: 'Você só pode guardar 3 fragmentos fundamentais por vez. Desmarque um para adicionar este.',
+
+        // Configurações
+        settingsCommunityTitle: 'Comunidade & Descoberta',
+        settingPulseName: 'Pulso da Comunidade',
+        settingPulseDesc: 'Exibir logs de atividade recente da comunidade acima do acervo.',
+        settingsReadingTitle: 'Leitura & Visualização',
+        settingDensityName: 'Densidade do Feed',
+        settingDensityDesc: 'Ajuste o espaçamento entre fragmentos.',
+        settingDensityComfortable: 'Confortável (Padrão)',
+        settingDensityCompact: 'Compacto',
+        settingFontName: 'Tamanho do Texto',
+        settingFontDesc: 'Tamanho da tipografia dos fragmentos.',
+        settingFontSmall: 'Pequeno',
+        settingFontNormal: 'Padrão',
+        settingFontLarge: 'Grande',
+        settingsWritingTitle: 'Escrita & Segurança',
+        settingAutosaveName: 'Salvar Rascunho',
+        settingAutosaveDesc: 'Memorizar texto digitado para não perder reflexões não enviadas.',
+        settingConfirmDeleteName: 'Confirmar Exclusão',
+        settingConfirmDeleteDesc: 'Exibir aviso de confirmação antes de apagar suas publicações.',
+        ready: 'Pronto'
     },
     'en-US': {
         // Header & Profile
@@ -168,6 +197,14 @@ export const translations = {
         newest: 'Newest',
         mostVoted: 'Most voted',
         mostFavorited: 'Most favorited',
+        mostCommented: 'Most discussed',
+        communityPulse: 'Community Pulse',
+        communityActive: 'Gnoteca: Active critical thinking community',
+        joinedCommunity: 'joined Gnoteca',
+        likedFragment: 'upvoted a fragment',
+        savedFundamental: 'saved a core pillar',
+        publishedIdea: 'posted a new reflection',
+        commentedOnIdea: 'commented on a fragment',
         backToFeed: 'Back to collection',
 
         // Writing & Actions
@@ -266,7 +303,28 @@ export const translations = {
         heroTitle: 'Think. Write. Question.',
         heroSubtitle: 'The micro-network crafted for those who value depth in a distracted world.',
         voteLimitReached: 'You have reached the limit of 5 votes per day. Choose carefully which ideas to validate!',
-        favoriteLimitReached: 'You can only keep 3 fundamental fragments at a time. Unfavorite one to add this.'
+        favoriteLimitReached: 'You can only keep 3 fundamental fragments at a time. Unfavorite one to add this.',
+
+        // Settings
+        settingsCommunityTitle: 'Community & Discovery',
+        settingPulseName: 'Community Pulse',
+        settingPulseDesc: 'Show recent community activity logs above the collection.',
+        settingsReadingTitle: 'Reading & Display',
+        settingDensityName: 'Feed Density',
+        settingDensityDesc: 'Adjust spacing between fragments.',
+        settingDensityComfortable: 'Comfortable (Default)',
+        settingDensityCompact: 'Compact',
+        settingFontName: 'Text Size',
+        settingFontDesc: 'Typography scale for fragment content.',
+        settingFontSmall: 'Small',
+        settingFontNormal: 'Standard',
+        settingFontLarge: 'Large',
+        settingsWritingTitle: 'Writing & Safety',
+        settingAutosaveName: 'Auto-save Draft',
+        settingAutosaveDesc: 'Preserve draft text to prevent loss of unsaved thoughts.',
+        settingConfirmDeleteName: 'Confirm Deletion',
+        settingConfirmDeleteDesc: 'Show confirmation prompt before deleting your fragments.',
+        ready: 'Done'
     },
     'es-ES': {
         // Cabecera y Perfil
@@ -312,6 +370,14 @@ export const translations = {
         newest: 'Más nuevas',
         mostVoted: 'Más votadas',
         mostFavorited: 'Más favoritas',
+        mostCommented: 'Más comentadas',
+        communityPulse: 'Pulso Comunitario',
+        communityActive: 'Gnoteca: Comunidad de pensamiento crítico activa',
+        joinedCommunity: 'se unió a Gnoteca',
+        likedFragment: 'votó en un fragmento',
+        savedFundamental: 'guardó un pilar fundamental',
+        publishedIdea: 'publicó una nueva reflexión',
+        commentedOnIdea: 'comentó en un fragmento',
         topicAll: 'Todos',
         topicScience: 'Ciencia',
         topicPhilosophy: 'Filosofía',
@@ -402,7 +468,28 @@ export const translations = {
         heroTitle: 'Piensa. Escribe. Cuestiona.',
         heroSubtitle: 'La micro-red creada para quienes valoran la profundidad en un mundo distraído.',
         voteLimitReached: '¡Has alcanzado el límite de 5 votos por día. Elige con criterio qué ideas validar!',
-        favoriteLimitReached: 'Solo puedes guardar 3 fragmentos fundamentales a la vez. Desmarca uno para añadir este.'
+        favoriteLimitReached: 'Solo puedes guardar 3 fragmentos fundamentales a la vez. Desmarca uno para añadir este.',
+
+        // Configuración
+        settingsCommunityTitle: 'Comunidad & Descubrimiento',
+        settingPulseName: 'Pulso Comunitario',
+        settingPulseDesc: 'Mostrar registros de actividad comunitaria sobre la colección.',
+        settingsReadingTitle: 'Lectura & Visualización',
+        settingDensityName: 'Densidad del Feed',
+        settingDensityDesc: 'Ajustar el espaciado entre fragmentos.',
+        settingDensityComfortable: 'Cómodo (Predeterminado)',
+        settingDensityCompact: 'Compacto',
+        settingFontName: 'Tamaño del Texto',
+        settingFontDesc: 'Escala de tipografía para fragmentos.',
+        settingFontSmall: 'Pequeño',
+        settingFontNormal: 'Estándar',
+        settingFontLarge: 'Grande',
+        settingsWritingTitle: 'Escritura & Seguridad',
+        settingAutosaveName: 'Guardar Borrador',
+        settingAutosaveDesc: 'Guardar texto escrito para no perder reflexiones no enviadas.',
+        settingConfirmDeleteName: 'Confirmar Eliminación',
+        settingConfirmDeleteDesc: 'Mostrar aviso de confirmación antes de eliminar publicaciones.',
+        ready: 'Listo'
     },
     'fr-FR': {
         // En-tête et Profil
@@ -448,6 +535,14 @@ export const translations = {
         newest: 'Plus récents',
         mostVoted: 'Plus votés',
         mostFavorited: 'Plus favoris',
+        mostCommented: 'Plus commentées',
+        communityPulse: 'Pouls de la Communauté',
+        communityActive: 'Gnoteca : Communauté de pensée critique active',
+        joinedCommunity: 'a rejoint Gnoteca',
+        likedFragment: 'a voté pour un fragment',
+        savedFundamental: 'a enregistré un pilier fondamental',
+        publishedIdea: 'a publié une nouvelle réflexion',
+        commentedOnIdea: 'a commenté un fragment',
         topicAll: 'Tous',
         topicScience: 'Science',
         topicPhilosophy: 'Philosophie',
@@ -537,8 +632,28 @@ export const translations = {
         heroBadge: 'Pensée critique en temps réel',
         heroTitle: 'Pensez. Écrivez. Questionnez.',
         heroSubtitle: 'Le micro-réseau conçu pour ceux qui valorisent la profondeur dans un monde distrait.',
-        voteLimitReached: 'Vous avez atteint la limite de 5 votes par jour. Choisissez avec soin les idées à valider !',
-        favoriteLimitReached: 'Vous ne pouvez garder que 3 fragments fondamentaux à la fois. Retirez-en un pour ajouter celui-ci.'
+        favoriteLimitReached: 'Vous ne pouvez garder que 3 fragments fondamentaux à la fois. Retirez-en un pour ajouter celui-ci.',
+
+        // Paramètres
+        settingsCommunityTitle: 'Communauté & Découverte',
+        settingPulseName: 'Pouls de la Communauté',
+        settingPulseDesc: 'Afficher les activités récentes au-dessus des fragments.',
+        settingsReadingTitle: 'Lecture & Affichage',
+        settingDensityName: 'Densité du Fil',
+        settingDensityDesc: 'Ajuster l\'espacement entre les fragments.',
+        settingDensityComfortable: 'Confortable (Par défaut)',
+        settingDensityCompact: 'Compact',
+        settingFontName: 'Taille du Texte',
+        settingFontDesc: 'Échelle typographique du contenu.',
+        settingFontSmall: 'Petite',
+        settingFontNormal: 'Standard',
+        settingFontLarge: 'Grande',
+        settingsWritingTitle: 'Écriture & Sécurité',
+        settingAutosaveName: 'Sauvegarder le Brouillon',
+        settingAutosaveDesc: 'Conserver le texte pour ne pas perdre vos réflexions.',
+        settingConfirmDeleteName: 'Confirmer la Suppression',
+        settingConfirmDeleteDesc: 'Demander confirmation avant de supprimer vos fragments.',
+        ready: 'Terminé'
     }
 };
 

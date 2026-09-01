@@ -8,6 +8,8 @@ import { openEditNameDialog, openEditAvatarDialog, openSelectTitleDialog, savePr
 import { loadIdeas, loadNextPage, handleFeedClick, confirmDeleteEntry, closeDeleteDialog } from './feed.js';
 import { setupShareListeners } from './share.js';
 import { initNotifications, openNotificationsDialog, closeNotificationsDialog, markAllNotificationsAsRead, markNotificationAsRead } from './notifications.js';
+import { initCommunityPulse } from './pulse.js';
+import { initSettings, openSettingsDialog, closeSettingsDialog } from './settings.js';
 
 // Elementos Principais do DOM
 const btnHome = document.getElementById('btn-home');
@@ -463,6 +465,13 @@ function setupEventListeners() {
         if (event.target === notificationsDialog) closeNotificationsDialog();
     });
 
+    // Configurações
+    const settingsMenu = document.getElementById('settings-menu');
+    settingsMenu?.addEventListener('click', () => {
+        toggleSidebar(false);
+        openSettingsDialog();
+    });
+
     notificationsListContainer?.addEventListener('click', async event => {
         const item = event.target.closest('.notification-item');
         if (!item) return;
@@ -523,6 +532,8 @@ export async function initApp() {
     setDarkMode(localStorage.getItem('gnoteca_dark_mode') === 'true');
     applyLanguage(currentLanguage, false);
     setupEventListeners();
+    initSettings();
+    initCommunityPulse();
     await refreshAuthState(undefined, async () => {
         await loadRouteFromUrl();
         initNotifications();

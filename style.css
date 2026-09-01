@@ -2280,3 +2280,292 @@ body.dark-mode .comment-submit-btn {
         transform: scale(1);
     }
 }
+
+/* ==========================================================================
+   Rodapé Discreto e Barra de Pulso da Comunidade
+   ========================================================================== */
+
+.app-footer {
+    margin-top: 5rem;
+    padding: 2.5rem 1rem 3.5rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    color: var(--muted-color);
+}
+
+.community-pulse-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 9999px;
+    padding: 0.45rem 1.15rem;
+    max-width: 620px;
+    width: 100%;
+    margin: 0 auto 2.5rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+    transition: all 0.2s ease;
+}
+
+body.dark-mode .community-pulse-bar {
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.25);
+}
+
+.community-pulse-bar:hover {
+    border-color: var(--accent-color);
+}
+
+.pulse-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    color: var(--accent-color);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.pulse-live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    animation: livePulseDot 2s infinite;
+}
+
+@keyframes livePulseDot {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    }
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
+}
+
+.pulse-ticker-container {
+    flex: 1;
+    overflow: hidden;
+    min-height: 1.25rem;
+    display: flex;
+    align-items: center;
+    cursor: default;
+}
+
+.pulse-ticker-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text-color);
+    font-size: 0.82rem;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.pulse-ticker-text strong {
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+.pulse-ticker-text em {
+    color: var(--muted-color);
+    font-style: normal;
+    font-size: 0.78rem;
+}
+
+.pulse-ticker-text.pulse-fade-out {
+    opacity: 0;
+    transform: translateY(-5px);
+}
+
+.pulse-ticker-text.pulse-fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.footer-bottom-info {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-size: 0.76rem;
+    color: var(--muted-color);
+}
+
+.footer-separator {
+    opacity: 0.35;
+}
+
+/* ==========================================================================
+   Modal de Configurações da Experiência do Usuário
+   ========================================================================== */
+
+.settings-dialog-card {
+    width: min(100%, 460px);
+    max-height: 88vh;
+    overflow-y: auto;
+    padding: 1.75rem 2rem 2rem;
+}
+
+.settings-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.settings-card-header .dialog-eyebrow {
+    margin: 0;
+}
+
+.settings-content-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 1.75rem;
+}
+
+.settings-section-title {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent-color);
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+}
+
+.settings-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.settings-item:last-child {
+    border-bottom: none;
+}
+
+.settings-item-meta {
+    flex: 1;
+}
+
+.settings-item-name {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text-color);
+    display: block;
+}
+
+.settings-item-desc {
+    font-size: 0.78rem;
+    color: var(--muted-color);
+    display: block;
+    margin-top: 0.2rem;
+    line-height: 1.35;
+}
+
+/* Toggle Switch Estilo iOS/Modern */
+.setting-toggle-label {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.setting-toggle-checkbox {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.setting-toggle-slider {
+    position: absolute;
+    inset: 0;
+    background-color: var(--border-color);
+    border-radius: 24px;
+    transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.setting-toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.setting-toggle-checkbox:checked + .setting-toggle-slider {
+    background-color: var(--accent-color);
+}
+
+.setting-toggle-checkbox:checked + .setting-toggle-slider:before {
+    transform: translateX(20px);
+}
+
+/* Select de Configuração */
+.settings-select-input {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    border-radius: 8px;
+    padding: 0.4rem 0.65rem;
+    font-size: 0.84rem;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.settings-select-input:focus {
+    border-color: var(--accent-color);
+}
+
+/* Densidade Compacta do Feed */
+.feed-compact .idea-card {
+    padding: 0.85rem 1.15rem;
+    margin-bottom: 0.85rem;
+}
+
+.feed-compact .idea-content {
+    margin-bottom: 0.65rem;
+    font-size: 0.92rem;
+}
+
+.feed-compact .idea-actions {
+    padding-top: 0.5rem;
+}
+
+/* Ajustes de Tamanho da Tipografia */
+body[data-font-size="small"] .idea-content {
+    font-size: 0.9rem;
+    line-height: 1.45;
+}
+
+body[data-font-size="large"] .idea-content {
+    font-size: 1.15rem;
+    line-height: 1.65;
+}

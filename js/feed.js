@@ -8,7 +8,7 @@ import { getMaxFavorites, getNextFavoriteMilestoneInfo, renderProfileConstellati
 import { openShareModal } from './share.js';
 
 // Formatação de Entradas do Supabase
-export function formatIdeaEntry(entry) {
+export function formatIdeaEntry(entry, commentsCount = 0) {
     const upvotes = (entry.votes || []).filter(v => v.vote_type === 'up').length;
     const downvotes = (entry.votes || []).filter(v => v.vote_type === 'down').length;
     const userVote = state.authenticatedUser
@@ -34,6 +34,7 @@ export function formatIdeaEntry(entry) {
         userVote,
         favorite,
         favoritesCount: totalFavorites,
+        commentsCount: commentsCount || 0,
         created_at: entry.created_at,
         date: new Date(entry.created_at).toLocaleDateString(currentLanguage, {
             day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
@@ -68,7 +69,7 @@ export function renderIdeaCard(idea) {
         <div class="idea-actions">
             <button class="vote-button${idea.userVote === 'up' ? ' selected' : ''}" type="button" data-action="upvote" data-idea-id="${idea.id}" aria-label="Dar upvote" title="Dar upvote"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" /></svg><span class="action-count">${idea.upvotes || 0}</span></button>
             <button class="vote-button${idea.userVote === 'down' ? ' selected' : ''}" type="button" data-action="downvote" data-idea-id="${idea.id}" aria-label="Dar downvote" title="Dar downvote"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m6-6-6 6-6-6" /></svg><span class="action-count">${idea.downvotes || 0}</span></button>
-            <button class="comment-toggle-btn" type="button" data-action="toggle-comments" data-idea-id="${idea.id}" aria-label="${translate('comments')}" title="${translate('comments')}"><svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="comment-count">${translate('comments')}</span></button>
+            <button class="comment-toggle-btn" type="button" data-action="toggle-comments" data-idea-id="${idea.id}" aria-label="${translate('comments')}" title="${translate('comments')}"><svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="action-count comment-count">${idea.commentsCount || 0}</span></button>
             <button class="favorite-button${idea.favorite ? ' selected' : ''}" type="button" data-action="favorite" data-idea-id="${idea.id}" aria-label="${idea.favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}" title="${idea.favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.6l6.2-.9L12 3Z" /></svg><span class="action-count">${idea.favoritesCount}</span></button>
             <button class="share-button" type="button" data-action="share" data-idea-id="${idea.id}" aria-label="Compartilhar fragmento" title="Compartilhar fragmento"><svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
         </div>
@@ -290,12 +291,33 @@ export async function fetchEntriesPage(page = 0) {
             return null;
         }
 
-        let formatted = (entries || []).map(formatIdeaEntry);
+        // Busca a contagem de comentários em lote (Ultra rápido e leve)
+        const entryIds = (entries || []).map(e => e.id);
+        let commentCounts = {};
+        if (entryIds.length > 0) {
+            try {
+                const { data: comments } = await supabaseClient
+                    .from('entries')
+                    .select('parent_id')
+                    .in('parent_id', entryIds);
+                (comments || []).forEach(c => {
+                    if (c.parent_id) {
+                        commentCounts[c.parent_id] = (commentCounts[c.parent_id] || 0) + 1;
+                    }
+                });
+            } catch (cErr) {
+                console.warn('count comments warn:', cErr);
+            }
+        }
+
+        let formatted = (entries || []).map(e => formatIdeaEntry(e, commentCounts[e.id] || 0));
 
         if (filter === 'voted') {
             formatted.sort((a, b) => (b.upvotes + b.downvotes) - (a.upvotes + a.downvotes));
         } else if (filter === 'favorite') {
             formatted.sort((a, b) => b.favoritesCount - a.favoritesCount);
+        } else if (filter === 'most_commented') {
+            formatted.sort((a, b) => (b.commentsCount || 0) - (a.commentsCount || 0));
         }
 
         if (isPublicVisitor && formatted.length > 4) {
@@ -655,6 +677,12 @@ export async function handleFeedClick(event, onNavigateProfile) {
                 } catch (notifErr) {
                     console.warn('notif comment warn:', notifErr);
                 }
+            }
+
+            const countBadge = card?.querySelector('.comment-toggle-btn .action-count');
+            if (countBadge) {
+                const cur = parseInt(countBadge.textContent || '0', 10);
+                countBadge.textContent = cur + 1;
             }
 
             const container = form.closest('.comments-thread-container');

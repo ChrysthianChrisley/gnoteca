@@ -83,7 +83,7 @@
                 <button id="overview-menu" class="menu-item active" type="button" data-i18n="overview">Visão geral</button>
                 <button id="favorites-menu" class="menu-item" type="button" data-i18n="favorites">Favoritos</button>
                 <button id="notifications-menu" class="menu-item" type="button" data-i18n="notifications">Notificações</button>
-                <button class="menu-item" type="button" data-i18n="settings">Configurações</button>
+                <button id="settings-menu" class="menu-item" type="button" data-i18n="settings">Configurações</button>
                 <button id="theme-toggle" class="menu-item" type="button" aria-pressed="false"><span id="theme-label">Modo noturno</span></button>
         </nav>
         <div class="language-panel">
@@ -163,6 +163,17 @@
             <p id="feedback-msg" class="hidden" data-i18n="ideaSaved">Ideia salva com sucesso!</p>
         </section>
 
+        <!-- Barra de Pulso da Comunidade (Posicionada Estrategicamente Acima do Feed) -->
+        <div id="community-pulse-bar" class="community-pulse-bar">
+            <div class="pulse-indicator">
+                <span class="pulse-live-dot" aria-hidden="true"></span>
+                <span class="pulse-label" data-i18n="communityPulse">Pulso da Comunidade</span>
+            </div>
+            <div id="pulse-ticker-container" class="pulse-ticker-container" title="Atividades recentes na Gnoteca">
+                <span id="pulse-ticker-text" class="pulse-ticker-text" data-i18n="communityActive">Gnoteca: Comunidade de pensamento crítico ativa</span>
+            </div>
+        </div>
+
         <!-- Tela de Leitura -->
         <section id="read-section">
             <div class="feed-header">
@@ -176,6 +187,7 @@
                         <option value="newest" data-i18n="newest">Mais novas</option>
                         <option value="voted" data-i18n="mostVoted">Mais votadas</option>
                         <option value="favorite" data-i18n="mostFavorited">Mais favoritas</option>
+                        <option value="most_commented" data-i18n="mostCommented">Mais comentadas</option>
                     </select>
                 </label>
             </div>
@@ -216,6 +228,16 @@
             <div id="feed-sentinel" class="feed-sentinel"></div>
             <button id="btn-back-to-top" class="back-to-top hidden" type="button" aria-label="Voltar ao topo" title="Voltar ao topo">^</button>
         </section>
+
+    <!-- Rodapé Discreto -->
+    <footer id="app-footer" class="app-footer">
+        <div class="footer-bottom-info">
+            <span>© 2026 Gnoteca</span>
+            <span class="footer-separator">•</span>
+            <span>Pensamento crítico em tempo real</span>
+        </div>
+    </footer>
+
     <div id="edit-profile-dialog" class="auth-gate hidden" role="dialog" aria-modal="true" aria-labelledby="edit-profile-title">
         <div class="auth-gate-card">
             <button id="close-edit-dialog" class="auth-gate-close" type="button" aria-label="Fechar">x</button>
@@ -292,6 +314,88 @@
             </div>
             <div id="notifications-list-container" class="notifications-list-container">
                 <!-- Preenchido dinamicamente pelo JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Configurações da Experiência do Usuário -->
+    <div id="settings-dialog" class="auth-gate hidden" role="dialog" aria-modal="true" aria-labelledby="settings-dialog-title">
+        <div class="auth-gate-card settings-dialog-card">
+            <div class="settings-card-header">
+                <h2 id="settings-dialog-title" class="dialog-eyebrow" data-i18n="settings">Configurações</h2>
+                <button id="close-settings-dialog" class="auth-gate-close" type="button" aria-label="Fechar">x</button>
+            </div>
+            
+            <div class="settings-content-body">
+                <!-- Seção 1: Comunidade & Descoberta -->
+                <div class="settings-section">
+                    <h3 class="settings-section-title" data-i18n="settingsCommunityTitle">Comunidade & Descoberta</h3>
+                    <div class="settings-item">
+                        <div class="settings-item-meta">
+                            <span class="settings-item-name" data-i18n="settingPulseName">Pulso da Comunidade</span>
+                            <span class="settings-item-desc" data-i18n="settingPulseDesc">Exibir logs de atividade recente da comunidade acima do acervo.</span>
+                        </div>
+                        <label class="setting-toggle-label">
+                            <input type="checkbox" id="setting-toggle-pulse" class="setting-toggle-checkbox" checked>
+                            <span class="setting-toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Seção 2: Leitura & Tipografia -->
+                <div class="settings-section">
+                    <h3 class="settings-section-title" data-i18n="settingsReadingTitle">Leitura & Visualização</h3>
+                    <div class="settings-item">
+                        <div class="settings-item-meta">
+                            <span class="settings-item-name" data-i18n="settingDensityName">Densidade do Feed</span>
+                            <span class="settings-item-desc" data-i18n="settingDensityDesc">Ajuste o espaçamento entre fragmentos.</span>
+                        </div>
+                        <select id="setting-select-density" class="settings-select-input">
+                            <option value="comfortable" data-i18n="settingDensityComfortable">Confortável (Padrão)</option>
+                            <option value="compact" data-i18n="settingDensityCompact">Compacto</option>
+                        </select>
+                    </div>
+                    <div class="settings-item">
+                        <div class="settings-item-meta">
+                            <span class="settings-item-name" data-i18n="settingFontName">Tamanho do Texto</span>
+                            <span class="settings-item-desc" data-i18n="settingFontDesc">Tamanho da tipografia dos fragmentos.</span>
+                        </div>
+                        <select id="setting-select-font" class="settings-select-input">
+                            <option value="small" data-i18n="settingFontSmall">Pequeno</option>
+                            <option value="normal" data-i18n="settingFontNormal" selected>Padrão</option>
+                            <option value="large" data-i18n="settingFontLarge">Grande</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Seção 3: Escrita & Segurança -->
+                <div class="settings-section">
+                    <h3 class="settings-section-title" data-i18n="settingsWritingTitle">Escrita & Segurança</h3>
+                    <div class="settings-item">
+                        <div class="settings-item-meta">
+                            <span class="settings-item-name" data-i18n="settingAutosaveName">Salvar Rascunho</span>
+                            <span class="settings-item-desc" data-i18n="settingAutosaveDesc">Memorizar texto digitado para não perder reflexões não enviadas.</span>
+                        </div>
+                        <label class="setting-toggle-label">
+                            <input type="checkbox" id="setting-toggle-autosave" class="setting-toggle-checkbox" checked>
+                            <span class="setting-toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="settings-item">
+                        <div class="settings-item-meta">
+                            <span class="settings-item-name" data-i18n="settingConfirmDeleteName">Confirmar Exclusão</span>
+                            <span class="settings-item-desc" data-i18n="settingConfirmDeleteDesc">Exibir aviso de confirmação antes de apagar suas publicações.</span>
+                        </div>
+                        <label class="setting-toggle-label">
+                            <input type="checkbox" id="setting-toggle-confirm-delete" class="setting-toggle-checkbox" checked>
+                            <span class="setting-toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dialog-actions">
+                <button id="btn-save-settings" class="gate-primary-button" type="button" data-i18n="ready">Pronto</button>
             </div>
         </div>
     </div>
