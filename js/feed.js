@@ -106,12 +106,13 @@ export function renderBlurredTeaserCard(idea) {
 // Busca Comentários da Thread Sob Demanda (Lazy Loading) com Votos
 export async function fetchComments(entryId) {
     try {
-        const { data, error } = await supabaseClient
+        let { data, error } = await supabaseClient
             .from('entries')
             .select(`
                 id,
                 content,
                 tag,
+                is_edited,
                 created_at,
                 author_id,
                 profiles:author_id (
@@ -126,6 +127,32 @@ export async function fetchComments(entryId) {
                 )
             `)
             .eq('parent_id', entryId);
+
+        // Fallback transparente se a coluna is_edited ainda não tiver sido criada via SQL
+        if (error && error.message && error.message.includes('is_edited')) {
+            const fallback = await supabaseClient
+                .from('entries')
+                .select(`
+                    id,
+                    content,
+                    tag,
+                    created_at,
+                    author_id,
+                    profiles:author_id (
+                        id,
+                        username,
+                        display_name,
+                        avatar_url
+                    ),
+                    votes (
+                        user_id,
+                        vote_type
+                    )
+                `)
+                .eq('parent_id', entryId);
+            data = fallback.data;
+            error = fallback.error;
+        }
 
         if (error) {
             console.error('fetchComments error:', error);
@@ -154,10 +181,14 @@ export async function fetchComments(entryId) {
                 }
             }
 
+            const isEdited = Boolean(c.is_edited);
+
             return {
                 id: c.id,
                 content: c.content,
+                rawContent: c.content,
                 tag: c.tag,
+                isEdited,
                 replyToCommentId,
                 replyToAuthorName,
                 createdAt: c.created_at,
@@ -223,13 +254,31 @@ export function renderCommentsContent(container, entryId, comments) {
         const replyBadge = c.replyToAuthorName
             ? `<span class="comment-reply-to-badge">@${escapeHTML(c.replyToAuthorName)}</span> `
             : '';
+        const isAuthor = state.authenticatedUser && state.authenticatedUser.id === c.authorId;
+        const editedBadge = c.isEdited
+            ? `<span class="comment-edited-badge">(${translate('edited')})</span>`
+            : '';
+        const authorActions = isAuthor
+            ? `
+                <div class="comment-author-actions">
+                    <button class="comment-action-btn" type="button" data-action="edit-comment" data-comment-id="${c.id}" data-parent-id="${entryId}" aria-label="${translate('edit')}">${translate('edit')}</button>
+                    <button class="comment-action-btn delete-action" type="button" data-action="delete-comment" data-comment-id="${c.id}" data-parent-id="${entryId}" aria-label="${translate('delete')}">${translate('delete')}</button>
+                </div>
+            `
+            : '';
 
         return `
             <div class="comment-card${isReply ? ' is-reply' : ''}" id="comment-${c.id}">
                 <div class="comment-header">
-                    <span class="comment-author"><button class="author-link" type="button" data-action="profile" data-profile-id="${c.authorId}">${authorImg}${escapeHTML(c.authorName)}</button></span>
+                    <span class="comment-author">
+                        <button class="author-link" type="button" data-action="profile" data-profile-id="${c.authorId}">${authorImg}${escapeHTML(c.authorName)}</button>
+                        ${editedBadge}
+                    </span>
+                    ${authorActions}
                 </div>
-                <p class="comment-content">${replyBadge}${escapeHTML(c.content).replace(/\n/g, '<br>')}</p>
+                <div class="comment-body-wrapper" id="comment-body-${c.id}">
+                    <p class="comment-content">${replyBadge}${escapeHTML(c.content).replace(/\n/g, '<br>')}</p>
+                </div>
                 <div class="comment-actions">
                     <button class="comment-vote-btn upvote${c.userVote === 'up' ? ' selected' : ''}" type="button" data-action="comment-upvote" data-comment-id="${c.id}" data-parent-id="${entryId}" aria-label="Upvote">
                         <svg viewBox="0 0 24 24" class="icon-tiny" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6" /></svg>
@@ -750,6 +799,137 @@ export async function handleFeedClick(event, onNavigateProfile) {
         return;
     }
 
+    if (action === 'edit-comment') {
+        const commentId = Number(button.dataset.commentId);
+        const parentId = Number(button.dataset.parentId);
+        const commentCard = button.closest('.comment-card');
+        const bodyWrapper = commentCard?.querySelector(`#comment-body-${commentId}`);
+        if (!bodyWrapper) return;
+
+        const pEl = bodyWrapper.querySelector('.comment-content');
+        const badgeEl = pEl?.querySelector('.comment-reply-to-badge');
+        let currentText = pEl ? pEl.innerText : '';
+        if (badgeEl && currentText.startsWith(badgeEl.innerText)) {
+            currentText = currentText.slice(badgeEl.innerText.length).trim();
+        }
+
+        bodyWrapper.innerHTML = `
+            <div class="comment-edit-box" id="comment-edit-box-${commentId}">
+                <textarea class="comment-edit-textarea" maxlength="280">${escapeHTML(currentText)}</textarea>
+                <div class="comment-edit-btn-row">
+                    <button class="comment-submit-btn" type="button" data-action="save-edit-comment" data-comment-id="${commentId}" data-parent-id="${parentId}">${translate('save')}</button>
+                    <button class="comment-cancel-reply-btn" type="button" data-action="cancel-edit-comment" data-comment-id="${commentId}" data-parent-id="${parentId}">${translate('cancel')}</button>
+                </div>
+            </div>
+        `;
+
+        const textarea = bodyWrapper.querySelector('.comment-edit-textarea');
+        textarea?.focus();
+        return;
+    }
+
+    if (action === 'cancel-edit-comment') {
+        const parentId = Number(button.dataset.parentId);
+        const container = button.closest('.comments-thread-container');
+        const comments = await fetchComments(parentId);
+        renderCommentsContent(container, parentId, comments);
+        return;
+    }
+
+    if (action === 'save-edit-comment') {
+        const commentId = Number(button.dataset.commentId);
+        const parentId = Number(button.dataset.parentId);
+        const editBox = button.closest('.comment-edit-box');
+        const textarea = editBox?.querySelector('.comment-edit-textarea');
+        const newText = textarea?.value.trim();
+
+        if (!newText) {
+            showActionFeedback(translate('emptyEntry'));
+            textarea?.focus();
+            return;
+        }
+
+        button.disabled = true;
+        try {
+            let { error } = await supabaseClient
+                .from('entries')
+                .update({ content: newText, is_edited: true })
+                .eq('id', commentId)
+                .eq('author_id', state.authenticatedUser.id);
+
+            // Fallback se a coluna is_edited ainda não tiver sido criada no SQL
+            if (error && error.message && error.message.includes('is_edited')) {
+                const fallback = await supabaseClient
+                    .from('entries')
+                    .update({ content: newText })
+                    .eq('id', commentId)
+                    .eq('author_id', state.authenticatedUser.id);
+                error = fallback.error;
+            }
+
+            if (error) {
+                showActionFeedback(error.message || translate('errorSaving'));
+                return;
+            }
+
+            showActionFeedback('Comentário atualizado!');
+            const container = button.closest('.comments-thread-container');
+            const comments = await fetchComments(parentId);
+            renderCommentsContent(container, parentId, comments);
+        } catch (err) {
+            console.error('save-edit-comment error:', err);
+            showActionFeedback(translate('errorSaving'));
+        } finally {
+            button.disabled = false;
+        }
+        return;
+    }
+
+    if (action === 'delete-comment') {
+        const commentId = Number(button.dataset.commentId);
+        const parentId = Number(button.dataset.parentId);
+
+        const confirmPref = localStorage.getItem('gnoteca_setting_confirm_delete') !== 'false';
+        if (confirmPref) {
+            const confirmed = window.confirm('Deseja realmente apagar este comentário?');
+            if (!confirmed) return;
+        }
+
+        button.disabled = true;
+        try {
+            const { error } = await supabaseClient
+                .from('entries')
+                .delete()
+                .eq('id', commentId)
+                .eq('author_id', state.authenticatedUser.id);
+
+            if (error) {
+                showActionFeedback(error.message || translate('errorSaving'));
+                return;
+            }
+
+            showActionFeedback(translate('commentDeleted'));
+
+            // Atualiza contagem no card
+            const card = button.closest('.idea-card');
+            const countBadge = card?.querySelector('.comment-toggle-btn .action-count');
+            if (countBadge) {
+                const cur = Math.max(0, parseInt(countBadge.textContent || '0', 10) - 1);
+                countBadge.textContent = cur;
+            }
+
+            const container = button.closest('.comments-thread-container');
+            const comments = await fetchComments(parentId);
+            renderCommentsContent(container, parentId, comments);
+        } catch (err) {
+            console.error('delete-comment error:', err);
+            showActionFeedback(translate('errorSaving'));
+        } finally {
+            button.disabled = false;
+        }
+        return;
+    }
+
     if (action === 'submit-comment') {
         if (!state.authenticatedUser) {
             showAuthGate();
@@ -774,7 +954,7 @@ export async function handleFeedClick(event, onNavigateProfile) {
                 author_id: state.authenticatedUser.id,
                 parent_id: parentId,
                 content: content,
-                tag: replyToId ? `reply:${replyToId}:${encodeURIComponent(replyAuthor)}` : null
+                tag: replyToId ? `reply:${replyToId}:${encodeURIComponent(replyAuthor)}` : 'Geral'
             };
 
             const { data: insertedComment, error } = await supabaseClient

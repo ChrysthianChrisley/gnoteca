@@ -111,6 +111,8 @@ export const translations = {
         sendComment: 'Comentar',
         noCommentsYet: 'Nenhum comentário ainda. Seja o primeiro a comentar!',
         commentPublished: 'Comentário publicado!',
+        commentDeleted: 'Comentário excluído!',
+        edited: 'editado',
         topComments: 'Mais votados',
 
         // Compartilhamento
@@ -126,6 +128,15 @@ export const translations = {
         notifReply: 'respondeu ao seu comentário',
         markAllRead: 'Marcar todas como lidas',
         noNotifications: 'Nenhuma notificação no momento.',
+
+        // Pulso da Comunidade
+        communityPulse: 'Pulso da Comunidade',
+        communityActive: 'Gnoteca: Comunidade de pensamento crítico ativa',
+        joinedCommunity: 'entrou para a Gnoteca',
+        publishedIdea: 'publicou uma nova reflexão',
+        commentedOnIdea: 'comentou em uma reflexão',
+        votedOnIdea: 'votou em uma reflexão',
+        favoritedIdea: 'guardou uma reflexão nos favoritos',
 
         // Teaser de Visitantes
         exclusiveAccess: 'Acesso Exclusivo',
@@ -278,6 +289,8 @@ export const translations = {
         sendComment: 'Comment',
         noCommentsYet: 'No comments yet. Be the first to comment!',
         commentPublished: 'Comment published!',
+        commentDeleted: 'Comment deleted!',
+        edited: 'edited',
         topComments: 'Top voted',
 
         // Sharing
@@ -293,6 +306,15 @@ export const translations = {
         notifReply: 'replied to your comment',
         markAllRead: 'Mark all as read',
         noNotifications: 'No notifications at the moment.',
+
+        // Community Pulse
+        communityPulse: 'Community Pulse',
+        communityActive: 'Gnoteca: Critical thinking community is active',
+        joinedCommunity: 'joined Gnoteca',
+        publishedIdea: 'published a new reflection',
+        commentedOnIdea: 'commented on a reflection',
+        votedOnIdea: 'voted on a reflection',
+        favoritedIdea: 'saved a reflection to favorites',
 
         // Visitor Teaser
         exclusiveAccess: 'Exclusive Access',
@@ -447,6 +469,8 @@ export const translations = {
         sendComment: 'Comentar',
         noCommentsYet: '¡Aún no hay comentarios. Sé el primero en comentar!',
         commentPublished: '¡Comentario publicado!',
+        commentDeleted: '¡Comentario eliminado!',
+        edited: 'editado',
         topComments: 'Más votados',
 
         // Compartir
@@ -462,6 +486,15 @@ export const translations = {
         notifReply: 'respondió a tu comentario',
         markAllRead: 'Marcar todas como leídas',
         noNotifications: 'Sin notificaciones en este momento.',
+
+        // Pulso de la Comunidad
+        communityPulse: 'Pulso de la Comunidad',
+        communityActive: 'Gnoteca: Comunidad de pensamiento crítico activa',
+        joinedCommunity: 'se unió a Gnoteca',
+        publishedIdea: 'publicó una nueva reflexión',
+        commentedOnIdea: 'comentó en una reflexión',
+        votedOnIdea: 'votó en una reflexión',
+        favoritedIdea: 'guardó una reflexión en favoritos',
 
         // Teaser de Visitantes
         exclusiveAccess: 'Acceso Exclusivo',
@@ -616,6 +649,8 @@ export const translations = {
         sendComment: 'Commenter',
         noCommentsYet: 'Aucun commentaire pour l\'instant. Soyez le premier à commenter !',
         commentPublished: 'Commentaire publié !',
+        commentDeleted: 'Commentaire supprimé !',
+        edited: 'modifié',
         topComments: 'Plus votés',
 
         // Partage
@@ -631,6 +666,15 @@ export const translations = {
         notifReply: 'a répondu à votre commentaire',
         markAllRead: 'Tout marquer comme lu',
         noNotifications: 'Aucune notification pour le moment.',
+
+        // Pouls de la Communauté
+        communityPulse: 'Pouls de la Communauté',
+        communityActive: 'Gnoteca : Communauté de pensée critique active',
+        joinedCommunity: 'a rejoint Gnoteca',
+        publishedIdea: 'a publié une nouvelle réflexion',
+        commentedOnIdea: 'a commenté une réflexion',
+        votedOnIdea: 'a voté pour une réflexion',
+        favoritedIdea: 'a ajouté une réflexion à ses favoris',
 
         // Teaser des Visiteurs
         exclusiveAccess: 'Accès Exclusif',
