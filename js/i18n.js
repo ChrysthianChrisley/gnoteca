@@ -376,6 +376,133 @@ export const translations = {
         heroSubtitle: 'La micro-red creada para quienes valoran la profundidad en un mundo distraído.',
         voteLimitReached: '¡Has alcanzado el límite de 5 votos por día. Elige con criterio qué ideas validar!',
         favoriteLimitReached: 'Solo puedes guardar 3 fragmentos fundamentales a la vez. Desmarca uno para añadir este.'
+    },
+    'fr-FR': {
+        // En-tête et Profil
+        profileTitle: 'Mon profil',
+        profileSubtitle: 'explorateur de connaissances',
+        notAuthenticated: 'Non authentifié',
+        signIn: 'Se connecter',
+        createAccount: 'Créer un compte',
+        continueGoogle: 'Continuer avec Google',
+        signOutShort: 'Sortir',
+        signOut: 'Se déconnecter',
+        or: 'ou',
+        signInToContinue: 'Connectez-vous pour continuer',
+        authTitle: 'Connectez-vous pour continuer',
+        authSubtitle: 'Sauvegardez vos découvertes, votez sur des fragments et participez aux débats.',
+        emailPlaceholder: 'votre-email@exemple.com',
+        passwordPlaceholder: 'Mot de passe',
+        loginWithEmail: 'Se connecter',
+        signupWithEmail: 'Créer un compte',
+        switchToSignUp: 'Pas de compte ? Inscrivez-vous',
+        switchToSignIn: 'Déjà un compte ? Connectez-vous',
+        authProcessing: 'Traitement en cours...',
+        authSuccess: 'Succès !',
+        confirmEmailNotice: 'Compte créé ! Vérifiez votre e-mail pour confirmer.',
+        genericAuthError: 'Erreur lors de l\'authentification.',
+
+        // Menus et Navigation
+        menuOverview: 'Vue d\'ensemble',
+        menuFavorites: 'Mes Favoris',
+        language: 'Langue',
+        nightMode: 'Mode nuit',
+        lightMode: 'Mode clair',
+        edit: 'Modifier',
+        delete: 'Supprimer',
+        save: 'Enregistrer',
+        cancel: 'Annuler',
+        loading: 'Chargement...',
+
+        // Fil d'actualité et Statistiques
+        publicCollection: 'Collection publique',
+        latestFragments: 'Derniers fragments',
+        sortBy: 'Trier par',
+        newest: 'Plus récents',
+        mostVoted: 'Plus votés',
+        mostFavorited: 'Plus favoris',
+        topicAll: 'Tous',
+        topicScience: 'Science',
+        topicPhilosophy: 'Philosophie',
+        topicTechnology: 'Technologie',
+        topicNeuroscience: 'Neurosciences',
+        topicPhysics: 'Physique',
+        topicPsychology: 'Psychologie',
+        topicSociety: 'Société',
+        topicGeneral: 'Général',
+        topicOther: '+ Autre sujet...',
+        topicCustomPlaceholder: '#VotreSujet',
+        topicLabel: 'Sujet :',
+        by: 'par',
+        backToFeed: 'Retour à la collection',
+        myIdeasFeedTitle: 'Mes Fragments',
+        favoritesFeedTitle: 'Fragments Favoris',
+        emptyFeed: 'Aucun fragment dans cette catégorie pour le moment.',
+        emptyFavorites: 'Vous n\'avez pas encore enregistré de fragments dans vos favoris.',
+        confirmDeleteTitle: 'Supprimer le fragment ?',
+        confirmDeleteMessage: 'Cette action est irréversible. Êtes-vous sûr de vouloir supprimer ce fragment de la collection ?',
+
+        // Formulaire d'Écriture
+        ideaPlaceholder: 'Quel concept, hypothèse ou idée souhaitez-vous enregistrer ?',
+        saveToGnoteca: 'Enregistrer dans Gnoteca',
+        ideaSaved: 'Idée enregistrée avec succès !',
+        emptyEntry: 'Écrivez quelque chose avant de publier.',
+        errorSaving: 'Erreur lors de l\'enregistrement. Réessayez.',
+        entryDeleted: 'Fragment supprimé.',
+
+        // Titres de Prestige Intellectuel
+        titleKnowledgeExplorer: 'Explorateur de Connaissances',
+        titleIdeaCurator: 'Curateur d\'Idées',
+        titleKnowledgeArchitect: 'Architecte du Savoir',
+        titleGnotecaLight: 'Lumière de Gnoteca',
+        titleDeepThinker: 'Penseur Profond',
+        titlePolymath: 'Polymathe Contemporain',
+        titleMasterCurator: 'Maître Curateur',
+        chooseTitle: 'Choisissez votre Titre',
+        unlockTitlesHint: 'Débloquez de nouveaux titres en participant à Gnoteca.',
+
+        // Édition du Profil
+        editProfile: 'Modifier le Profil',
+        changeDisplayName: 'Changer le Nom d\'Affichage',
+        nameHint: 'C\'est le nom affiché en haut de votre profil (espaces et majuscules autorisés).',
+        changeAvatar: 'Changer la Photo de Profil',
+        avatarHint: 'Collez le lien direct (URL) d\'une image (jpg, png, webp).',
+        namePlaceholder: 'Votre Nom',
+        avatarPlaceholder: 'https://lien-image.com/photo.jpg',
+        profileSaved: 'Profil mis à jour avec succès !',
+
+        // Commentaires et Discussions
+        comments: 'Commentaires',
+        comment: 'Commentaire',
+        addCommentPlaceholder: 'Qu\'en pensez-vous ? Ajoutez un commentaire...',
+        sendComment: 'Commenter',
+        noCommentsYet: 'Aucun commentaire pour l\'instant. Soyez le premier à commenter !',
+        commentPublished: 'Commentaire publié !',
+        topComments: 'Plus votés',
+
+        // Partage
+        shareTitle: 'Partager le Fragment',
+        copyQuote: 'Copier la Citation avec Lien',
+        quoteCopied: 'Citation copiée dans le presse-papiers !',
+
+        // Teaser des Visiteurs
+        exclusiveAccess: 'Accès Exclusif',
+        teaserMessage: 'Débloquez toute la collection pour lire ce fragment et des centaines d\'autres',
+        createAccountOrSignIn: 'Créer un Compte Gratuit / Se Connecter',
+
+        // Constellation
+        constellationTitle: 'Constellation du Savoir',
+        constellationSubtitle: 'Les 3 piliers fondamentaux conservés par cet auteur',
+        emptyConstellationSlot: 'Pilier',
+        emptyConstellationHelp: 'Sélectionnez une autre idée pour compléter votre triade fondamentale.',
+        emptyConstellationOther: 'Espace ouvert pour un nouveau principe fondamental.',
+        pillar: 'Pilier',
+        pillars: 'Piliers',
+        heroBadge: 'Pensée critique en temps réel',
+        heroTitle: 'Pensez. Écrivez. Questionnez.',
+        heroSubtitle: 'Le micro-réseau conçu pour ceux qui valorisent la profondeur dans un monde distrait.',
+        voteLimitReached: 'Vous avez atteint la limite de 5 votes par jour. Choisissez avec soin les idées à valider !',
+        favoriteLimitReached: 'Vous ne pouvez garder que 3 fragments fondamentaux à la fois. Retirez-en un pour ajouter celui-ci.'
     }
 };
 

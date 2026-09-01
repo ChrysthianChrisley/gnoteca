@@ -256,13 +256,14 @@ function setupEventListeners() {
         handleEmailSignUp(gateEmail?.value.trim(), gatePassword?.value, true);
     });
 
-    btnSignout?.addEventListener('click', () => handleSignOut(() => {
-        toggleSidebar(false);
-        writeSection?.classList.add('hidden');
-        readSection?.classList.remove('hidden');
-        btnWrite?.classList.remove('active');
-        btnRead?.classList.remove('active');
-    }));
+    btnSignout?.addEventListener('click', async () => {
+        await handleSignOut(async () => {
+            toggleSidebar(false);
+            const writeSec = document.getElementById('write-section');
+            writeSec?.classList.add('hidden');
+            await showFeed('global');
+        });
+    });
 
     // Estatísticas Clicáveis no Perfil
     statFragments?.addEventListener('click', () => {
@@ -445,7 +446,12 @@ function setupEventListeners() {
     // Escuta mudanças na autenticação do Supabase
     supabaseClient.auth.onAuthStateChange(async (event, session) => {
         if (event === 'SIGNED_OUT') {
-            await handleSignOut();
+            toggleSidebar(false);
+            const writeSec = document.getElementById('write-section');
+            writeSec?.classList.add('hidden');
+            await handleSignOut(async () => {
+                await showFeed('global');
+            });
         } else if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED') {
             await refreshAuthState(session?.user || undefined);
         }

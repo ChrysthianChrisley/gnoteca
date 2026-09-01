@@ -115,23 +115,31 @@ export async function handleEmailSignUp(email, password, isGate = false) {
     }
 }
 
+let isSigningOut = false;
 export async function handleSignOut(onAfterSignOut = null) {
-    state.authenticatedUser = null;
-    invalidateCache();
-    state.activeFeed = 'global';
-    state.selectedProfileId = null;
-    window.history.replaceState({ feedType: 'global' }, '', getHomePath());
-    window.scrollTo({ top: 0 });
+    if (isSigningOut) return;
+    isSigningOut = true;
 
     try {
-        await supabaseClient.auth.signOut();
-    } catch (err) {
-        console.warn('Sign out warning:', err);
-    }
+        state.authenticatedUser = null;
+        invalidateCache();
+        state.activeFeed = 'global';
+        state.selectedProfileId = null;
+        window.history.replaceState({ feedType: 'global' }, '', getHomePath());
+        window.scrollTo({ top: 0 });
 
-    await refreshAuthState(null);
-    if (typeof onAfterSignOut === 'function') {
-        onAfterSignOut();
+        try {
+            await supabaseClient.auth.signOut();
+        } catch (err) {
+            console.warn('Sign out warning:', err);
+        }
+
+        await refreshAuthState(null);
+        if (typeof onAfterSignOut === 'function') {
+            await onAfterSignOut();
+        }
+    } finally {
+        isSigningOut = false;
     }
 }
 
