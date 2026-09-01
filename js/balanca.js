@@ -59,22 +59,7 @@ let currentPairIndex = 0;
 export function getStoredSyntheses() {
     try {
         const raw = localStorage.getItem('gnoteca_balanca_syntheses');
-        return raw ? JSON.parse(raw) : [
-            {
-                id: 'syn-1',
-                pairId: 'par-1',
-                authorName: 'Pensador da Gnoteca',
-                content: 'A solitude fornece o combustível da contemplação, mas a vida em comunidade é a fornalha onde as ideias são postas à prova.',
-                date: 'Recente'
-            },
-            {
-                id: 'syn-2',
-                pairId: 'par-2',
-                authorName: 'Explorador do Saber',
-                content: 'A máquina deve ser tratada como o cinzel que esculpe a pedra, nunca como o escultor que concebe a forma.',
-                date: 'Recente'
-            }
-        ];
+        return raw ? JSON.parse(raw) : [];
     } catch {
         return [];
     }
