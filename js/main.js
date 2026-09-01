@@ -10,6 +10,7 @@ import { setupShareListeners } from './share.js';
 import { initNotifications, openNotificationsDialog, closeNotificationsDialog, markAllNotificationsAsRead, markNotificationAsRead, clearAllNotifications } from './notifications.js';
 import { fetchCommunityPulse, initCommunityPulse } from './pulse.js';
 import { initSettings, openSettingsDialog, closeSettingsDialog } from './settings.js';
+import { initTopics, normalizeTagName, fetchCommunityTopics } from './topics.js';
 
 // Elementos Principais do DOM
 const btnHome = document.getElementById('btn-home');
@@ -94,6 +95,13 @@ export async function showFeed(feedType) {
     const isGlobal = feedType === 'global';
     writeSection?.classList.toggle('hidden', !state.authenticatedUser || !isGlobal);
     readSection?.classList.remove('hidden');
+
+    const communityPulseBar = document.getElementById('community-pulse-bar');
+    if (communityPulseBar) {
+        const isPulseEnabled = localStorage.getItem('gnoteca_setting_pulse') !== 'false';
+        communityPulseBar.classList.toggle('hidden', !state.authenticatedUser || !isGlobal || !isPulseEnabled);
+    }
+
     await loadIdeas();
 }
 
@@ -101,6 +109,11 @@ export async function showProfile(profileId) {
     if (!profileId) return;
     state.activeFeed = 'profile';
     state.selectedProfileId = profileId;
+
+    const communityPulseBar = document.getElementById('community-pulse-bar');
+    if (communityPulseBar) {
+        communityPulseBar.classList.add('hidden');
+    }
 
     let account = null;
     if (state.authenticatedUser && state.authenticatedUser.id === profileId) {
@@ -366,13 +379,9 @@ function setupEventListeners() {
         const text = ideaInput?.value.trim();
         if (!text) return;
 
-        const tagSelect = document.getElementById('write-tag-select');
-        const customTagInput = document.getElementById('write-custom-tag');
-        let selectedTag = tagSelect?.value || 'Geral';
-        if (selectedTag === '__custom__') {
-            const customVal = customTagInput?.value.trim().replace(/^#+/, '');
-            selectedTag = customVal ? customVal.slice(0, 20) : 'Geral';
-        }
+        const writeTagInput = document.getElementById('write-tag-input');
+        const rawTag = writeTagInput?.value || 'Geral';
+        const selectedTag = normalizeTagName(rawTag);
 
         btnSave.disabled = true;
         try {
@@ -391,9 +400,7 @@ function setupEventListeners() {
             }
 
             if (ideaInput) ideaInput.value = '';
-            if (customTagInput) customTagInput.value = '';
-            if (tagSelect) tagSelect.value = 'Geral';
-            customTagInput?.classList.add('hidden');
+            if (writeTagInput) writeTagInput.value = '#Geral';
             if (charCounter) {
                 charCounter.textContent = `0 / ${MAX_LENGTH}`;
                 charCounter.classList.remove('limit-reached');
@@ -406,38 +413,13 @@ function setupEventListeners() {
             invalidateCache();
             await loadIdeas();
             await updateProfileStats();
+            fetchCommunityTopics();
             showFeed('global');
         } catch (err) {
             console.error('Save idea error:', err);
             showActionFeedback(translate('errorSaving'));
         } finally {
             btnSave.disabled = false;
-        }
-    });
-
-    // Barra de Filtro de Tópicos
-    const topicFilterBar = document.getElementById('topic-filter-bar');
-    topicFilterBar?.addEventListener('click', async event => {
-        const pill = event.target.closest('.topic-pill');
-        if (!pill) return;
-        const tag = pill.dataset.tag || 'Todos';
-        state.selectedTag = tag;
-        topicFilterBar.querySelectorAll('.topic-pill').forEach(p => {
-            p.classList.toggle('active', p === pill);
-        });
-        await loadIdeas();
-    });
-
-    // Seletor de Tópicos e Campo Personalizado
-    const writeTagSelect = document.getElementById('write-tag-select');
-    const writeCustomTag = document.getElementById('write-custom-tag');
-    writeTagSelect?.addEventListener('change', () => {
-        if (writeTagSelect.value === '__custom__') {
-            writeCustomTag?.classList.remove('hidden');
-            writeCustomTag?.focus();
-        } else {
-            writeCustomTag?.classList.add('hidden');
-            if (writeCustomTag) writeCustomTag.value = '';
         }
     });
 
@@ -679,6 +661,7 @@ export async function initApp() {
     setupEventListeners();
     initSettings();
     initCookieBanner();
+    initTopics();
     initCommunityPulse({
         onNavigateProfile: showProfile,
         onNavigateEntry: navigateToEntry

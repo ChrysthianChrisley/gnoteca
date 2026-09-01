@@ -544,7 +544,15 @@ export async function loadIdeas(reset = true) {
     }
 
     if (firstPage.length === 0) {
-        ideasList.innerHTML = `<p class="empty-state">${translate('empty')}</p>`;
+        let emptyMsg = translate('empty');
+        if (state.activeFeed === 'favorites') {
+            emptyMsg = translate('emptyFavorites');
+        } else if (state.activeFeed === 'mine') {
+            emptyMsg = translate('emptyMine');
+        } else if (state.activeFeed === 'profile') {
+            emptyMsg = translate('emptyProfile');
+        }
+        ideasList.innerHTML = `<p class="empty-state">${emptyMsg}</p>`;
         if (ideasCount && state.activeFeed === 'global') ideasCount.textContent = '0';
         state.hasMorePages = false;
         unauthGateBanner?.classList.add('hidden');

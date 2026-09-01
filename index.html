@@ -76,7 +76,7 @@
                 <strong id="ideas-count">0</strong><span data-i18n="fragments">fragmentos</span>
             </button>
             <button id="stat-favorites" class="stat-button" type="button">
-                <strong id="favorites-count">0/3</strong><span data-i18n="favorites">favoritos</span>
+                <strong id="favorites-count">0/3</strong><span data-i18n="favorites">Favoritos</span>
             </button>
         </div>
         <nav class="sidebar-menu" aria-label="Opções do perfil">
@@ -228,19 +228,9 @@
             <textarea id="idea-input" maxlength="280" placeholder="Qual conceito, hipótese ou insight deseja registrar?" data-i18n-placeholder="ideaPlaceholder"></textarea>
             <div class="write-meta-bar">
                 <div class="tag-selector-wrapper">
-                    <label for="write-tag-select" class="tag-select-label" data-i18n="topicLabel">Tópico:</label>
-                    <select id="write-tag-select" class="tag-select-input">
-                        <option value="Geral" data-i18n="topicGeneral">#Geral</option>
-                        <option value="Ciência" data-i18n="topicScience">#Ciência</option>
-                        <option value="Filosofia" data-i18n="topicPhilosophy">#Filosofia</option>
-                        <option value="Tecnologia" data-i18n="topicTechnology">#Tecnologia</option>
-                        <option value="Neurociência" data-i18n="topicNeuroscience">#Neurociência</option>
-                        <option value="Física" data-i18n="topicPhysics">#Física</option>
-                        <option value="Psicologia" data-i18n="topicPsychology">#Psicologia</option>
-                        <option value="Sociedade" data-i18n="topicSociety">#Sociedade</option>
-                        <option value="__custom__" data-i18n="topicOther">+ Outro tópico...</option>
-                    </select>
-                    <input id="write-custom-tag" class="tag-custom-input hidden" type="text" maxlength="20" placeholder="#SeuTópico" data-i18n-placeholder="topicCustomPlaceholder">
+                    <label for="write-tag-input" class="tag-select-label" data-i18n="topicLabel">Tópico:</label>
+                    <input id="write-tag-input" class="tag-smart-input" list="available-topics-list" type="text" maxlength="20" placeholder="#Filosofia" value="#Geral">
+                    <datalist id="available-topics-list"></datalist>
                 </div>
                 <div id="char-counter">0 / 280</div>
             </div>
@@ -264,7 +254,6 @@
             <div class="feed-header">
                 <div>
                     <button id="back-to-feed" class="back-link hidden" type="button" data-i18n="backToFeed">Voltar ao acervo</button>
-                    <p id="feed-kicker" class="section-kicker" data-i18n="publicCollection">Acervo público</p>
                     <h2 id="feed-title" data-i18n="latestFragments">Últimos fragmentos</h2>
                 </div>
                 <label class="filter-label" for="feed-filter"><span data-i18n="sortBy">Ordenar por</span>
@@ -277,17 +266,9 @@
                 </label>
             </div>
 
-            <!-- Barra de Filtro de Tópicos / Tags -->
+            <!-- Barra de Filtro de Tópicos / Tags (Dinâmica) -->
             <div id="topic-filter-bar" class="topic-filter-bar" role="tablist" aria-label="Filtrar por tópico">
                 <button class="topic-pill active" data-tag="Todos" data-i18n="topicAll" type="button">Todos</button>
-                <button class="topic-pill" data-tag="Ciência" data-i18n="topicScience" type="button">#Ciência</button>
-                <button class="topic-pill" data-tag="Filosofia" data-i18n="topicPhilosophy" type="button">#Filosofia</button>
-                <button class="topic-pill" data-tag="Tecnologia" data-i18n="topicTechnology" type="button">#Tecnologia</button>
-                <button class="topic-pill" data-tag="Neurociência" data-i18n="topicNeuroscience" type="button">#Neurociência</button>
-                <button class="topic-pill" data-tag="Física" data-i18n="topicPhysics" type="button">#Física</button>
-                <button class="topic-pill" data-tag="Psicologia" data-i18n="topicPsychology" type="button">#Psicologia</button>
-                <button class="topic-pill" data-tag="Sociedade" data-i18n="topicSociety" type="button">#Sociedade</button>
-                <button class="topic-pill" data-tag="Geral" data-i18n="topicGeneral" type="button">#Geral</button>
             </div>
             <div id="profile-constellation" class="profile-constellation hidden"></div>
             <div id="ideas-list">

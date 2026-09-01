@@ -52,7 +52,7 @@ export const translations = {
 
         // Menus e Estatísticas
         fragments: 'fragmentos',
-        favorites: 'favoritos',
+        favorites: 'Favoritos',
         overview: 'Visão geral',
         settings: 'Configurações',
         language: 'Idioma',
@@ -90,7 +90,10 @@ export const translations = {
         removeEntry: 'Remover entrada',
         deleteQuestion: 'Apagar este fragmento?',
         deleteWarning: 'Essa ação não poderá ser desfeita.',
-        empty: 'Nenhum fragmento salvo ainda. Comece a escrever!',
+        empty: 'Nenhum fragmento encontrado.',
+        emptyFavorites: 'Nenhum fragmento favoritado ainda.',
+        emptyMine: 'Você ainda não publicou nenhum fragmento.',
+        emptyProfile: 'Este pensador ainda não publicou fragmentos.',
         authorOnly: 'Apenas o autor pode alterar esta entrada.',
         emptyEntry: 'A entrada não pode ficar vazia.',
         loading: 'Carregando fragmentos...',
@@ -158,7 +161,7 @@ export const translations = {
         notifFavorite: 'guardou seu fragmento nos favoritos',
         notifComment: 'comentou no seu fragmento',
         notifReply: 'respondeu ao seu comentário',
-        markAllRead: 'Marcar todas como lidas',
+        markAllRead: 'Marcar como lidas',
         noNotifications: 'Nenhuma notificação no momento.',
 
         // Pulso da Comunidade
@@ -262,7 +265,7 @@ export const translations = {
 
         // Menus & Statistics
         fragments: 'fragments',
-        favorites: 'favorites',
+        favorites: 'Favorites',
         overview: 'Overview',
         settings: 'Settings',
         language: 'Language',
@@ -300,7 +303,10 @@ export const translations = {
         removeEntry: 'Remove entry',
         deleteQuestion: 'Delete this fragment?',
         deleteWarning: 'This action cannot be undone.',
-        empty: 'No fragments saved yet. Start writing!',
+        empty: 'No fragments found.',
+        emptyFavorites: 'No favorited fragments yet.',
+        emptyMine: 'You have not published any fragments yet.',
+        emptyProfile: 'This thinker has not published any fragments yet.',
         authorOnly: 'Only the author can change this entry.',
         emptyEntry: 'The entry cannot be empty.',
         loading: 'Loading fragments...',
@@ -325,19 +331,19 @@ export const translations = {
         titleKnowledgeExplorer: 'Knowledge Explorer',
         titleIdeaCurator: 'Idea Curator',
         titleKnowledgeArchitect: 'Architect of Knowledge',
-        titleGnotecaLight: 'Beacon of Gnoteca',
+        titleGnotecaLight: 'Light of Gnoteca',
         titleDeepThinker: 'Deep Thinker',
         titlePolymath: 'Contemporary Polymath',
         titleMasterCurator: 'Master Curator',
-        chooseTitle: 'Choose your Title',
+        chooseTitle: 'Choose Your Title',
         unlockTitlesHint: 'Unlock new titles by participating in Gnoteca.',
 
         // Profile Editing
         editProfile: 'Edit Profile',
         changeDisplayName: 'Change Display Name',
-        nameHint: 'This is the name that appears at the top of your profile (allows spaces and capital letters).',
+        nameHint: 'This is the name that appears at the top of your profile (supports spaces and uppercase).',
         changeAvatar: 'Change Profile Picture',
-        avatarHint: 'Paste a direct image URL (jpg, png, webp).',
+        avatarHint: 'Paste the direct URL to an image (jpg, png, webp).',
         namePlaceholder: 'Your Name',
         avatarPlaceholder: 'https://image-link.com/photo.jpg',
         profileSaved: 'Profile updated successfully!',
@@ -348,7 +354,7 @@ export const translations = {
         reply: 'Reply',
         replyingTo: 'Replying to',
         cancelReply: 'Cancel',
-        addCommentPlaceholder: 'What are your thoughts on this? Add a comment...',
+        addCommentPlaceholder: 'What are your thoughts? Add a comment...',
         writeReplyPlaceholder: 'Write your reply...',
         sendComment: 'Comment',
         noCommentsYet: 'No comments yet. Be the first to comment!',
@@ -364,7 +370,7 @@ export const translations = {
 
         // Notifications
         notifications: 'Notifications',
-        notifVoteUp: 'upvoted your fragment',
+        notifVoteUp: 'voted on your fragment',
         notifFavorite: 'added your fragment to favorites',
         notifComment: 'commented on your fragment',
         notifReply: 'replied to your comment',
@@ -573,7 +579,7 @@ export const translations = {
         notifFavorite: 'guardó tu fragmento en favoritos',
         notifComment: 'comentó en tu fragmento',
         notifReply: 'respondió a tu comentario',
-        markAllRead: 'Marcar todas como leídas',
+        markAllRead: 'Marcar como leídas',
         noNotifications: 'Sin notificaciones en este momento.',
 
         // Pulso de la Comunidad
@@ -778,7 +784,7 @@ export const translations = {
         notifFavorite: 'a ajouté votre fragment à ses favoris',
         notifComment: 'a commenté votre fragment',
         notifReply: 'a répondu à votre commentaire',
-        markAllRead: 'Tout marquer comme lu',
+        markAllRead: 'Marquer comme lu',
         noNotifications: 'Aucune notification pour le moment.',
 
         // Pouls de la Communauté
