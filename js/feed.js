@@ -6,6 +6,7 @@ import { showAuthGate } from './auth.js';
 import { getMaxFavorites, getNextFavoriteMilestoneInfo, renderProfileConstellation, updateProfileStats } from './favorites.js';
 
 import { openShareModal } from './share.js';
+import { getCadernoNotes, deleteCadernoNote, promoteNoteToPublic } from './caderno.js';
 
 // Formatação de Entradas do Supabase
 export function formatIdeaEntry(entry, commentsCount = 0) {
@@ -63,6 +64,38 @@ export function renderIdeaCard(idea) {
     const rawTag = idea.tag || 'Geral';
     const displayTag = getTranslatedTopic(rawTag);
 
+    // Se for nota privada do Caderno Pessoal
+    if (idea.is_private) {
+        const citationHtml = idea.citation ? `<div class="card-citation">— Fonte: ${escapeHTML(idea.citation)}</div>` : '';
+        card.classList.add('caderno-card');
+        card.innerHTML = `
+            <div class="idea-header">
+                <span class="idea-date">${idea.date} <span class="caderno-badge">Caderno Pessoal</span></span>
+                <div style="display: flex; align-items: center; gap: 0.35rem;">
+                    <button class="card-tag-pill" type="button" data-action="tag" data-tag="${escapeHTML(rawTag)}">${escapeHTML(displayTag)}</button>
+                    <div class="entry-actions">
+                        <button class="entry-action promote-action" type="button" data-action="promote-note" data-note-id="${idea.id}" title="Publicar este fragmento no Acervo Público">Promover ao Acervo</button>
+                        <button class="entry-action delete-action" type="button" data-action="delete-caderno" data-note-id="${idea.id}" aria-label="Apagar nota">Apagar</button>
+                    </div>
+                </div>
+            </div>
+            <p class="idea-content">${escapeHTML(idea.content).replace(/\n/g, '<br>')}</p>
+            ${citationHtml}
+        `;
+        return card;
+    }
+
+    // Extração de citação / nota de rodapé
+    let mainContent = idea.content || '';
+    let citationHtml = '';
+    const footnoteMatch = mainContent.match(/\n*—\s*Fonte:\s*(.+)$/i);
+    if (footnoteMatch) {
+        mainContent = mainContent.replace(/\n*—\s*Fonte:\s*(.+)$/i, '').trim();
+        citationHtml = `<div class="card-citation">— Fonte: ${escapeHTML(footnoteMatch[1].trim())}</div>`;
+    } else if (idea.citation) {
+        citationHtml = `<div class="card-citation">— Fonte: ${escapeHTML(idea.citation)}</div>`;
+    }
+
     card.innerHTML = `
         <div class="idea-header">
             <span class="idea-date">${idea.date}<span class="idea-author">${translate('by')} ${authorHtml}</span></span>
@@ -74,10 +107,22 @@ export function renderIdeaCard(idea) {
                 </div>
             </div>
         </div>
-        <p class="idea-content">${escapeHTML(idea.content).replace(/\n/g, '<br>')}</p>
+        <p class="idea-content">${escapeHTML(mainContent).replace(/\n/g, '<br>')}</p>
+        ${citationHtml}
         <div class="idea-actions">
-            <button class="vote-button${idea.userVote === 'up' ? ' selected' : ''}" type="button" data-action="upvote" data-idea-id="${idea.id}" aria-label="Dar upvote" title="Dar upvote"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" /></svg><span class="action-count">${idea.upvotes || 0}</span></button>
-            <button class="vote-button${idea.userVote === 'down' ? ' selected' : ''}" type="button" data-action="downvote" data-idea-id="${idea.id}" aria-label="Dar downvote" title="Dar downvote"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m6-6-6 6-6-6" /></svg><span class="action-count">${idea.downvotes || 0}</span></button>
+            <button class="reflex-button reflex-insight${idea.userVote === 'up' ? ' selected' : ''}" type="button" data-action="reflex-insight" data-idea-id="${idea.id}" aria-label="Insight: perspectiva nova" title="Insight: perspectiva nova">
+                <span class="reflex-symbol" aria-hidden="true">✦</span>
+                <span class="reflex-name">Insight</span>
+                <span class="action-count">${idea.upvotes || 0}</span>
+            </button>
+            <button class="reflex-button reflex-solid" type="button" data-action="reflex-solid" data-idea-id="${idea.id}" aria-label="Sólido: bem fundamentado" title="Sólido: bem fundamentado">
+                <span class="reflex-symbol" aria-hidden="true">■</span>
+                <span class="reflex-name">Sólido</span>
+            </button>
+            <button class="reflex-button reflex-provocative" type="button" data-action="reflex-provocative" data-idea-id="${idea.id}" aria-label="Provocativo: desafiador" title="Provocativo: desafiador">
+                <span class="reflex-symbol" aria-hidden="true">~</span>
+                <span class="reflex-name">Provocativo</span>
+            </button>
             <button class="comment-toggle-btn" type="button" data-action="toggle-comments" data-idea-id="${idea.id}" aria-label="${translate('comments')}" title="${translate('comments')}"><svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="action-count comment-count">${idea.commentsCount || 0}</span></button>
             <button class="favorite-button${idea.favorite ? ' selected' : ''}" type="button" data-action="favorite" data-idea-id="${idea.id}" aria-label="${idea.favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}" title="${idea.favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.6l6.2-.9L12 3Z" /></svg><span class="action-count">${idea.favoritesCount}</span></button>
             <button class="share-button" type="button" data-action="share" data-idea-id="${idea.id}" aria-label="Compartilhar fragmento" title="Compartilhar fragmento"><svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
@@ -323,6 +368,20 @@ export async function fetchEntriesPage(page = 0) {
     if (cached) return cached;
 
     try {
+        if (state.activeFeed === 'caderno') {
+            const notes = getCadernoNotes();
+            const filteredNotes = (tag && tag !== 'Todos') ? notes.filter(n => (n.tag || 'Geral') === tag) : notes;
+            return filteredNotes.map(n => ({
+                id: n.id,
+                content: n.content,
+                tag: n.tag || 'Geral',
+                citation: n.citation || '',
+                date: new Date(n.created_at).toLocaleDateString('pt-BR'),
+                authorName: state.authenticatedUser?.name || 'Você',
+                is_private: true
+            }));
+        }
+
         let query;
         if (state.activeFeed === 'favorites') {
             if (!state.authenticatedUser) return [];
@@ -492,9 +551,15 @@ export async function loadIdeas(reset = true) {
 
     if (feedKicker) feedKicker.textContent = state.activeFeed === 'profile' ? translate('profile') : translate('publicCollection');
     if (feedTitle) {
-        feedTitle.textContent = state.activeFeed === 'profile'
-            ? `${translate('fragments')} de ${profileAccount?.name || translate('profile')}`
-            : state.activeFeed === 'favorites' ? translate('favoriteCollection') : translate('latestFragments');
+        if (state.activeFeed === 'caderno') {
+            feedTitle.textContent = 'Meu Caderno Pessoal';
+        } else if (state.activeFeed === 'profile') {
+            feedTitle.textContent = `${translate('fragments')} de ${profileAccount?.name || translate('profile')}`;
+        } else if (state.activeFeed === 'favorites') {
+            feedTitle.textContent = translate('favoriteCollection');
+        } else {
+            feedTitle.textContent = translate('latestFragments');
+        }
     }
     if (backToFeed) backToFeed.classList.toggle('hidden', state.activeFeed !== 'profile');
 
@@ -521,7 +586,9 @@ export async function loadIdeas(reset = true) {
 
     if (firstPage.length === 0) {
         let emptyMsg = translate('empty');
-        if (state.activeFeed === 'favorites') {
+        if (state.activeFeed === 'caderno') {
+            emptyMsg = 'Seu caderno pessoal ainda está vazio. Anote ideias, citações de livros e insights com privacidade antes de publicar no acervo!';
+        } else if (state.activeFeed === 'favorites') {
             emptyMsg = translate('emptyFavorites');
         } else if (state.activeFeed === 'mine') {
             emptyMsg = translate('emptyMine');
@@ -1075,7 +1142,43 @@ export async function handleFeedClick(event, onNavigateProfile) {
         return;
     }
 
-    if (!state.authenticatedUser && ['upvote', 'downvote', 'favorite', 'edit', 'delete', 'save-edit'].includes(action)) {
+    if (action === 'promote-note') {
+        const noteId = button.dataset.noteId;
+        button.disabled = true;
+        button.textContent = 'Promovendo...';
+        const success = await promoteNoteToPublic(noteId);
+        if (success) {
+            await loadIdeas();
+        } else {
+            button.disabled = false;
+            button.textContent = 'Promover ao Acervo';
+        }
+        return;
+    }
+
+    if (action === 'delete-caderno') {
+        const noteId = button.dataset.noteId;
+        deleteCadernoNote(noteId);
+        showActionFeedback('Nota removida do seu Caderno.');
+        await loadIdeas();
+        return;
+    }
+
+    if (action === 'reflex-solid') {
+        button.classList.toggle('selected');
+        const isSel = button.classList.contains('selected');
+        showActionFeedback(isSel ? 'Marcado como Sólido: bem fundamentado.' : 'Reação removida.');
+        return;
+    }
+
+    if (action === 'reflex-provocative') {
+        button.classList.toggle('selected');
+        const isSel = button.classList.contains('selected');
+        showActionFeedback(isSel ? 'Marcado como Provocativo: desafia o pensamento.' : 'Reação removida.');
+        return;
+    }
+
+    if (!state.authenticatedUser && ['upvote', 'downvote', 'reflex-insight', 'favorite', 'edit', 'delete', 'save-edit'].includes(action)) {
         showAuthGate();
         return;
     }
@@ -1152,11 +1255,11 @@ export async function handleFeedClick(event, onNavigateProfile) {
         return;
     }
 
-    // Votação Otimista em Tempo Real (Sem Recarregar a Tela)
-    if (action === 'upvote' || action === 'downvote') {
-        const targetType = action === 'upvote' ? 'up' : 'down';
+    // Votação Otimista em Tempo Real (Mapeada para o Impacto Reflexivo Insight)
+    if (action === 'upvote' || action === 'downvote' || action === 'reflex-insight') {
+        const targetType = (action === 'upvote' || action === 'reflex-insight') ? 'up' : 'down';
         const card = button.closest('.idea-card');
-        const upBtn = card?.querySelector('[data-action="upvote"]');
+        const upBtn = card?.querySelector('[data-action="upvote"], [data-action="reflex-insight"]');
         const downBtn = card?.querySelector('[data-action="downvote"]');
         const upCountEl = upBtn?.querySelector('.action-count');
         const downCountEl = downBtn?.querySelector('.action-count');

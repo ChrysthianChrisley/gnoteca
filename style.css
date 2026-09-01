@@ -3270,3 +3270,597 @@ body[data-font-size="large"] .idea-content {
     font-family: inherit;
     color: inherit;
 }
+
+/* ==========================================================================
+   A Nova Alma do Gnoteca: Modos, Caderno, Métricas Reflexivas e A Balança
+   ========================================================================== */
+
+/* 1. Barra de Modos Principais */
+.gnoteca-mode-tabs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1.25rem 0 1.5rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.gnoteca-mode-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.mode-tab-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--muted-color);
+    font-family: var(--font-primary, sans-serif);
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-full, 9999px);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.mode-tab-btn:hover {
+    color: var(--text-color);
+    background: var(--hover-bg, rgba(0,0,0,0.03));
+}
+
+.mode-tab-btn.active {
+    color: var(--text-color);
+    background: var(--card-bg, #ffffff);
+    border-color: var(--border-color);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.05));
+}
+
+body.dark-mode .mode-tab-btn.active {
+    background: var(--soft-accent-color);
+    border-color: rgba(255,255,255,0.12);
+}
+
+.mode-tab-btn.zen-btn {
+    margin-left: auto;
+    border: 1px dashed var(--accent-color);
+    color: var(--accent-color);
+    font-style: italic;
+}
+.mode-tab-btn.zen-btn:hover {
+    background: var(--soft-accent-color);
+}
+
+/* 2. Composer: Destino e Nota de Rodapé */
+.composer-dest-toggle {
+    display: flex;
+    gap: 1.25rem;
+    margin-bottom: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.dest-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--muted-color);
+    cursor: pointer;
+    user-select: none;
+}
+
+.dest-option input[type="radio"] {
+    accent-color: var(--accent-color);
+    cursor: pointer;
+}
+
+.dest-option input[type="radio"]:checked + .dest-label {
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.write-citation-row {
+    margin: 0.4rem 0 0.8rem 0;
+}
+
+.citation-input {
+    width: 100%;
+    padding: 0.45rem 0.85rem;
+    font-family: var(--font-secondary, serif);
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--text-color);
+    background: var(--input-bg, rgba(0,0,0,0.02));
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm, 6px);
+    transition: border-color 0.2s ease;
+}
+
+.citation-input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+/* 3. Card: Citação e Caderno Pessoal */
+.card-citation {
+    margin-top: 0.6rem;
+    padding-top: 0.45rem;
+    border-top: 1px dashed var(--border-color);
+    font-family: var(--font-secondary, serif);
+    font-style: italic;
+    font-size: 0.83rem;
+    color: var(--muted-color);
+    line-height: 1.4;
+}
+
+.caderno-card {
+    border-left: 3px solid var(--accent-color);
+    background: var(--card-bg, #ffffff);
+}
+
+.caderno-badge {
+    display: inline-block;
+    margin-left: 0.5rem;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: var(--soft-accent-color);
+    color: var(--accent-color);
+}
+
+.promote-action {
+    color: var(--accent-color) !important;
+    font-weight: 600;
+    border-color: var(--accent-color) !important;
+}
+.promote-action:hover {
+    background: var(--soft-accent-color) !important;
+}
+
+/* 4. Métricas de Impacto Reflexivo (Adeus Up/Downvote) */
+.reflex-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.65rem;
+    border: 1px solid var(--border-color);
+    background: transparent;
+    color: var(--muted-color);
+    border-radius: var(--radius-full, 9999px);
+    font-family: var(--font-primary, sans-serif);
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.reflex-button:hover {
+    color: var(--text-color);
+    border-color: var(--accent-color);
+    background: var(--soft-accent-color);
+}
+
+.reflex-symbol {
+    font-size: 0.85rem;
+    line-height: 1;
+}
+
+.reflex-button.selected {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+    background: var(--soft-accent-color);
+    font-weight: 600;
+}
+
+.reflex-insight.selected {
+    border-color: #d97706;
+    color: #d97706;
+    background: rgba(217, 119, 6, 0.08);
+}
+body.dark-mode .reflex-insight.selected {
+    border-color: #fbbf24;
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.12);
+}
+
+.reflex-solid.selected {
+    border-color: #2563eb;
+    color: #2563eb;
+    background: rgba(37, 99, 235, 0.08);
+}
+body.dark-mode .reflex-solid.selected {
+    border-color: #60a5fa;
+    color: #60a5fa;
+    background: rgba(96, 165, 250, 0.12);
+}
+
+.reflex-provocative.selected {
+    border-color: #7c3aed;
+    color: #7c3aed;
+    background: rgba(124, 58, 237, 0.08);
+}
+body.dark-mode .reflex-provocative.selected {
+    border-color: #a78bfa;
+    color: #a78bfa;
+    background: rgba(167, 139, 250, 0.12);
+}
+
+/* 5. Modo de Leitura Contemplativa (Zen Reader / Anti-Scroll) */
+.zen-reader-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(15, 15, 17, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+body:not(.dark-mode) .zen-reader-overlay {
+    background: rgba(248, 247, 244, 0.92);
+}
+
+.zen-reader-container {
+    max-width: 680px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.zen-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--muted-color);
+}
+
+.zen-badge {
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--accent-color);
+}
+
+.zen-close-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--muted-color);
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius-sm, 6px);
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+}
+.zen-close-btn:hover {
+    color: var(--text-color);
+    border-color: var(--text-color);
+}
+
+.zen-card {
+    background: var(--card-bg, #ffffff);
+    padding: 3rem 2.5rem;
+    border-radius: var(--radius-lg, 16px);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 20px 40px -15px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+body.dark-mode .zen-card {
+    background: #18181b;
+    border-color: rgba(255,255,255,0.08);
+}
+
+.zen-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--muted-color);
+}
+
+.zen-tag {
+    font-weight: 600;
+    color: var(--accent-color);
+}
+
+.zen-content {
+    font-family: var(--font-secondary, 'Lora', Georgia, serif);
+    font-size: 1.45rem;
+    line-height: 1.75;
+    color: var(--text-color);
+    letter-spacing: -0.2px;
+}
+
+.zen-citation {
+    font-family: var(--font-secondary, serif);
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--muted-color);
+    border-top: 1px dashed var(--border-color);
+    padding-top: 0.75rem;
+}
+
+.zen-breath-guide {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+    font-size: 0.8rem;
+    color: var(--muted-color);
+    font-style: italic;
+}
+
+.zen-pulse-ring {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    animation: zenBreath 4s ease-in-out infinite;
+}
+
+@keyframes zenBreath {
+    0%, 100% { transform: scale(1); opacity: 0.4; }
+    50% { transform: scale(1.8); opacity: 1; }
+}
+
+.zen-nav-bar {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.zen-nav-btn {
+    flex: 1;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius-md, 8px);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: var(--card-bg, #ffffff);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.zen-nav-btn:hover {
+    filter: brightness(0.96);
+    border-color: var(--accent-color);
+}
+
+.zen-nav-btn.primary {
+    background: var(--accent-color);
+    color: #ffffff;
+    border-color: var(--accent-color);
+}
+
+/* 6. A Balança: Confronto Dialético */
+.balanca-section {
+    max-width: 840px;
+    margin: 0 auto 3rem auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.balanca-header {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.balanca-kicker {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent-color);
+}
+
+.balanca-title {
+    font-family: var(--font-header, 'Cinzel', serif);
+    font-size: 1.8rem;
+    margin: 0.4rem 0 0.6rem 0;
+    color: var(--text-color);
+}
+
+.balanca-description {
+    font-size: 0.95rem;
+    color: var(--muted-color);
+    line-height: 1.5;
+}
+
+.balanca-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1.25rem;
+    align-items: center;
+}
+
+.balanca-scale-icon {
+    font-size: 1.8rem;
+    color: var(--muted-color);
+    opacity: 0.6;
+    text-align: center;
+}
+
+.balanca-card {
+    background: var(--card-bg, #ffffff);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md, 10px);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    min-height: 180px;
+}
+
+body.dark-mode .balanca-card {
+    background: #18181b;
+}
+
+.balanca-card.balanca-thesis {
+    border-top: 3px solid #3b82f6;
+}
+
+.balanca-card.balanca-antithesis {
+    border-top: 3px solid #ef4444;
+}
+
+.balanca-badge {
+    align-self: flex-start;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+
+.balanca-badge.thesis {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.balanca-badge.antithesis {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.balanca-content {
+    font-family: var(--font-secondary, serif);
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--text-color);
+    flex: 1;
+}
+
+.balanca-citation {
+    font-size: 0.8rem;
+    font-style: italic;
+    color: var(--muted-color);
+}
+
+.balanca-synthesis-box {
+    background: var(--card-bg, #ffffff);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg, 12px);
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+body.dark-mode .balanca-synthesis-box {
+    background: #1c1917;
+    border-color: rgba(217, 119, 6, 0.25);
+}
+
+.synthesis-title {
+    font-family: var(--font-header, serif);
+    font-size: 1.25rem;
+    color: var(--accent-color);
+}
+
+.synthesis-prompt {
+    font-size: 0.9rem;
+    color: var(--muted-color);
+}
+
+.synthesis-textarea {
+    width: 100%;
+    min-height: 90px;
+    padding: 0.85rem;
+    font-family: var(--font-primary, sans-serif);
+    font-size: 0.95rem;
+    color: var(--text-color);
+    background: var(--input-bg, rgba(0,0,0,0.02));
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm, 6px);
+    resize: vertical;
+}
+
+.synthesis-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--muted-color);
+}
+
+.balanca-community-syntheses {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.syntheses-feed-title {
+    font-family: var(--font-header, serif);
+    font-size: 1.1rem;
+    color: var(--text-color);
+}
+
+.synthesis-card {
+    background: var(--card-bg, #ffffff);
+    border: 1px solid var(--border-color);
+    border-left: 3px solid var(--accent-color);
+    padding: 1.15rem;
+    border-radius: var(--radius-sm, 6px);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+body.dark-mode .synthesis-card {
+    background: #18181b;
+}
+
+.synthesis-card-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+}
+
+.synthesis-badge {
+    font-weight: 600;
+    color: var(--accent-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.synthesis-author {
+    color: var(--muted-color);
+}
+
+.synthesis-card-text {
+    font-family: var(--font-secondary, serif);
+    font-size: 0.98rem;
+    line-height: 1.55;
+    color: var(--text-color);
+}
+
+@media (max-width: 680px) {
+    .balanca-grid {
+        grid-template-columns: 1fr;
+    }
+    .balanca-scale-icon {
+        transform: rotate(90deg);
+        margin: -0.5rem 0;
+    }
+    .zen-card {
+        padding: 1.75rem 1.25rem;
+    }
+    .zen-content {
+        font-size: 1.2rem;
+    }
+}

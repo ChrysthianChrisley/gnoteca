@@ -224,9 +224,32 @@
             <p class="visitor-hero-subtitle" data-i18n="heroSubtitle">A micro-rede feita para quem valoriza a profundidade em um mundo distraído.</p>
         </div>
 
+        <!-- Barra de Modos Principais da Gnoteca -->
+        <nav class="gnoteca-mode-tabs" role="tablist" aria-label="Navegação Principal">
+            <button id="tab-mode-acervo" class="mode-tab-btn active" type="button" data-mode="acervo" data-i18n="acervoPublico">Acervo Público</button>
+            <button id="tab-mode-caderno" class="mode-tab-btn" type="button" data-mode="caderno" data-i18n="cadernoPessoal">Meu Caderno</button>
+            <button id="tab-mode-balanca" class="mode-tab-btn" type="button" data-mode="balanca" data-i18n="balanca">A Balança</button>
+            <button id="btn-open-zen-reader" class="mode-tab-btn zen-btn" type="button" title="Leitura com Respiração" data-i18n="contemplativeMode">Modo Contemplativo</button>
+        </nav>
+
         <!-- Tela de Registro -->
         <section id="write-section" class="hidden">
-            <textarea id="idea-input" maxlength="280" placeholder="Qual conceito, hipótese ou insight deseja registrar?" data-i18n-placeholder="ideaPlaceholder"></textarea>
+            <div class="composer-dest-toggle">
+                <label class="dest-option">
+                    <input type="radio" name="write-destination" id="dest-caderno" value="caderno" checked>
+                    <span class="dest-label">Caderno Pessoal (Privado)</span>
+                </label>
+                <label class="dest-option">
+                    <input type="radio" name="write-destination" id="dest-acervo" value="acervo">
+                    <span class="dest-label">Publicar no Acervo</span>
+                </label>
+            </div>
+            <textarea id="idea-input" maxlength="1000" placeholder="Qual conceito, hipótese ou insight deseja registrar?" data-i18n-placeholder="ideaPlaceholder"></textarea>
+            
+            <div class="write-citation-row">
+                <input id="write-citation-input" class="citation-input" type="text" maxlength="120" placeholder="Origem / Citação / Livro (opcional. Ex: Sêneca, Da Brevidade da Vida)">
+            </div>
+
             <div class="write-meta-bar">
                 <div class="tag-selector-wrapper" id="write-tag-autocomplete">
                     <label for="write-tag-input" class="tag-select-label" data-i18n="topicLabel">Tópico:</label>
@@ -235,10 +258,45 @@
                         <div id="tag-autocomplete-dropdown" class="tag-autocomplete-dropdown hidden" role="listbox"></div>
                     </div>
                 </div>
-                <div id="char-counter">0 / 280</div>
+                <div id="char-counter">0 / 1000</div>
             </div>
-            <button id="btn-save" data-i18n="saveToGnoteca">Salvar na Gnoteca</button>
+            <button id="btn-save" data-i18n="saveToGnoteca">Salvar no Caderno</button>
             <p id="feedback-msg" class="hidden" data-i18n="ideaSaved">Ideia salva com sucesso!</p>
+        </section>
+
+        <!-- Painel Dialético: A Balança (Confronto de Perspectivas) -->
+        <section id="balanca-section" class="balanca-section hidden" aria-label="A Balança">
+            <div class="balanca-header">
+                <span class="balanca-kicker">Dialética Coletiva</span>
+                <h2 class="balanca-title">A Balança: Confronto de Perspectivas</h2>
+                <p class="balanca-description">Duas visões opostas. O propósito não é escolher um lado, mas forjar uma síntese que concilie as duas verdades.</p>
+            </div>
+            <div class="balanca-grid">
+                <div class="balanca-card balanca-thesis" id="balanca-thesis-card">
+                    <span class="balanca-badge thesis">Tese</span>
+                    <p class="balanca-content" id="balanca-thesis-content">"A solidão e o silêncio são os únicos santuários onde o pensamento pode amadurecer livre do ruído e da validação alheia."</p>
+                    <span class="balanca-citation">— Citação: Schopenhauer, Aforismos</span>
+                </div>
+                <div class="balanca-scale-icon" aria-hidden="true">⇄</div>
+                <div class="balanca-card balanca-antithesis" id="balanca-antithesis-card">
+                    <span class="balanca-badge antithesis">Antítese</span>
+                    <p class="balanca-content" id="balanca-antithesis-content">"O isolamento excessivo deforma o juízo; a sabedoria e a temperança só se desenvolvem no atrito diário com o outro."</p>
+                    <span class="balanca-citation">— Citação: Sêneca, Cartas a Lucílio</span>
+                </div>
+            </div>
+            <div class="balanca-synthesis-box">
+                <h3 class="synthesis-title">Construir a Síntese</h3>
+                <p class="synthesis-prompt">Qual princípio superior é capaz de harmonizar esses dois polos aparentemente contrários?</p>
+                <textarea id="balanca-synthesis-input" class="synthesis-textarea" maxlength="280" placeholder="Redija sua síntese dialética..."></textarea>
+                <div class="synthesis-actions">
+                    <span id="balanca-char-counter">0 / 280</span>
+                    <button id="btn-submit-synthesis" class="gate-primary-button" type="button">Propor Síntese ao Acervo</button>
+                </div>
+            </div>
+            <div class="balanca-community-syntheses" id="balanca-syntheses-list">
+                <h4 class="syntheses-feed-title">Sínteses Forjadas</h4>
+                <div id="syntheses-items" class="syntheses-items"></div>
+            </div>
         </section>
 
         <!-- Barra de Pulso da Comunidade (Visível Apenas para Usuários Autenticados) -->
@@ -523,6 +581,33 @@
             </div>
         </div>
     </aside>
+
+    <!-- Modo de Leitura com Respiração (Anti-Scroll / Zen Reader) -->
+    <div id="zen-reader-overlay" class="zen-reader-overlay hidden" role="dialog" aria-modal="true" aria-label="Leitura Contemplativa">
+        <div class="zen-reader-container">
+            <div class="zen-top-bar">
+                <span class="zen-badge">Leitura Contemplativa</span>
+                <span id="zen-progress" class="zen-progress">1 / 1</span>
+                <button id="btn-close-zen" class="zen-close-btn" type="button" aria-label="Fechar leitor">Fechar [ESC]</button>
+            </div>
+            <article class="zen-card" id="zen-current-card">
+                <div class="zen-meta">
+                    <span id="zen-tag" class="zen-tag">Filosofia</span>
+                    <span id="zen-author" class="zen-author">por Pensador</span>
+                </div>
+                <p id="zen-content" class="zen-content">...</p>
+                <p id="zen-citation" class="zen-citation hidden"></p>
+                <div class="zen-breath-guide">
+                    <div class="zen-pulse-ring" aria-hidden="true"></div>
+                    <span class="zen-breath-text">Respire e contemple o pensamento</span>
+                </div>
+            </article>
+            <div class="zen-nav-bar">
+                <button id="btn-zen-prev" class="zen-nav-btn" type="button">← Anterior</button>
+                <button id="btn-zen-next" class="zen-nav-btn primary" type="button">Próximo Pensamento →</button>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module" src="js/main.js"></script>
