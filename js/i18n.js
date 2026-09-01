@@ -13,7 +13,7 @@ export const translations = {
         signOut: 'Sair da conta',
         or: 'ou',
         signInToContinue: 'Entre para continuar',
-        authDescription: 'Crie sua conta ou entre para publicar, validar hipóteses e explorar todo o acervo.',
+        authDescription: 'Crie sua conta ou entre para publicar, validar hipóteses e explorar todo o mural.',
         signInTab: 'Entrar',
         signUpTab: 'Criar conta',
         emailPlaceholder: 'Seu e-mail',
@@ -60,7 +60,7 @@ export const translations = {
         nightMode: 'Modo noturno',
         lightMode: 'Modo diurno',
         cadernoPessoal: 'Meu Caderno',
-        acervoPublico: 'Acervo Público',
+        acervoPublico: 'Mural',
         balanca: 'A Balança',
         contemplativeMode: 'Modo Contemplativo',
         insight: 'Insight',
@@ -68,7 +68,7 @@ export const translations = {
         provocative: 'Provocativo',
         profile: 'Perfil',
         favoriteCollection: 'Meus favoritos',
-        publicCollection: 'Acervo público',
+        publicCollection: 'Mural',
         latestFragments: 'Últimos fragmentos',
         sortBy: 'Ordenar por',
         newest: 'Mais novas',
@@ -82,11 +82,11 @@ export const translations = {
         savedFundamental: 'guardou um pilar fundamental',
         publishedIdea: 'publicou uma nova reflexão',
         commentedOnIdea: 'comentou em um fragmento',
-        backToFeed: 'Voltar ao acervo',
+        backToFeed: 'Voltar ao mural',
 
         // Escrita e Ações
         newIdea: 'Nova Ideia',
-        myCollection: 'Meu Acervo',
+        myCollection: 'Meu Mural',
         save: 'Salvar',
         saveToGnoteca: 'Salvar na Gnoteca',
         ideaPlaceholder: 'Qual conceito, hipótese ou insight deseja registrar?',
@@ -192,7 +192,7 @@ export const translations = {
 
         // Teaser de Visitantes
         exclusiveAccess: 'Acesso Exclusivo',
-        teaserMessage: 'Desbloqueie o acervo completo para ler este e mais centenas de fragmentos',
+        teaserMessage: 'Desbloqueie o mural completo para ler este e mais centenas de fragmentos',
         createAccountOrSignIn: 'Criar Conta Gratuita / Entrar',
 
         // Constelação
@@ -212,7 +212,7 @@ export const translations = {
         // Configurações
         settingsCommunityTitle: 'Comunidade & Descoberta',
         settingPulseName: 'Pulso da Comunidade',
-        settingPulseDesc: 'Exibir logs de atividade recente da comunidade acima do acervo.',
+        settingPulseDesc: 'Exibir logs de atividade recente da comunidade acima do mural.',
         settingsReadingTitle: 'Leitura & Visualização',
         settingDensityName: 'Densidade do Feed',
         settingDensityDesc: 'Ajuste o espaçamento entre fragmentos.',
@@ -289,7 +289,7 @@ export const translations = {
         nightMode: 'Night mode',
         lightMode: 'Light mode',
         cadernoPessoal: 'My Notebook',
-        acervoPublico: 'Public Archive',
+        acervoPublico: 'Wall',
         balanca: 'The Scale',
         contemplativeMode: 'Contemplative Mode',
         insight: 'Insight',
@@ -471,7 +471,7 @@ export const translations = {
         signOut: 'Cerrar sesión',
         or: 'o',
         signInToContinue: 'Inicia sesión para continuar',
-        authDescription: 'Crea tu cuenta o inicia sesión para publicar, validar hipótesis y explorar todo el acervo.',
+        authDescription: 'Crea tu cuenta o inicia sesión para publicar, validar hipótesis y explorar todo el mural.',
         signInTab: 'Entrar',
         signUpTab: 'Crear cuenta',
         emailPlaceholder: 'Tu correo',
@@ -516,7 +516,7 @@ export const translations = {
         nightMode: 'Modo nocturno',
         lightMode: 'Modo diurno',
         cadernoPessoal: 'Mi Cuaderno',
-        acervoPublico: 'Acervo Público',
+        acervoPublico: 'Mural',
         balanca: 'La Balanza',
         contemplativeMode: 'Modo Contemplativo',
         insight: 'Perspicacia',
@@ -642,7 +642,7 @@ export const translations = {
 
         // Teaser de Visitantes
         exclusiveAccess: 'Acceso Exclusivo',
-        teaserMessage: 'Desbloquea el acervo completo para leer este y cientos de fragmentos más',
+        teaserMessage: 'Desbloquea el mural completo para leer este y cientos de fragmentos más',
         createAccountOrSignIn: 'Crear Cuenta Gratuita / Entrar',
 
         // Constelación
