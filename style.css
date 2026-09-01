@@ -2782,3 +2782,290 @@ body[data-font-size="large"] .idea-content {
     font-size: 1.15rem;
     line-height: 1.65;
 }
+
+/* ==========================================================================
+   Abas do Modal de Autenticação e Verificação Anti-Bot
+   ========================================================================== */
+.auth-gate-tabs {
+    display: flex;
+    gap: 0.4rem;
+    margin: 1.25rem 0 1rem 0;
+    background: var(--surface-glass);
+    padding: 4px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+.auth-tab-btn {
+    flex: 1;
+    padding: 0.55rem 0.75rem;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--muted-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.auth-tab-btn:hover {
+    color: var(--text-color);
+}
+
+.auth-tab-btn.active {
+    background: var(--surface-color);
+    color: var(--text-color);
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.auth-form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.gate-extra-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    animation: fadeIn 0.25s ease;
+}
+
+.gate-challenge-box {
+    background: var(--surface-glass);
+    border: 1px dashed var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.challenge-label {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--muted-color);
+    margin-bottom: 0.4rem;
+}
+
+.challenge-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.challenge-question {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--accent-color);
+    background: var(--soft-accent-color);
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+}
+
+.challenge-input {
+    max-width: 80px;
+    text-align: center;
+    font-weight: 600;
+    padding: 0.35rem 0.5rem;
+}
+
+.danger-hover:hover {
+    color: #ef4444 !important;
+}
+
+/* ==========================================================================
+   Recuperação de Senha & Checklist de Requisitos de Segurança
+   ========================================================================== */
+.gate-password-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.gate-forgot-wrapper {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.gate-forgot-btn {
+    font-size: 0.76rem;
+    color: var(--muted-color);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.15s ease;
+}
+
+.gate-forgot-btn:hover {
+    color: var(--accent-color);
+    text-decoration: underline;
+}
+
+.password-policy-checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    background: var(--surface-glass);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 0.65rem 0.85rem;
+    font-size: 0.78rem;
+    margin-top: 0.2rem;
+}
+
+.policy-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--muted-color);
+    transition: all 0.2s ease;
+}
+
+.policy-item .policy-icon {
+    font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.policy-item.valid {
+    color: #10b981;
+    font-weight: 500;
+}
+
+.policy-item.valid .policy-icon {
+    color: #10b981;
+}
+
+.policy-item.invalid {
+    color: var(--muted-color);
+}
+
+.settings-password-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+.settings-section-desc {
+    font-size: 0.8rem;
+    color: var(--muted-color);
+    margin-top: 0.25rem;
+}
+
+/* ==========================================================================
+   Banner de Cookies e Privacidade (LGPD / GDPR)
+   ========================================================================== */
+.cookie-banner {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 2rem);
+    max-width: 620px;
+    z-index: 10000;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.22);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    padding: 1rem 1.25rem;
+    animation: fadeIn 0.35s ease;
+}
+
+.cookie-banner-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+}
+
+.cookie-banner-text {
+    font-size: 0.84rem;
+    line-height: 1.45;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.cookie-accept-btn {
+    background: var(--accent-color);
+    color: #ffffff;
+    border: none;
+    padding: 0.55rem 1.15rem;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.cookie-accept-btn:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+    .cookie-banner {
+        bottom: 1rem;
+    }
+    .cookie-banner-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .cookie-accept-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* ==========================================================================
+   Privacidade / Anonimização para Visitantes Não Autenticados
+   ========================================================================== */
+.blurred-pulse-actor {
+    filter: blur(4px);
+    user-select: none;
+    pointer-events: none;
+    letter-spacing: 2px;
+    opacity: 0.75;
+    display: inline-block;
+}
+
+.blurred-author-preview {
+    filter: blur(4px);
+    user-select: none;
+    pointer-events: none;
+    letter-spacing: 2px;
+    opacity: 0.75;
+    display: inline-block;
+}
+
+.card-author-avatar-anon {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--soft-accent-color);
+    border: 1px dashed var(--accent-color);
+    filter: blur(1.5px);
+    vertical-align: middle;
+    margin-right: 0.35rem;
+    opacity: 0.7;
+}
+
+.unauth-author-link {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    background: transparent;
+    border: none;
+    padding: 0;
+    font-size: inherit;
+    font-family: inherit;
+    color: inherit;
+}

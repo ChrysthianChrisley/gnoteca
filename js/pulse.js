@@ -1,6 +1,8 @@
 import { supabaseClient } from './config.js';
+import { state } from './state.js';
 import { translate } from './i18n.js';
 import { escapeHTML } from './utils.js';
+import { showAuthGate } from './auth.js';
 
 let pulseEvents = [];
 let currentEventIndex = 0;
@@ -156,7 +158,11 @@ export async function fetchCommunityPulse() {
 function formatPulseText(event) {
     if (!event) return translate('communityActive');
 
-    const actor = `<strong>@${escapeHTML(event.actor)}</strong>`;
+    const isAuth = !!state.authenticatedUser;
+    const actor = isAuth
+        ? `<strong>@${escapeHTML(event.actor)}</strong>`
+        : `<strong class="blurred-pulse-actor">@••••••••</strong>`;
+
     if (event.type === 'join') {
         return `${actor} ${translate('joinedCommunity')}`;
     }
@@ -223,6 +229,11 @@ function renderCurrentPulse() {
 let pulseCallbacks = {};
 
 async function handlePulseClick() {
+    if (!state.authenticatedUser) {
+        showAuthGate('signin');
+        return;
+    }
+
     if (pulseEvents.length === 0) return;
     const event = pulseEvents[currentEventIndex];
     if (!event) return;

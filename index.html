@@ -103,16 +103,101 @@
             <button id="close-auth-gate" class="auth-gate-close" type="button" aria-label="Fechar">x</button>
             <p class="section-kicker">Gnoteca</p>
             <h2 id="auth-gate-title" data-i18n="signInToContinue">Entre para continuar</h2>
-            <p data-i18n="authDescription">Crie sua conta ou entre para publicar, votar e explorar todo o acervo.</p>
-            <input id="gate-email" class="auth-input" type="email" placeholder="Seu e-mail" data-i18n-placeholder="emailPlaceholder" autocomplete="email">
-            <input id="gate-password" class="auth-input" type="password" placeholder="Sua senha" data-i18n-placeholder="passwordPlaceholder" autocomplete="current-password">
-            <div class="gate-email-actions">
-                <button id="gate-email-sign-in" class="gate-primary-button" type="button" data-i18n="signIn">Entrar</button>
-                <button id="gate-email-sign-up" class="gate-secondary-button" type="button" data-i18n="createAccount">Criar conta</button>
+            <p id="auth-gate-desc" data-i18n="authDescription">Crie sua conta ou entre para publicar, validar hipóteses e explorar todo o acervo.</p>
+            
+            <div class="auth-gate-tabs" role="tablist">
+                <button id="gate-tab-signin" class="auth-tab-btn active" type="button" role="tab" aria-selected="true" data-i18n="signInTab">Entrar</button>
+                <button id="gate-tab-signup" class="auth-tab-btn" type="button" role="tab" aria-selected="false" data-i18n="signUpTab">Criar conta</button>
+                <button id="gate-tab-forgot" class="auth-tab-btn hidden" type="button" role="tab" aria-selected="false" data-i18n="resetPassword">Recuperar</button>
             </div>
-            <div class="auth-divider"><span data-i18n="or">ou</span></div>
-            <button id="gate-google-sign-in" class="google-button" type="button"><span class="google-mark" aria-hidden="true">G</span> <span data-i18n="continueGoogle">Continuar com Google</span></button>
+
+            <!-- Honeypot invisível para enganar e bloquear bots automatizados -->
+            <input type="text" id="gate-bot-trap" name="website_hp_bot_trap" style="display:none !important; position:absolute; left:-9999px;" tabindex="-1" autocomplete="off">
+
+            <div class="auth-form-fields">
+                <input id="gate-email" class="auth-input" type="email" placeholder="Seu e-mail" data-i18n-placeholder="emailPlaceholder" autocomplete="email" required>
+                
+                <div id="gate-password-group" class="gate-password-group">
+                    <input id="gate-password" class="auth-input" type="password" placeholder="Sua senha" data-i18n-placeholder="passwordPlaceholder" autocomplete="current-password" required>
+                    <div id="gate-forgot-link-wrapper" class="gate-forgot-wrapper">
+                        <button id="gate-forgot-btn" class="btn-text-action gate-forgot-btn" type="button" data-i18n="forgotPassword">Esqueceu a senha?</button>
+                    </div>
+                </div>
+                
+                <div id="gate-confirm-password-group" class="gate-extra-group hidden">
+                    <input id="gate-password-confirm" class="auth-input" type="password" placeholder="Confirme sua senha" data-i18n-placeholder="confirmPasswordPlaceholder" autocomplete="new-password">
+                </div>
+
+                <!-- Checklist Interativo de Requisitos da Senha do Supabase -->
+                <div id="gate-policy-checklist" class="password-policy-checklist hidden" aria-live="polite">
+                    <div class="policy-item" id="policy-len">
+                        <span class="policy-icon">•</span>
+                        <span data-i18n="policyMinLength">Mínimo de 8 caracteres</span>
+                    </div>
+                    <div class="policy-item" id="policy-cases">
+                        <span class="policy-icon">•</span>
+                        <span data-i18n="policyUpperLower">Letras maiúsculas e minúsculas</span>
+                    </div>
+                    <div class="policy-item" id="policy-num-sym">
+                        <span class="policy-icon">•</span>
+                        <span data-i18n="policyNumberSymbol">Ao menos um número e um símbolo</span>
+                    </div>
+                </div>
+
+                <div id="gate-challenge-group" class="gate-extra-group gate-challenge-box hidden">
+                    <span id="gate-challenge-label" class="challenge-label" data-i18n="humanVerification">Verificação de segurança</span>
+                    <div class="challenge-row">
+                        <span id="gate-math-question" class="challenge-question">3 + 4 = ?</span>
+                        <input id="gate-challenge-answer" class="auth-input challenge-input" type="number" placeholder="=" min="0" max="99">
+                    </div>
+                </div>
+            </div>
+
+            <div class="gate-email-actions">
+                <button id="gate-submit-btn" class="gate-primary-button" type="button" data-i18n="signIn">Entrar</button>
+            </div>
+
+            <div id="gate-google-section">
+                <div class="auth-divider"><span data-i18n="or">ou</span></div>
+                <button id="gate-google-sign-in" class="google-button" type="button"><span class="google-mark" aria-hidden="true">G</span> <span data-i18n="continueGoogle">Continuar com Google</span></button>
+            </div>
+            
             <p id="gate-auth-feedback" class="gate-auth-feedback" role="status"></p>
+        </div>
+    </div>
+
+    <!-- Modal de Redefinição de Senha (Após clicar no link do e-mail) -->
+    <div id="reset-password-dialog" class="auth-gate hidden" role="dialog" aria-modal="true" aria-labelledby="reset-password-dialog-title">
+        <div class="auth-gate-card">
+            <button id="close-reset-password-dialog" class="auth-gate-close" type="button" aria-label="Fechar">x</button>
+            <p class="section-kicker">Gnoteca</p>
+            <h2 id="reset-password-dialog-title" data-i18n="resetPassword">Redefinir Senha</h2>
+            <p data-i18n="resetPasswordDesc">Digite sua nova senha abaixo para atualizar seu acesso.</p>
+            
+            <div class="auth-form-fields">
+                <input id="reset-new-password" class="auth-input" type="password" placeholder="Nova senha" data-i18n-placeholder="newPasswordPlaceholder" autocomplete="new-password" required>
+                <input id="reset-confirm-password" class="auth-input" type="password" placeholder="Confirme sua senha" data-i18n-placeholder="confirmPasswordPlaceholder" autocomplete="new-password" required>
+                
+                <div id="reset-policy-checklist" class="password-policy-checklist" aria-live="polite">
+                    <div class="policy-item" id="reset-policy-len">
+                        <span class="policy-icon">•</span>
+                        <span data-i18n="policyMinLength">Mínimo de 8 caracteres</span>
+                    </div>
+                    <div class="policy-item" id="reset-policy-cases">
+                        <span class="policy-icon">•</span>
+                        <span data-i18n="policyUpperLower">Letras maiúsculas e minúsculas</span>
+                    </div>
+                    <div class="policy-item" id="reset-policy-num-sym">
+                        <span class="policy-icon">•</span>
+                        <span data-i18n="policyNumberSymbol">Ao menos um número e um símbolo</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="gate-email-actions">
+                <button id="reset-submit-btn" class="gate-primary-button" type="button" data-i18n="updatePassword">Atualizar Senha</button>
+            </div>
+            <p id="reset-auth-feedback" class="gate-auth-feedback" role="status"></p>
         </div>
     </div>
 
@@ -309,6 +394,7 @@
                 <h2 id="notifications-dialog-title" class="dialog-eyebrow" data-i18n="notifications">Notificações</h2>
                 <div class="notif-header-actions">
                     <button id="btn-mark-all-read" class="btn-text-action" type="button" data-i18n="markAllRead">Marcar todas como lidas</button>
+                    <button id="btn-clear-notifications" class="btn-text-action danger-hover" type="button" data-i18n="clearNotifications">Limpar</button>
                     <button id="close-notifications-dialog" class="auth-gate-close" type="button" aria-label="Fechar">x</button>
                 </div>
             </div>
@@ -392,6 +478,36 @@
                         </label>
                     </div>
                 </div>
+
+                <!-- Seção 4: Segurança & Senha -->
+                <div id="settings-security-section" class="settings-section">
+                    <h3 class="settings-section-title" data-i18n="securityTitle">Segurança & Senha</h3>
+                    <p class="settings-section-desc" data-i18n="changePasswordDesc">Atualize sua senha fornecendo a senha atual e a nova.</p>
+                    
+                    <div class="settings-password-form">
+                        <input id="settings-current-password" class="auth-input" type="password" placeholder="Senha atual" data-i18n-placeholder="currentPasswordPlaceholder" autocomplete="current-password">
+                        <input id="settings-new-password" class="auth-input" type="password" placeholder="Nova senha" data-i18n-placeholder="newPasswordPlaceholder" autocomplete="new-password">
+                        <input id="settings-confirm-password" class="auth-input" type="password" placeholder="Confirme sua senha" data-i18n-placeholder="confirmPasswordPlaceholder" autocomplete="new-password">
+                        
+                        <div id="settings-policy-checklist" class="password-policy-checklist">
+                            <div class="policy-item" id="settings-policy-len">
+                                <span class="policy-icon">•</span>
+                                <span data-i18n="policyMinLength">Mínimo de 8 caracteres</span>
+                            </div>
+                            <div class="policy-item" id="settings-policy-cases">
+                                <span class="policy-icon">•</span>
+                                <span data-i18n="policyUpperLower">Letras maiúsculas e minúsculas</span>
+                            </div>
+                            <div class="policy-item" id="settings-policy-num-sym">
+                                <span class="policy-icon">•</span>
+                                <span data-i18n="policyNumberSymbol">Ao menos um número e um símbolo</span>
+                            </div>
+                        </div>
+
+                        <button id="btn-settings-change-password" class="gate-primary-button" type="button" data-i18n="changePassword">Alterar Senha</button>
+                        <p id="settings-password-feedback" class="gate-auth-feedback" role="status"></p>
+                    </div>
+                </div>
             </div>
 
             <div class="dialog-actions">
@@ -399,6 +515,16 @@
             </div>
         </div>
     </div>
+
+    <!-- Banner de Consentimento de Cookies (LGPD / GDPR) -->
+    <aside id="cookie-banner" class="cookie-banner hidden" role="region" aria-label="Consentimento de Cookies">
+        <div class="cookie-banner-content">
+            <p class="cookie-banner-text" data-i18n="cookieBannerText">Utilizamos cookies essenciais e armazenamento local para autenticação, segurança e personalização da sua experiência.</p>
+            <div class="cookie-banner-actions">
+                <button id="btn-accept-cookies" class="cookie-accept-btn" type="button" data-i18n="cookieAccept">Aceitar e Continuar</button>
+            </div>
+        </div>
+    </aside>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module" src="js/main.js"></script>

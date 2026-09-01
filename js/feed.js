@@ -46,17 +46,26 @@ export function formatIdeaEntry(entry, commentsCount = 0) {
 export function renderIdeaCard(idea) {
     const card = document.createElement('div');
     card.className = 'idea-card';
-    card.dataset.authorId = idea.authorId || '';
-    const isAuthor = state.authenticatedUser && idea.authorId === state.authenticatedUser.id;
-    const authorImgBadge = idea.authorAvatarUrl
-        ? `<img class="card-author-avatar" src="${escapeHTML(idea.authorAvatarUrl)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`
-        : '';
+    const isAuth = !!state.authenticatedUser;
+    card.dataset.authorId = isAuth ? (idea.authorId || '') : '';
+    const isAuthor = isAuth && idea.authorId === state.authenticatedUser.id;
+
+    let authorHtml = '';
+    if (isAuth) {
+        const authorImgBadge = idea.authorAvatarUrl
+            ? `<img class="card-author-avatar" src="${escapeHTML(idea.authorAvatarUrl)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`
+            : '';
+        authorHtml = `<button class="author-link" type="button" data-action="profile" data-profile-id="${idea.authorId}">${authorImgBadge}${escapeHTML(idea.authorName)}</button>`;
+    } else {
+        authorHtml = `<button class="author-link unauth-author-link" type="button" data-action="auth-gate" title="${translate('signInToContinue')}"><span class="card-author-avatar-anon" aria-hidden="true"></span><span class="blurred-author-preview">••••••••</span></button>`;
+    }
+
     const rawTag = idea.tag || 'Geral';
     const displayTag = getTranslatedTopic(rawTag);
 
     card.innerHTML = `
         <div class="idea-header">
-            <span class="idea-date">${idea.date}<span class="idea-author">${translate('by')} <button class="author-link" type="button" data-action="profile" data-profile-id="${idea.authorId}">${authorImgBadge}${escapeHTML(idea.authorName)}</button></span></span>
+            <span class="idea-date">${idea.date}<span class="idea-author">${translate('by')} ${authorHtml}</span></span>
             <div style="display: flex; align-items: center; gap: 0.25rem;">
                 <button class="card-tag-pill" type="button" data-action="tag" data-tag="${escapeHTML(rawTag)}">#${escapeHTML(displayTag)}</button>
                 <div class="entry-actions${isAuthor ? '' : ' hidden'}">
@@ -82,14 +91,15 @@ export function renderIdeaCard(idea) {
 export function renderBlurredTeaserCard(idea) {
     const card = document.createElement('div');
     card.className = 'idea-card blurred-teaser';
-    const authorName = idea?.authorName || 'Pensador';
+    const isAuth = !!state.authenticatedUser;
+    const authorHtml = isAuth ? escapeHTML(idea?.authorName || 'Pensador') : '<span class="blurred-author-preview">••••••••</span>';
     const rawTag = idea?.tag || 'Geral';
     const displayTag = getTranslatedTopic(rawTag);
 
     card.innerHTML = `
         <div class="blurred-content-wrapper">
             <div class="idea-header">
-                <span class="idea-date">Recentemente<span class="idea-author">${translate('by')} ${escapeHTML(authorName)}</span></span>
+                <span class="idea-date">Recentemente<span class="idea-author">${translate('by')} ${authorHtml}</span></span>
                 <span class="card-tag-pill">#${escapeHTML(displayTag)}</span>
             </div>
             <p class="idea-content">${escapeHTML(idea?.content || 'A expansão da mente humana depende da capacidade de questionar e preservar o conhecimento...')}</p>
@@ -1081,6 +1091,10 @@ export async function handleFeedClick(event, onNavigateProfile) {
     }
 
     if (action === 'profile') {
+        if (!state.authenticatedUser) {
+            showAuthGate();
+            return;
+        }
         if (typeof onNavigateProfile === 'function') {
             onNavigateProfile(button.dataset.profileId);
         }

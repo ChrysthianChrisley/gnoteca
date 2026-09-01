@@ -2,12 +2,12 @@ import { supabaseClient, MAX_LENGTH, PROJECT_BASE_PATH } from './config.js';
 import { state, invalidateCache } from './state.js';
 import { translate, setLanguage, currentLanguage, getTranslatedTitle } from './i18n.js';
 import { slugify, updateAvatarDisplay, showActionFeedback, setDarkMode, getProfilePath, getHomePath } from './utils.js';
-import { showAuthGate, hideAuthGate, handleGoogleSignIn, handleEmailSignIn, handleEmailSignUp, handleSignOut, refreshAuthState } from './auth.js';
+import { showAuthGate, hideAuthGate, setAuthGateMode, handleGateAuthSubmit, handleGoogleSignIn, handleEmailSignIn, handleEmailSignUp, handleSignOut, refreshAuthState, updatePasswordChecklist, showResetPasswordDialog, hideResetPasswordDialog, handleResetPasswordSubmit, handleSettingsChangePassword } from './auth.js';
 import { updateProfileStats } from './favorites.js';
 import { openEditNameDialog, openEditAvatarDialog, openSelectTitleDialog, saveProfileEdits, closeProfileEditDialog } from './profile.js';
-import { loadIdeas, loadNextPage, handleFeedClick, confirmDeleteEntry, closeDeleteDialog } from './feed.js';
+import { loadIdeas, loadNextPage, handleFeedClick, confirmDeleteEntry, closeDeleteDialog, fetchComments, renderCommentsContent } from './feed.js';
 import { setupShareListeners } from './share.js';
-import { initNotifications, openNotificationsDialog, closeNotificationsDialog, markAllNotificationsAsRead, markNotificationAsRead } from './notifications.js';
+import { initNotifications, openNotificationsDialog, closeNotificationsDialog, markAllNotificationsAsRead, markNotificationAsRead, clearAllNotifications } from './notifications.js';
 import { initCommunityPulse } from './pulse.js';
 import { initSettings, openSettingsDialog, closeSettingsDialog } from './settings.js';
 
@@ -244,19 +244,59 @@ function setupEventListeners() {
     googleSignIn?.addEventListener('click', handleGoogleSignIn);
     gateGoogleSignIn?.addEventListener('click', handleGoogleSignIn);
     gateBannerGoogle?.addEventListener('click', handleGoogleSignIn);
-    gateBannerAuth?.addEventListener('click', showAuthGate);
+    gateBannerAuth?.addEventListener('click', () => showAuthGate('signin'));
+
+    // Abas do Modal de Autenticação
+    document.getElementById('gate-tab-signin')?.addEventListener('click', () => setAuthGateMode('signin'));
+    document.getElementById('gate-tab-signup')?.addEventListener('click', () => setAuthGateMode('signup'));
+    document.getElementById('gate-forgot-btn')?.addEventListener('click', () => setAuthGateMode('forgot'));
+    document.getElementById('gate-submit-btn')?.addEventListener('click', handleGateAuthSubmit);
+
+    // Validação em Tempo Real do Checklist de Política de Senha
+    document.getElementById('gate-password')?.addEventListener('input', e => {
+        updatePasswordChecklist('policy', e.target.value);
+    });
+    document.getElementById('reset-new-password')?.addEventListener('input', e => {
+        updatePasswordChecklist('reset-policy', e.target.value);
+    });
+    document.getElementById('settings-new-password')?.addEventListener('input', e => {
+        updatePasswordChecklist('settings-policy', e.target.value);
+    });
+
+    // Modal de Redefinição de Senha
+    document.getElementById('close-reset-password-dialog')?.addEventListener('click', hideResetPasswordDialog);
+    document.getElementById('reset-password-dialog')?.addEventListener('click', event => {
+        if (event.target === document.getElementById('reset-password-dialog')) hideResetPasswordDialog();
+    });
+    document.getElementById('reset-submit-btn')?.addEventListener('click', handleResetPasswordSubmit);
+    document.getElementById('reset-confirm-password')?.addEventListener('keydown', e => {
+        if (e.key === 'Enter') handleResetPasswordSubmit();
+    });
+
+    // Alteração de Senha nas Configurações (exige senha atual)
+    document.getElementById('btn-settings-change-password')?.addEventListener('click', handleSettingsChangePassword);
+    document.getElementById('settings-confirm-password')?.addEventListener('keydown', e => {
+        if (e.key === 'Enter') handleSettingsChangePassword();
+    });
+
+    // Tecla Enter nos campos do modal
+    const gateInputs = [
+        document.getElementById('gate-email'),
+        document.getElementById('gate-password'),
+        document.getElementById('gate-password-confirm'),
+        document.getElementById('gate-challenge-answer')
+    ];
+    gateInputs.forEach(input => {
+        input?.addEventListener('keydown', e => {
+            if (e.key === 'Enter') handleGateAuthSubmit();
+        });
+    });
 
     emailSignIn?.addEventListener('click', () => {
         handleEmailSignIn(authEmail?.value.trim(), authPassword?.value, false);
     });
     emailSignUp?.addEventListener('click', () => {
-        handleEmailSignUp(authEmail?.value.trim(), authPassword?.value, false);
-    });
-    gateEmailSignIn?.addEventListener('click', () => {
-        handleEmailSignIn(gateEmail?.value.trim(), gatePassword?.value, true);
-    });
-    gateEmailSignUp?.addEventListener('click', () => {
-        handleEmailSignUp(gateEmail?.value.trim(), gatePassword?.value, true);
+        showAuthGate('signup');
     });
 
     btnSignout?.addEventListener('click', async () => {
@@ -472,6 +512,7 @@ function setupEventListeners() {
     const notificationsMenu = document.getElementById('notifications-menu');
     const closeNotificationsDialogBtn = document.getElementById('close-notifications-dialog');
     const btnMarkAllRead = document.getElementById('btn-mark-all-read');
+    const btnClearNotifications = document.getElementById('btn-clear-notifications');
     const notificationsDialog = document.getElementById('notifications-dialog');
     const notificationsListContainer = document.getElementById('notifications-list-container');
 
@@ -482,6 +523,7 @@ function setupEventListeners() {
     });
     closeNotificationsDialogBtn?.addEventListener('click', closeNotificationsDialog);
     btnMarkAllRead?.addEventListener('click', markAllNotificationsAsRead);
+    btnClearNotifications?.addEventListener('click', clearAllNotifications);
     notificationsDialog?.addEventListener('click', event => {
         if (event.target === notificationsDialog) closeNotificationsDialog();
     });
@@ -505,23 +547,58 @@ function setupEventListeners() {
         closeNotificationsDialog();
 
         if (entryId) {
-            let targetCard = document.querySelector(`.idea-card [data-idea-id="${entryId}"]`)?.closest('.idea-card')
-                || document.getElementById(`comment-${entryId}`);
-
-            if (!targetCard && state.activeFeed !== 'global') {
-                await showFeed('global');
-                targetCard = document.querySelector(`.idea-card [data-idea-id="${entryId}"]`)?.closest('.idea-card')
-                    || document.getElementById(`comment-${entryId}`);
-            }
+            let targetPostId = entryId;
+            let targetCommentId = null;
 
             if (notifType === 'comment' || notifType === 'reply') {
-                const commentBtn = targetCard?.querySelector('[data-action="toggle-comments"]');
-                if (commentBtn && !commentBtn.classList.contains('open')) {
-                    commentBtn.click();
+                targetCommentId = entryId;
+                try {
+                    const { data: commentRow } = await supabaseClient
+                        .from('entries')
+                        .select('id, parent_id')
+                        .eq('id', entryId)
+                        .maybeSingle();
+
+                    if (commentRow?.parent_id) {
+                        targetPostId = commentRow.parent_id;
+                    }
+                } catch (e) {
+                    console.warn('fetch parent_id for notif comment warn:', e);
                 }
             }
 
+            if (state.activeFeed !== 'global') {
+                await showFeed('global');
+            }
+
+            let targetCard = document.querySelector(`.idea-card [data-idea-id="${targetPostId}"]`)?.closest('.idea-card')
+                || document.getElementById(`comment-${targetPostId}`);
+
             if (targetCard) {
+                if (notifType === 'comment' || notifType === 'reply') {
+                    const container = targetCard.querySelector(`#comments-thread-${targetPostId}`);
+                    const commentBtn = targetCard.querySelector('[data-action="toggle-comments"]');
+                    if (container) {
+                        container.classList.remove('hidden');
+                        commentBtn?.classList.add('open');
+                        container.innerHTML = `<p style="font-size:0.85rem; color:var(--muted-color); padding:0.5rem 0;">${translate('loading')}</p>`;
+                        const comments = await fetchComments(targetPostId);
+                        renderCommentsContent(container, targetPostId, comments);
+
+                        setTimeout(() => {
+                            const commentEl = document.getElementById(`comment-${targetCommentId}`) || container;
+                            if (commentEl) {
+                                commentEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                commentEl.classList.remove('notif-target-pulse');
+                                void commentEl.offsetWidth;
+                                commentEl.classList.add('notif-target-pulse');
+                                setTimeout(() => { commentEl.classList.remove('notif-target-pulse'); }, 2800);
+                            }
+                        }, 120);
+                        return;
+                    }
+                }
+
                 targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 targetCard.classList.remove('notif-target-pulse');
                 void targetCard.offsetWidth;
@@ -541,6 +618,8 @@ function setupEventListeners() {
                 await showFeed('global');
             });
             initNotifications();
+        } else if (event === 'PASSWORD_RECOVERY') {
+            showResetPasswordDialog();
         } else if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED') {
             await refreshAuthState(session?.user || undefined);
             initNotifications();
@@ -573,16 +652,39 @@ async function navigateToEntry(entryId, isComment = false) {
     }
 }
 
+// Inicialização do Banner de Cookies (LGPD / GDPR)
+function initCookieBanner() {
+    const banner = document.getElementById('cookie-banner');
+    const btnAccept = document.getElementById('btn-accept-cookies');
+    if (!banner || !btnAccept) return;
+
+    const hasConsented = localStorage.getItem('gnoteca_cookie_consent') === 'true';
+    if (!hasConsented) {
+        banner.classList.remove('hidden');
+    }
+
+    btnAccept.addEventListener('click', () => {
+        localStorage.setItem('gnoteca_cookie_consent', 'true');
+        banner.classList.add('hidden');
+    });
+}
+
 // Inicialização Principal da Aplicação
 export async function initApp() {
     setDarkMode(localStorage.getItem('gnoteca_dark_mode') === 'true');
     applyLanguage(currentLanguage, false);
     setupEventListeners();
     initSettings();
+    initCookieBanner();
     initCommunityPulse({
         onNavigateProfile: showProfile,
         onNavigateEntry: navigateToEntry
     });
+
+    if (window.location.hash && window.location.hash.includes('type=recovery')) {
+        showResetPasswordDialog();
+    }
+
     await refreshAuthState(undefined, async () => {
         await loadRouteFromUrl();
         initNotifications();

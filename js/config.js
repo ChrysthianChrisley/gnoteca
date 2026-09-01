@@ -2,8 +2,15 @@
 export const SUPABASE_URL = 'https://vavitcyykwqqmjqkhyna.supabase.co';
 export const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_5hBpKXPuMB0HmAuyww6WcA_I7C55xwa';
 
-// Instância do Cliente Supabase (injetada via CDN no index.html)
-export const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+// Instância do Cliente Supabase com persistência de sessão e auto-refresh ativados
+export const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+    auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        storage: window.localStorage
+    }
+});
 
 // Constantes de Interface e Paginação
 export const MAX_LENGTH = 280;

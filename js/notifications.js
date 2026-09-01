@@ -188,6 +188,24 @@ export async function markAllNotificationsAsRead() {
     }
 }
 
+// Limpa/Exclui Todas as Notificações do Usuário
+export async function clearAllNotifications() {
+    if (!state.authenticatedUser || notificationsList.length === 0) return;
+
+    notificationsList = [];
+    updateNotificationsBadge();
+    renderNotificationsList();
+
+    try {
+        await supabaseClient
+            .from('notifications')
+            .delete()
+            .eq('user_id', state.authenticatedUser.id);
+    } catch (err) {
+        console.warn('clearAllNotifications err:', err);
+    }
+}
+
 // Inicia Escuta Realtime e Polling Periódico de Notificações
 export function setupNotificationsRealtime() {
     if (realtimeSubscription) {
