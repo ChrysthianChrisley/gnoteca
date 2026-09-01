@@ -67,11 +67,11 @@ export function renderIdeaCard(idea) {
         <div class="idea-actions">
             <button class="vote-button${idea.userVote === 'up' ? ' selected' : ''}" type="button" data-action="upvote" data-idea-id="${idea.id}" aria-label="Dar upvote" title="Dar upvote"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" /></svg><span class="action-count">${idea.upvotes || 0}</span></button>
             <button class="vote-button${idea.userVote === 'down' ? ' selected' : ''}" type="button" data-action="downvote" data-idea-id="${idea.id}" aria-label="Dar downvote" title="Dar downvote"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m6-6-6 6-6-6" /></svg><span class="action-count">${idea.downvotes || 0}</span></button>
-            <button class="dialectic-toggle-btn" type="button" data-action="toggle-dialectic" data-idea-id="${idea.id}" aria-label="${translate('dialectic')}" title="${translate('dialectic')}"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="dialectic-count">${translate('dialectic')}</span></button>
+            <button class="comment-toggle-btn" type="button" data-action="toggle-comments" data-idea-id="${idea.id}" aria-label="${translate('comments')}" title="${translate('comments')}"><svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="comment-count">${translate('comments')}</span></button>
             <button class="favorite-button${idea.favorite ? ' selected' : ''}" type="button" data-action="favorite" data-idea-id="${idea.id}" aria-label="${idea.favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}" title="${idea.favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.6l6.2-.9L12 3Z" /></svg><span class="action-count">${idea.favoritesCount}</span></button>
             <button class="share-button" type="button" data-action="share" data-idea-id="${idea.id}" aria-label="Compartilhar fragmento" title="Compartilhar fragmento"><svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
         </div>
-        <div class="dialectic-thread-container hidden" id="dialectic-thread-${idea.id}"></div>
+        <div class="comments-thread-container hidden" id="comments-thread-${idea.id}"></div>
     `;
     return card;
 }
@@ -101,15 +101,14 @@ export function renderBlurredTeaserCard(idea) {
     return card;
 }
 
-// Busca Respostas Dialéticas Sob Demanda (Lazy Loading)
-export async function fetchDialecticReplies(entryId) {
+// Busca Comentários da Thread Sob Demanda (Lazy Loading) com Votos
+export async function fetchComments(entryId) {
     try {
         const { data, error } = await supabaseClient
             .from('entries')
             .select(`
                 id,
                 content,
-                dialectic_type,
                 created_at,
                 author_id,
                 profiles:author_id (
@@ -117,52 +116,84 @@ export async function fetchDialecticReplies(entryId) {
                     username,
                     display_name,
                     avatar_url
+                ),
+                votes (
+                    user_id,
+                    vote_type
                 )
             `)
-            .eq('parent_id', entryId)
-            .order('created_at', { ascending: true });
+            .eq('parent_id', entryId);
 
         if (error) {
-            console.error('fetchDialecticReplies error:', error);
+            console.error('fetchComments error:', error);
             return [];
         }
-        return data || [];
+
+        const comments = (data || []).map(c => {
+            const upvotes = (c.votes || []).filter(v => v.vote_type === 'up').length;
+            const downvotes = (c.votes || []).filter(v => v.vote_type === 'down').length;
+            const userVote = state.authenticatedUser
+                ? (c.votes || []).find(v => v.user_id === state.authenticatedUser.id)?.vote_type || null
+                : null;
+            const score = upvotes - downvotes;
+
+            return {
+                id: c.id,
+                content: c.content,
+                createdAt: c.created_at,
+                authorId: c.author_id,
+                authorName: c.profiles?.display_name || c.profiles?.username || 'Pensador',
+                authorAvatarUrl: c.profiles?.avatar_url || null,
+                upvotes,
+                downvotes,
+                userVote,
+                score
+            };
+        });
+
+        // Ordenação Reddit: Comentários mais votados no topo
+        comments.sort((a, b) => b.score - a.score || new Date(a.createdAt) - new Date(b.createdAt));
+        return comments;
     } catch (err) {
-        console.error('fetchDialecticReplies catch:', err);
+        console.error('fetchComments catch:', err);
         return [];
     }
 }
 
-// Renderiza Conteúdo do Fio Dialético
-export function renderDialecticContent(container, entryId, replies) {
-    const repliesHtml = replies.map(r => {
-        const authorName = r.profiles?.display_name || r.profiles?.username || 'Pensador';
-        const typeBadge = r.dialectic_type === 'antithesis'
-            ? `<span class="dialectic-badge antithesis">${translate('dialecticAntithesis')}</span>`
-            : `<span class="dialectic-badge synthesis">${translate('dialecticSynthesis')}</span>`;
+// Renderiza Conteúdo da Thread de Comentários (Reddit Style)
+export function renderCommentsContent(container, entryId, comments) {
+    const commentsHtml = comments.map(c => {
+        const authorImg = c.authorAvatarUrl
+            ? `<img class="comment-author-avatar" src="${escapeHTML(c.authorAvatarUrl)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`
+            : '';
+        const scoreClass = c.score > 0 ? ' positive' : c.score < 0 ? ' negative' : '';
 
         return `
-            <div class="dialectic-item">
-                <div class="dialectic-item-header">
-                    <strong>${escapeHTML(authorName)}</strong>
-                    ${typeBadge}
+            <div class="comment-card" id="comment-${c.id}">
+                <div class="comment-header">
+                    <span class="comment-author"><button class="author-link" type="button" data-action="profile" data-profile-id="${c.authorId}">${authorImg}${escapeHTML(c.authorName)}</button></span>
                 </div>
-                <p>${escapeHTML(r.content).replace(/\n/g, '<br>')}</p>
+                <p class="comment-content">${escapeHTML(c.content).replace(/\n/g, '<br>')}</p>
+                <div class="comment-actions">
+                    <button class="comment-vote-btn upvote${c.userVote === 'up' ? ' selected' : ''}" type="button" data-action="comment-upvote" data-comment-id="${c.id}" data-parent-id="${entryId}" aria-label="Upvote">
+                        <svg viewBox="0 0 24 24" class="icon-tiny" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6" /></svg>
+                    </button>
+                    <span class="comment-score${scoreClass}">${c.score}</span>
+                    <button class="comment-vote-btn downvote${c.userVote === 'down' ? ' selected' : ''}" type="button" data-action="comment-downvote" data-comment-id="${c.id}" data-parent-id="${entryId}" aria-label="Downvote">
+                        <svg viewBox="0 0 24 24" class="icon-tiny" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14m6-6-6 6-6-6" /></svg>
+                    </button>
+                </div>
             </div>
         `;
     }).join('');
 
     container.innerHTML = `
-        <div class="dialectic-replies-list">
-            ${replies.length ? repliesHtml : `<p style="font-size:0.85rem; color:var(--muted-color); font-style:italic;">${translate('dialecticEmpty')}</p>`}
+        <div class="comments-list">
+            ${comments.length ? commentsHtml : `<p class="comments-empty">${translate('noCommentsYet')}</p>`}
         </div>
-        <div class="dialectic-reply-form" data-parent-id="${entryId}">
-            <div class="dialectic-type-selector">
-                <button type="button" class="dialectic-type-btn active synthesis" data-type="synthesis">${translate('dialecticSynthesis')}</button>
-                <button type="button" class="dialectic-type-btn antithesis" data-type="antithesis">${translate('dialecticAntithesis')}</button>
-            </div>
-            <textarea class="dialectic-reply-input" placeholder="${translate('dialecticPlaceholder')}" maxlength="280"></textarea>
-            <button class="dialectic-submit-btn" type="button" data-action="submit-dialectic" data-parent-id="${entryId}">${translate('connectIdea')}</button>
+        <div class="comment-reply-form" data-parent-id="${entryId}">
+            <textarea class="comment-reply-input" placeholder="${translate('addCommentPlaceholder')}" maxlength="280"></textarea>
+            <button class="comment-submit-btn" type="button" data-action="submit-comment" data-parent-id="${entryId}">${translate('sendComment')}</button>
         </div>
     `;
 }
@@ -529,32 +560,24 @@ export async function handleFeedClick(event, onNavigateProfile) {
         return;
     }
 
-    const typeBtn = event.target.closest('.dialectic-type-btn');
-    if (typeBtn) {
-        const parentForm = typeBtn.closest('.dialectic-reply-form');
-        parentForm.querySelectorAll('.dialectic-type-btn').forEach(btn => btn.classList.remove('active'));
-        typeBtn.classList.add('active');
-        return;
-    }
-
     const button = event.target.closest('button[data-action]');
     if (!button) return;
 
     const action = button.dataset.action;
     const ideaId = Number(button.dataset.ideaId);
 
-    if (action === 'toggle-dialectic') {
+    if (action === 'toggle-comments') {
         const card = button.closest('.idea-card');
-        const container = card.querySelector(`#dialectic-thread-${ideaId}`);
+        const container = card.querySelector(`#comments-thread-${ideaId}`);
         if (!container) return;
 
         const isCurrentlyHidden = container.classList.contains('hidden');
         if (isCurrentlyHidden) {
             container.classList.remove('hidden');
             button.classList.add('open');
-            container.innerHTML = '<p style="font-size:0.85rem; color:var(--muted-color); padding:0.5rem 0;">Carregando conexões dialéticas...</p>';
-            const replies = await fetchDialecticReplies(ideaId);
-            renderDialecticContent(container, ideaId, replies);
+            container.innerHTML = `<p style="font-size:0.85rem; color:var(--muted-color); padding:0.5rem 0;">${translate('loading')}</p>`;
+            const comments = await fetchComments(ideaId);
+            renderCommentsContent(container, ideaId, comments);
         } else {
             container.classList.add('hidden');
             button.classList.remove('open');
@@ -562,16 +585,14 @@ export async function handleFeedClick(event, onNavigateProfile) {
         return;
     }
 
-    if (action === 'submit-dialectic') {
+    if (action === 'submit-comment') {
         if (!state.authenticatedUser) {
             showAuthGate();
             return;
         }
         const parentId = Number(button.dataset.parentId);
-        const form = button.closest('.dialectic-reply-form');
-        const input = form.querySelector('.dialectic-reply-input');
-        const activeTypeBtn = form.querySelector('.dialectic-type-btn.active');
-        const dialecticType = activeTypeBtn?.dataset.type || 'synthesis';
+        const form = button.closest('.comment-reply-form');
+        const input = form.querySelector('.comment-reply-input');
         const content = input?.value.trim();
 
         if (!content) {
@@ -587,23 +608,62 @@ export async function handleFeedClick(event, onNavigateProfile) {
                 .insert([{
                     author_id: state.authenticatedUser.id,
                     parent_id: parentId,
-                    content: content,
-                    dialectic_type: dialecticType
+                    content: content
                 }]);
 
             if (error) {
-                console.error('Error inserting dialectic reply:', error);
-                showActionFeedback(error.message || 'Erro ao conectar ideia.');
+                console.error('Error inserting comment:', error);
+                showActionFeedback(error.message || translate('errorSaving'));
                 return;
             }
 
-            showActionFeedback('Conexão dialética publicada!');
-            const container = form.closest('.dialectic-thread-container');
-            const replies = await fetchDialecticReplies(parentId);
-            renderDialecticContent(container, parentId, replies);
+            showActionFeedback(translate('commentPublished'));
+            const container = form.closest('.comments-thread-container');
+            const comments = await fetchComments(parentId);
+            renderCommentsContent(container, parentId, comments);
         } catch (err) {
-            console.error('submit dialectic error:', err);
-            showActionFeedback('Erro ao conectar ideia.');
+            console.error('submit comment error:', err);
+            showActionFeedback(translate('errorSaving'));
+        } finally {
+            button.disabled = false;
+        }
+        return;
+    }
+
+    if (action === 'comment-upvote' || action === 'comment-downvote') {
+        if (!state.authenticatedUser) {
+            showAuthGate();
+            return;
+        }
+        const commentId = Number(button.dataset.commentId);
+        const parentId = Number(button.dataset.parentId);
+        const targetType = action === 'comment-upvote' ? 'up' : 'down';
+        const isCurrentlySelected = button.classList.contains('selected');
+
+        button.disabled = true;
+        try {
+            if (isCurrentlySelected) {
+                await supabaseClient
+                    .from('votes')
+                    .delete()
+                    .eq('entry_id', commentId)
+                    .eq('user_id', state.authenticatedUser.id);
+            } else {
+                await supabaseClient
+                    .from('votes')
+                    .upsert([{
+                        entry_id: commentId,
+                        user_id: state.authenticatedUser.id,
+                        vote_type: targetType
+                    }], { onConflict: 'entry_id,user_id' });
+            }
+            const container = document.getElementById(`comments-thread-${parentId}`);
+            if (container) {
+                const comments = await fetchComments(parentId);
+                renderCommentsContent(container, parentId, comments);
+            }
+        } catch (err) {
+            console.error('Comment vote error:', err);
         } finally {
             button.disabled = false;
         }

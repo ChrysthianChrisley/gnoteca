@@ -92,15 +92,14 @@ export const translations = {
         avatarPlaceholder: 'https://link-da-imagem.com/foto.jpg',
         profileSaved: 'Perfil atualizado com sucesso!',
 
-        // Fios Dialéticos
-        dialectic: 'Dialética',
-        dialecticAntithesis: 'Contraponto',
-        dialecticSynthesis: 'Desdobramento',
-        dialecticPlaceholder: 'Adicione um contraponto lógico ou desdobre esta ideia...',
-        connectIdea: 'Conectar Ideia',
-        dialecticLoading: 'Carregando conexões dialéticas...',
-        dialecticEmpty: 'Nenhuma conexão dialética ainda. Proponha a primeira tese!',
-        dialecticPublished: 'Conexão dialética publicada com sucesso!',
+        // Comentários e Discussões
+        comments: 'Comentários',
+        comment: 'Comentário',
+        addCommentPlaceholder: 'O que você pensa sobre isso? Adicione um comentário...',
+        sendComment: 'Comentar',
+        noCommentsYet: 'Nenhum comentário ainda. Seja o primeiro a comentar!',
+        commentPublished: 'Comentário publicado!',
+        topComments: 'Mais votados',
 
         // Compartilhamento
         shareTitle: 'Compartilhar Fragmento',
@@ -218,15 +217,14 @@ export const translations = {
         avatarPlaceholder: 'https://image-link.com/photo.jpg',
         profileSaved: 'Profile updated successfully!',
 
-        // Dialectic Threads
-        dialectic: 'Dialectics',
-        dialecticAntithesis: 'Counterpoint',
-        dialecticSynthesis: 'Development',
-        dialecticPlaceholder: 'Add a logical counterpoint or develop this idea...',
-        connectIdea: 'Connect Idea',
-        dialecticLoading: 'Loading dialectical connections...',
-        dialecticEmpty: 'No dialectical connections yet. Be the first to propose a perspective!',
-        dialecticPublished: 'Dialectical connection published successfully!',
+        // Comments & Discussions
+        comments: 'Comments',
+        comment: 'Comment',
+        addCommentPlaceholder: 'What are your thoughts on this? Add a comment...',
+        sendComment: 'Comment',
+        noCommentsYet: 'No comments yet. Be the first to comment!',
+        commentPublished: 'Comment posted!',
+        topComments: 'Top comments',
 
         // Sharing
         shareTitle: 'Share Fragment',
@@ -344,15 +342,14 @@ export const translations = {
         avatarPlaceholder: 'https://enlace-de-imagen.com/foto.jpg',
         profileSaved: '¡Perfil actualizado con éxito!',
 
-        // Hilos Dialécticos
-        dialectic: 'Dialéctica',
-        dialecticAntithesis: 'Contrapunto',
-        dialecticSynthesis: 'Desarrollo',
-        dialecticPlaceholder: 'Añade un contrapunto lógico o desarrolla esta idea...',
-        connectIdea: 'Conectar Idea',
-        dialecticLoading: 'Cargando conexiones dialécticas...',
-        dialecticEmpty: '¡Aún no hay conexiones dialécticas. Sé el primero en proponer una perspectiva!',
-        dialecticPublished: '¡Conexión dialéctica publicada con éxito!',
+        // Comentarios y Discusiones
+        comments: 'Comentarios',
+        comment: 'Comentario',
+        addCommentPlaceholder: '¿Qué piensas sobre esto? Añade un comentario...',
+        sendComment: 'Comentar',
+        noCommentsYet: '¡Aún no hay comentarios. Sé el primero en comentar!',
+        commentPublished: '¡Comentario publicado!',
+        topComments: 'Más votados',
 
         // Compartir
         shareTitle: 'Compartir Fragmento',
