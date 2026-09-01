@@ -413,9 +413,30 @@ function setupEventListeners() {
         if (event.target === deleteDialog) closeDeleteDialog();
     });
     document.addEventListener('keydown', event => {
-        if (event.key === 'Escape' && deleteDialog && !deleteDialog.classList.contains('hidden')) {
-            closeDeleteDialog();
+        if (event.key === 'Escape') {
+            if (deleteDialog && !deleteDialog.classList.contains('hidden')) {
+                closeDeleteDialog();
+            }
+            const openThreads = document.querySelectorAll('.comments-thread-container:not(.hidden)');
+            openThreads.forEach(thread => {
+                thread.classList.add('hidden');
+                const card = thread.closest('.idea-card');
+                card?.querySelector('[data-action="toggle-comments"]')?.classList.remove('open');
+            });
         }
+    });
+
+    // Fechar thread de comentários ao clicar fora
+    document.addEventListener('click', event => {
+        if (event.target.closest('.comments-thread-container') || event.target.closest('[data-action="toggle-comments"]')) {
+            return;
+        }
+        const openThreads = document.querySelectorAll('.comments-thread-container:not(.hidden)');
+        openThreads.forEach(thread => {
+            thread.classList.add('hidden');
+            const card = thread.closest('.idea-card');
+            card?.querySelector('[data-action="toggle-comments"]')?.classList.remove('open');
+        });
     });
 
     // Roteamento de Histórico

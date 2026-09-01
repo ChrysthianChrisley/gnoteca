@@ -111,6 +111,7 @@ export async function fetchComments(entryId) {
             .select(`
                 id,
                 content,
+                tag,
                 created_at,
                 author_id,
                 profiles:author_id (
@@ -139,9 +140,26 @@ export async function fetchComments(entryId) {
                 : null;
             const score = upvotes - downvotes;
 
+            let replyToCommentId = null;
+            let replyToAuthorName = null;
+            if (c.tag && c.tag.startsWith('reply:')) {
+                const parts = c.tag.split(':');
+                replyToCommentId = Number(parts[1]) || null;
+                if (parts[2]) {
+                    try {
+                        replyToAuthorName = decodeURIComponent(parts[2]);
+                    } catch (e) {
+                        replyToAuthorName = parts[2];
+                    }
+                }
+            }
+
             return {
                 id: c.id,
                 content: c.content,
+                tag: c.tag,
+                replyToCommentId,
+                replyToAuthorName,
                 createdAt: c.created_at,
                 authorId: c.author_id,
                 authorName: c.profiles?.display_name || c.profiles?.username || 'Pensador',
@@ -153,8 +171,6 @@ export async function fetchComments(entryId) {
             };
         });
 
-        // Ordenação Reddit: Comentários mais votados no topo
-        comments.sort((a, b) => b.score - a.score || new Date(a.createdAt) - new Date(b.createdAt));
         return comments;
     } catch (err) {
         console.error('fetchComments catch:', err);
@@ -162,20 +178,58 @@ export async function fetchComments(entryId) {
     }
 }
 
-// Renderiza Conteúdo da Thread de Comentários (Reddit Style)
+// Renderiza Conteúdo da Thread de Comentários (Modelo Híbrido: 1 nível de recuo com @menção)
 export function renderCommentsContent(container, entryId, comments) {
-    const commentsHtml = comments.map(c => {
+    if (!container) return;
+
+    // Indexa todos os comentários por ID
+    const commentMap = {};
+    comments.forEach(c => { commentMap[c.id] = c; });
+
+    // Determina o comentário raiz de cada resposta (para manter o aninhamento em exatamente 1 nível)
+    function getRootCommentId(comment) {
+        let curr = comment;
+        let visited = new Set();
+        while (curr && curr.replyToCommentId && commentMap[curr.replyToCommentId]) {
+            if (visited.has(curr.id)) break;
+            visited.add(curr.id);
+            curr = commentMap[curr.replyToCommentId];
+        }
+        return curr?.id || comment.id;
+    }
+
+    const rootComments = [];
+    const repliesByRoot = {};
+
+    comments.forEach(c => {
+        if (!c.replyToCommentId || !commentMap[c.replyToCommentId]) {
+            rootComments.push(c);
+        } else {
+            const rootId = getRootCommentId(c);
+            repliesByRoot[rootId] = repliesByRoot[rootId] || [];
+            repliesByRoot[rootId].push(c);
+        }
+    });
+
+    // Ordenação Reddit: Comentários raiz mais votados no topo
+    rootComments.sort((a, b) => b.score - a.score || new Date(a.createdAt) - new Date(b.createdAt));
+
+    // Renderiza um card individual de comentário
+    function renderSingleComment(c, isReply = false) {
         const authorImg = c.authorAvatarUrl
             ? `<img class="comment-author-avatar" src="${escapeHTML(c.authorAvatarUrl)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`
             : '';
         const scoreClass = c.score > 0 ? ' positive' : c.score < 0 ? ' negative' : '';
+        const replyBadge = c.replyToAuthorName
+            ? `<span class="comment-reply-to-badge">@${escapeHTML(c.replyToAuthorName)}</span> `
+            : '';
 
         return `
-            <div class="comment-card" id="comment-${c.id}">
+            <div class="comment-card${isReply ? ' is-reply' : ''}" id="comment-${c.id}">
                 <div class="comment-header">
                     <span class="comment-author"><button class="author-link" type="button" data-action="profile" data-profile-id="${c.authorId}">${authorImg}${escapeHTML(c.authorName)}</button></span>
                 </div>
-                <p class="comment-content">${escapeHTML(c.content).replace(/\n/g, '<br>')}</p>
+                <p class="comment-content">${replyBadge}${escapeHTML(c.content).replace(/\n/g, '<br>')}</p>
                 <div class="comment-actions">
                     <button class="comment-vote-btn upvote${c.userVote === 'up' ? ' selected' : ''}" type="button" data-action="comment-upvote" data-comment-id="${c.id}" data-parent-id="${entryId}" aria-label="Upvote">
                         <svg viewBox="0 0 24 24" class="icon-tiny" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6" /></svg>
@@ -184,16 +238,42 @@ export function renderCommentsContent(container, entryId, comments) {
                     <button class="comment-vote-btn downvote${c.userVote === 'down' ? ' selected' : ''}" type="button" data-action="comment-downvote" data-comment-id="${c.id}" data-parent-id="${entryId}" aria-label="Downvote">
                         <svg viewBox="0 0 24 24" class="icon-tiny" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14m6-6-6 6-6-6" /></svg>
                     </button>
+                    <button class="comment-reply-action-btn" type="button" data-action="open-reply-box" data-comment-id="${c.id}" data-author-name="${escapeHTML(c.authorName)}" data-parent-id="${entryId}">
+                        <svg viewBox="0 0 24 24" class="icon-tiny" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 5 5v5"/></svg>
+                        ${translate('reply')}
+                    </button>
                 </div>
+            </div>
+        `;
+    }
+
+    // Renderiza a lista de comentários encadeados
+    const commentsListHtml = rootComments.map(root => {
+        const rootHtml = renderSingleComment(root, false);
+        const replies = repliesByRoot[root.id] || [];
+        replies.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        const repliesHtml = replies.map(r => renderSingleComment(r, true)).join('');
+
+        return `
+            <div class="comment-group" id="comment-group-${root.id}">
+                ${rootHtml}
+                <div class="comment-replies-container${replies.length === 0 ? ' hidden' : ''}" id="replies-container-${root.id}">
+                    ${repliesHtml}
+                </div>
+                <div class="comment-inline-reply-slot" id="reply-slot-${root.id}"></div>
             </div>
         `;
     }).join('');
 
     container.innerHTML = `
-        <div class="comments-list">
-            ${comments.length ? commentsHtml : `<p class="comments-empty">${translate('noCommentsYet')}</p>`}
+        <div class="comments-thread-header">
+            <span class="comments-thread-title">${translate('comments')} (${comments.length})</span>
+            <button class="comments-close-btn" type="button" data-action="close-comments" data-idea-id="${entryId}" aria-label="Fechar comentários">x</button>
         </div>
-        <div class="comment-reply-form" data-parent-id="${entryId}">
+        <div class="comments-list">
+            ${comments.length ? commentsListHtml : `<p class="comments-empty">${translate('noCommentsYet')}</p>`}
+        </div>
+        <div class="comment-reply-form main-comment-form" data-parent-id="${entryId}">
             <textarea class="comment-reply-input" placeholder="${translate('addCommentPlaceholder')}" maxlength="280"></textarea>
             <button class="comment-submit-btn" type="button" data-action="submit-comment" data-parent-id="${entryId}">${translate('sendComment')}</button>
         </div>
@@ -600,6 +680,15 @@ export async function handleFeedClick(event, onNavigateProfile) {
 
         const isCurrentlyHidden = container.classList.contains('hidden');
         if (isCurrentlyHidden) {
+            // Fecha qualquer outra thread de comentários que esteja aberta
+            document.querySelectorAll('.comments-thread-container:not(.hidden)').forEach(openContainer => {
+                if (openContainer !== container) {
+                    openContainer.classList.add('hidden');
+                    const otherCard = openContainer.closest('.idea-card');
+                    otherCard?.querySelector('[data-action="toggle-comments"]')?.classList.remove('open');
+                }
+            });
+
             container.classList.remove('hidden');
             button.classList.add('open');
             container.innerHTML = `<p style="font-size:0.85rem; color:var(--muted-color); padding:0.5rem 0;">${translate('loading')}</p>`;
@@ -612,12 +701,63 @@ export async function handleFeedClick(event, onNavigateProfile) {
         return;
     }
 
+    if (action === 'close-comments') {
+        const card = button.closest('.idea-card');
+        const container = card?.querySelector(`#comments-thread-${ideaId}`);
+        container?.classList.add('hidden');
+        card?.querySelector('[data-action="toggle-comments"]')?.classList.remove('open');
+        return;
+    }
+
+    if (action === 'open-reply-box') {
+        if (!state.authenticatedUser) {
+            showAuthGate();
+            return;
+        }
+        const commentId = Number(button.dataset.commentId);
+        const authorName = button.dataset.authorName || 'Pensador';
+        const parentId = Number(button.dataset.parentId);
+        const card = button.closest('.idea-card');
+        const group = button.closest('.comment-group') || button.closest('.comment-card');
+        const rootId = group.id.replace('comment-group-', '') || commentId;
+
+        // Fecha qualquer outro box de resposta aberto neste card
+        card.querySelectorAll('.comment-inline-reply-box').forEach(b => b.remove());
+
+        const slot = document.getElementById(`reply-slot-${rootId}`) || group;
+        slot.innerHTML = `
+            <div class="comment-inline-reply-box" id="inline-reply-box-${rootId}">
+                <div class="comment-inline-reply-header">
+                    <span>${translate('replyingTo')} <strong>@${escapeHTML(authorName)}</strong></span>
+                    <button class="comment-cancel-reply-btn" type="button" data-action="cancel-reply" data-root-id="${rootId}">${translate('cancelReply')}</button>
+                </div>
+                <div class="comment-reply-form" data-parent-id="${parentId}">
+                    <textarea class="comment-reply-input" placeholder="${translate('writeReplyPlaceholder')}" maxlength="280"></textarea>
+                    <button class="comment-submit-btn" type="button" data-action="submit-comment" data-parent-id="${parentId}" data-reply-to="${commentId}" data-reply-author="${escapeHTML(authorName)}">${translate('reply')}</button>
+                </div>
+            </div>
+        `;
+
+        const textarea = slot.querySelector('.comment-reply-input');
+        textarea?.focus();
+        return;
+    }
+
+    if (action === 'cancel-reply') {
+        const rootId = button.dataset.rootId;
+        const box = document.getElementById(`inline-reply-box-${rootId}`);
+        box?.remove();
+        return;
+    }
+
     if (action === 'submit-comment') {
         if (!state.authenticatedUser) {
             showAuthGate();
             return;
         }
         const parentId = Number(button.dataset.parentId);
+        const replyToId = button.dataset.replyTo ? Number(button.dataset.replyTo) : null;
+        const replyAuthor = button.dataset.replyAuthor || '';
         const form = button.closest('.comment-reply-form');
         const input = form.querySelector('.comment-reply-input');
         const content = input?.value.trim();
@@ -630,37 +770,60 @@ export async function handleFeedClick(event, onNavigateProfile) {
 
         button.disabled = true;
         try {
+            const insertPayload = {
+                author_id: state.authenticatedUser.id,
+                parent_id: parentId,
+                content: content,
+                tag: replyToId ? `reply:${replyToId}:${encodeURIComponent(replyAuthor)}` : null
+            };
+
             const { data: insertedComment, error } = await supabaseClient
                 .from('entries')
-                .insert([{
-                    author_id: state.authenticatedUser.id,
-                    parent_id: parentId,
-                    content: content
-                }])
+                .insert([insertPayload])
                 .select('id')
                 .single();
 
             if (error) {
-                console.error('Error inserting comment:', error);
+                console.error('Error inserting comment/reply:', error);
                 showActionFeedback(error.message || translate('errorSaving'));
                 return;
             }
 
             showActionFeedback(translate('commentPublished'));
 
-            // Notificação direta para o autor do post
+            // Notificações: se for resposta, notifica o autor do comentário respondido!
             const card = form.closest('.idea-card');
-            let targetAuthorId = card?.dataset.authorId;
-            if (!targetAuthorId) {
+            let targetAuthorId = null;
+            let notifType = 'comment';
+
+            if (replyToId) {
                 try {
-                    const { data: parentEntry } = await supabaseClient
+                    const { data: targetComment } = await supabaseClient
                         .from('entries')
                         .select('author_id')
-                        .eq('id', parentId)
+                        .eq('id', replyToId)
                         .maybeSingle();
-                    targetAuthorId = parentEntry?.author_id;
-                } catch (peErr) {
-                    console.warn('fetch parent author warn:', peErr);
+                    targetAuthorId = targetComment?.author_id;
+                    notifType = 'reply';
+                } catch (rErr) {
+                    console.warn('fetch reply author warn:', rErr);
+                }
+            }
+
+            // Se for comentário direto no post (sem ser resposta), notifica o autor do post
+            if (!targetAuthorId) {
+                targetAuthorId = card?.dataset.authorId;
+                if (!targetAuthorId) {
+                    try {
+                        const { data: parentEntry } = await supabaseClient
+                            .from('entries')
+                            .select('author_id')
+                            .eq('id', parentId)
+                            .maybeSingle();
+                        targetAuthorId = parentEntry?.author_id;
+                    } catch (peErr) {
+                        console.warn('fetch parent author warn:', peErr);
+                    }
                 }
             }
 
@@ -671,11 +834,11 @@ export async function handleFeedClick(event, onNavigateProfile) {
                         .insert({
                             user_id: targetAuthorId,
                             actor_id: state.authenticatedUser.id,
-                            type: 'comment',
+                            type: notifType,
                             entry_id: insertedComment?.id || parentId
                         });
                 } catch (notifErr) {
-                    console.warn('notif comment warn:', notifErr);
+                    console.warn('notif comment/reply warn:', notifErr);
                 }
             }
 

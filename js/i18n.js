@@ -103,7 +103,11 @@ export const translations = {
         // Comentários e Discussões
         comments: 'Comentários',
         comment: 'Comentário',
+        reply: 'Responder',
+        replyingTo: 'Respondendo a',
+        cancelReply: 'Cancelar',
         addCommentPlaceholder: 'O que você pensa sobre isso? Adicione um comentário...',
+        writeReplyPlaceholder: 'Escreva sua resposta...',
         sendComment: 'Comentar',
         noCommentsYet: 'Nenhum comentário ainda. Seja o primeiro a comentar!',
         commentPublished: 'Comentário publicado!',
@@ -266,11 +270,15 @@ export const translations = {
         // Comments & Discussions
         comments: 'Comments',
         comment: 'Comment',
+        reply: 'Reply',
+        replyingTo: 'Replying to',
+        cancelReply: 'Cancel',
         addCommentPlaceholder: 'What are your thoughts on this? Add a comment...',
+        writeReplyPlaceholder: 'Write your reply...',
         sendComment: 'Comment',
         noCommentsYet: 'No comments yet. Be the first to comment!',
-        commentPublished: 'Comment posted!',
-        topComments: 'Top comments',
+        commentPublished: 'Comment published!',
+        topComments: 'Top voted',
 
         // Sharing
         shareTitle: 'Share Fragment',
@@ -431,7 +439,11 @@ export const translations = {
         // Comentarios y Discusiones
         comments: 'Comentarios',
         comment: 'Comentario',
+        reply: 'Responder',
+        replyingTo: 'Respondiendo a',
+        cancelReply: 'Cancelar',
         addCommentPlaceholder: '¿Qué piensas sobre esto? Añade un comentario...',
+        writeReplyPlaceholder: 'Escribe tu respuesta...',
         sendComment: 'Comentar',
         noCommentsYet: '¡Aún no hay comentarios. Sé el primero en comentar!',
         commentPublished: '¡Comentario publicado!',
@@ -596,7 +608,11 @@ export const translations = {
         // Commentaires et Discussions
         comments: 'Commentaires',
         comment: 'Commentaire',
+        reply: 'Répondre',
+        replyingTo: 'En réponse à',
+        cancelReply: 'Annuler',
         addCommentPlaceholder: 'Qu\'en pensez-vous ? Ajoutez un commentaire...',
+        writeReplyPlaceholder: 'Écrivez votre réponse...',
         sendComment: 'Commenter',
         noCommentsYet: 'Aucun commentaire pour l\'instant. Soyez le premier à commenter !',
         commentPublished: 'Commentaire publié !',
