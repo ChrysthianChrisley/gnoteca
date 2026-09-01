@@ -130,7 +130,7 @@ function renderSynthesesList(pairId) {
 
     const list = getStoredSyntheses().filter(s => s.pairId === pairId);
     if (list.length === 0) {
-        container.innerHTML = '<p class="empty-syntheses" style="font-style:italic; color:var(--muted-color); padding: 1rem 0;">Nenhuma síntese forjada para este dilema ainda. Seja o primeiro a redigir a união destas verdades!</p>';
+        container.innerHTML = '<p class="empty-syntheses" style="font-style:italic; color:var(--muted-color); padding: 1rem 0;">Nenhum comentário ainda.</p>';
         return;
     }
 
