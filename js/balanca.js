@@ -99,6 +99,11 @@ export function saveSynthesis(pairId, content) {
     return newSyn;
 }
 
+export function deleteSynthesis(id) {
+    const list = getStoredSyntheses().filter(s => s.id !== id);
+    localStorage.setItem('gnoteca_balanca_syntheses', JSON.stringify(list));
+}
+
 /**
  * Renderiza o confronto atual da Balança.
  */
@@ -151,6 +156,12 @@ function renderSynthesesList(pairId) {
                 <span class="synthesis-author">${escapeHTML(s.authorName)} • ${escapeHTML(s.date)}</span>
             </div>
             <p class="synthesis-card-text">${escapeHTML(s.content)}</p>
+            ${s.authorName === 'Você' || (state.authenticatedUser && s.authorName === state.authenticatedUser.name) ? `
+            <div class="synthesis-actions-bar" style="margin-top: 0.5rem; display: flex; gap: 0.5rem; justify-content: flex-end;">
+                <button class="entry-action edit-synthesis" data-id="${s.id}" style="font-size: 0.75rem;">Editar</button>
+                <button class="entry-action delete-synthesis" data-id="${s.id}" style="font-size: 0.75rem; color: #ef4444;">Apagar</button>
+            </div>
+            ` : ''}
         </div>
     `).join('');
 }
@@ -194,20 +205,66 @@ export function initBalanca() {
         btnSubmit.addEventListener('click', () => {
             const text = input.value.trim();
             if (!text) {
-                showActionFeedback('Escreva sua síntese antes de enviar.');
+                showActionFeedback('Escreva sua conclusão antes de enviar.');
                 return;
             }
             if (text.length > 280) {
-                showActionFeedback('A síntese deve ter no máximo 280 caracteres.');
+                showActionFeedback('A conclusão deve ter no máximo 280 caracteres.');
                 return;
             }
 
             const currentPair = BALANCA_PAIRS[currentPairIndex];
-            saveSynthesis(currentPair.id, text);
+            const editId = btnSubmit.dataset.editId;
+            
+            if (editId) {
+                // Modo Edição
+                const list = getStoredSyntheses();
+                const index = list.findIndex(s => s.id === editId);
+                if (index !== -1) {
+                    list[index].content = text;
+                    list[index].date = 'Editado agora';
+                    localStorage.setItem('gnoteca_balanca_syntheses', JSON.stringify(list));
+                    showActionFeedback('Conclusão editada com sucesso!');
+                }
+                btnSubmit.removeAttribute('data-editId');
+                btnSubmit.textContent = 'Compartilhar Conclusão';
+            } else {
+                // Modo Criação
+                saveSynthesis(currentPair.id, text);
+                showActionFeedback('Conclusão compartilhada com sucesso!');
+            }
+            
             input.value = '';
             if (counter) counter.textContent = '0 / 280';
             renderSynthesesList(currentPair.id);
-            showActionFeedback('Síntese compartilhada com sucesso!');
+        });
+    }
+
+    // Delegação de eventos para Editar/Apagar Sínteses
+    const synthesesContainer = document.getElementById('syntheses-items');
+    if (synthesesContainer) {
+        synthesesContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('delete-synthesis')) {
+                const id = e.target.dataset.id;
+                deleteSynthesis(id);
+                renderSynthesesList(BALANCA_PAIRS[currentPairIndex].id);
+                showActionFeedback('Conclusão apagada.');
+            }
+            
+            if (e.target.classList.contains('edit-synthesis')) {
+                const id = e.target.dataset.id;
+                const list = getStoredSyntheses();
+                const syn = list.find(s => s.id === id);
+                if (syn && input) {
+                    input.value = syn.content;
+                    if (counter) counter.textContent = `${syn.content.length} / 280`;
+                    input.focus();
+                    if (btnSubmit) {
+                        btnSubmit.textContent = 'Salvar Edição';
+                        btnSubmit.dataset.editId = id;
+                    }
+                }
+            }
         });
     }
 
