@@ -763,7 +763,10 @@ body.dark-mode #btn-save {
     display: grid;
     place-items: center;
     padding: 1rem;
-    background: rgba(15, 25, 35, 0.48);
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    animation: fadeIn 0.2s ease;
 }
 
 .auth-gate-card {
@@ -901,52 +904,91 @@ body.dark-mode #btn-save {
     opacity: 0.86;
 }
 
-@media (max-width: 560px) {
+@media (max-width: 600px) {
+    body {
+        padding: 0.85rem 0.75rem 3.5rem;
+        overflow-x: hidden;
+    }
+
     header {
-        flex-wrap: wrap;
-        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
     }
 
-    header nav {
-        order: 3;
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
+    .brand-button {
+        font-size: 1.35rem;
     }
 
-    nav button {
-        margin-left: 0;
+    .header-right-actions {
+        gap: 0.35rem;
+    }
+
+    .header-user-name {
+        display: none;
+    }
+
+    .profile-trigger {
+        padding: 0.15rem;
+        margin-left: 0.25rem;
     }
 
     .profile-sidebar {
-        width: min(var(--sidebar-width), 94vw);
-        padding: 1rem;
+        width: min(var(--sidebar-width), 88vw);
+        padding: 1.25rem 1rem;
+    }
+
+    .idea-card {
+        padding: 1.15rem 1rem;
     }
 
     .idea-actions {
         flex-wrap: wrap;
+        gap: 0.4rem;
     }
 
-    .favorite-button {
-        margin-left: 0;
+    .idea-actions .favorite-button {
+        margin-left: auto;
+    }
+
+    .community-pulse-bar {
+        padding: 0.4rem 0.85rem;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .pulse-ticker-text {
+        font-size: 0.76rem;
     }
 
     .feed-header {
         align-items: stretch;
         flex-direction: column;
+        gap: 0.75rem;
     }
 
     .feed-filter {
         width: 100%;
     }
 
-    .delete-dialog {
-        background: rgba(15, 25, 35, 0.42);
+    .auth-gate {
+        padding: 0.75rem;
+    }
+
+    .auth-gate-card {
+        width: 100%;
+        padding: 1.5rem 1.25rem;
+    }
+
+    .auth-input,
+    .challenge-input,
+    .comment-reply-input,
+    .settings-select-input {
+        font-size: 16px !important; /* Previne auto-zoom indesejado no iOS Safari */
     }
 
     .delete-dialog-card {
-        width: min(380px, calc(100vw - 32px));
-        padding: 1.5rem;
+        width: min(360px, calc(100vw - 24px));
+        padding: 1.25rem;
     }
 }
 
@@ -2627,17 +2669,21 @@ body.dark-mode .community-pulse-bar:hover {
    ========================================================================== */
 
 .settings-dialog-card {
-    width: min(100%, 460px);
-    max-height: 88vh;
+    width: min(95vw, 760px);
+    max-height: 90vh;
     overflow-y: auto;
-    padding: 1.75rem 2rem 2rem;
+    padding: 1.75rem 2.25rem 2rem;
+    border-radius: var(--radius-lg);
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
 .settings-card-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
     padding-bottom: 0.75rem;
     border-bottom: 1px solid var(--border-color);
 }
@@ -2647,10 +2693,24 @@ body.dark-mode .community-pulse-bar:hover {
 }
 
 .settings-content-body {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    margin-bottom: 1.75rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem 2rem;
+    align-items: start;
+    margin-bottom: 1.5rem;
+}
+
+@media (max-width: 720px) {
+    .settings-dialog-card {
+        width: min(100%, 460px);
+        padding: 1.25rem 1.25rem 1.5rem;
+    }
+
+    .settings-content-body {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
 }
 
 .settings-section-title {

@@ -8,7 +8,7 @@ import { openEditNameDialog, openEditAvatarDialog, openSelectTitleDialog, savePr
 import { loadIdeas, loadNextPage, handleFeedClick, confirmDeleteEntry, closeDeleteDialog, fetchComments, renderCommentsContent } from './feed.js';
 import { setupShareListeners } from './share.js';
 import { initNotifications, openNotificationsDialog, closeNotificationsDialog, markAllNotificationsAsRead, markNotificationAsRead, clearAllNotifications } from './notifications.js';
-import { initCommunityPulse } from './pulse.js';
+import { fetchCommunityPulse, initCommunityPulse } from './pulse.js';
 import { initSettings, openSettingsDialog, closeSettingsDialog } from './settings.js';
 
 // Elementos Principais do DOM
@@ -622,6 +622,9 @@ function setupEventListeners() {
             showResetPasswordDialog();
         } else if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED') {
             await refreshAuthState(session?.user || undefined);
+            invalidateCache();
+            await loadIdeas();
+            fetchCommunityPulse();
             initNotifications();
         }
     });
