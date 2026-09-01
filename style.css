@@ -3394,49 +3394,6 @@ body.dark-mode .mode-tab-btn.active {
     line-height: 1.45;
 }
 
-.caderno-card {
-    background-color: var(--surface-color) !important;
-    border: 1px solid var(--border-color) !important;
-    border-left: 4px solid var(--gold-accent) !important;
-    box-shadow: var(--shadow-subtle);
-}
-
-body.dark-mode .caderno-card {
-    background-color: var(--surface-color) !important;
-    border-color: var(--border-color) !important;
-    border-left-color: var(--gold-accent) !important;
-}
-
-.caderno-badge {
-    display: inline-block;
-    margin-left: 0.5rem;
-    padding: 0.15rem 0.5rem;
-    border-radius: var(--radius-sm);
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    background: var(--gold-soft);
-    color: var(--gold-accent);
-}
-
-body.dark-mode .caderno-badge {
-    background: rgba(251, 191, 36, 0.15);
-    color: #fbbf24;
-}
-
-.promote-action {
-    color: var(--accent-color) !important;
-    font-weight: 600 !important;
-    border: 1px solid var(--accent-color) !important;
-    background: transparent !important;
-    border-radius: var(--radius-sm);
-    padding: 0.2rem 0.6rem;
-    transition: all 0.2s ease;
-}
-.promote-action:hover {
-    background: var(--soft-accent-color) !important;
-}
 
 /* 4. Métricas de Impacto Reflexivo */
 .reflex-button {

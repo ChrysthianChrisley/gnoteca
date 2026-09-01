@@ -8,44 +8,44 @@ import { showActionFeedback, escapeHTML } from './utils.js';
 const BALANCA_PAIRS = [
     {
         id: 'par-1',
-        title: 'Solitude vs. Convivência Social',
+        title: 'Trabalho Remoto vs. Presencial',
         thesis: {
-            text: 'A solidão e o silêncio são os únicos santuários onde o pensamento pode amadurecer livre do ruído e da validação alheia.',
-            author: 'Arthur Schopenhauer',
-            citation: 'Aforismos para a Sabedoria da Vida'
+            text: 'O trabalho remoto liberta as pessoas do trânsito, dando mais tempo para a família e qualidade de vida.',
+            author: 'Defensor do Remoto',
+            citation: ''
         },
         antithesis: {
-            text: 'O isolamento excessivo deforma o juízo; a sabedoria e a temperança só se desenvolvem no atrito diário com o outro.',
-            author: 'Sêneca',
-            citation: 'Cartas a Lucílio'
+            text: 'Trabalhar em casa nos isola. É no convívio presencial que a cultura, a amizade e as ideias criativas nascem.',
+            author: 'Defensor do Presencial',
+            citation: ''
         }
     },
     {
         id: 'par-2',
-        title: 'Automação vs. Esforço Cognitivo',
+        title: 'Livro Físico vs. Leitura Digital',
         thesis: {
-            text: 'A automação e a inteligência artificial libertam o ser humano do labor repetitivo, abrindo espaço para a verdadeira criatividade.',
-            author: 'Visão Iluminista',
-            citation: 'Elogio do Ócio Criativo'
+            text: 'O livro físico proporciona uma experiência tátil única. O cheiro do papel e o peso do livro ajudam na imersão e na memória.',
+            author: 'Leitor Tradicional',
+            citation: ''
         },
         antithesis: {
-            text: 'Ao terceirizar o esforço cognitivo para as máquinas, atrofiamos a musculatura da reflexão profunda e o senso crítico autônomo.',
-            author: 'Crítica Humanista',
-            citation: 'O Homem Unidimensional'
+            text: 'Os leitores digitais permitem carregar mil livros no bolso, ler no escuro e pesquisar palavras instantaneamente. É o futuro inevitável.',
+            author: 'Entusiasta Digital',
+            citation: ''
         }
     },
     {
         id: 'par-3',
-        title: 'Ambição vs. Contentamento',
+        title: 'Buscar Paixão vs. Buscar Estabilidade',
         thesis: {
-            text: 'Quem não aspira a superar seus limites e moldar a realidade com ambição condena a si mesmo à mediocridade passiva.',
-            author: 'Friedrich Nietzsche',
-            citation: 'Assim Falou Zaratustra'
+            text: 'A vida é curta demais para trabalhar com algo que você não ama. Siga sua paixão, e o sucesso financeiro virá como consequência.',
+            author: 'Visão Romântica',
+            citation: ''
         },
         antithesis: {
-            text: 'A ambição desmedida é a fonte de toda inquietação mental; a verdadeira liberdade reside na moderação dos desejos.',
-            author: 'Epicuro',
-            citation: 'Carta sobre a Felicidade'
+            text: 'Paixões mudam com o tempo. É melhor garantir estabilidade financeira primeiro para então financiar seus hobbies e paixões nas horas livres.',
+            author: 'Visão Pragmática',
+            citation: ''
         }
     }
 ];

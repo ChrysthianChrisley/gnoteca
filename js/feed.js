@@ -6,7 +6,7 @@ import { showAuthGate } from './auth.js';
 import { getMaxFavorites, getNextFavoriteMilestoneInfo, renderProfileConstellation, updateProfileStats } from './favorites.js';
 
 import { openShareModal } from './share.js';
-import { getCadernoNotes, deleteCadernoNote, promoteNoteToPublic } from './caderno.js';
+import { trackInteraction, publishMetrics } from './metrics.js';
 
 // Formatação de Entradas do Supabase
 export function formatIdeaEntry(entry, commentsCount = 0) {
@@ -63,27 +63,6 @@ export function renderIdeaCard(idea) {
 
     const rawTag = idea.tag || 'Geral';
     const displayTag = getTranslatedTopic(rawTag);
-
-    // Se for nota privada do Caderno Pessoal
-    if (idea.is_private) {
-        const citationHtml = idea.citation ? `<div class="card-citation">— Fonte: ${escapeHTML(idea.citation)}</div>` : '';
-        card.classList.add('caderno-card');
-        card.innerHTML = `
-            <div class="idea-header">
-                <span class="idea-date">${idea.date} <span class="caderno-badge">Caderno Pessoal</span></span>
-                <div style="display: flex; align-items: center; gap: 0.35rem;">
-                    <button class="card-tag-pill" type="button" data-action="tag" data-tag="${escapeHTML(rawTag)}">${escapeHTML(displayTag)}</button>
-                    <div class="entry-actions">
-                        <button class="entry-action promote-action" type="button" data-action="promote-note" data-note-id="${idea.id}" title="Publicar este fragmento no Acervo Público">Promover ao Acervo</button>
-                        <button class="entry-action delete-action" type="button" data-action="delete-caderno" data-note-id="${idea.id}" aria-label="Apagar nota">Apagar</button>
-                    </div>
-                </div>
-            </div>
-            <p class="idea-content">${escapeHTML(idea.content).replace(/\n/g, '<br>')}</p>
-            ${citationHtml}
-        `;
-        return card;
-    }
 
     // Extração de citação / nota de rodapé
     let mainContent = idea.content || '';
@@ -368,19 +347,7 @@ export async function fetchEntriesPage(page = 0) {
     if (cached) return cached;
 
     try {
-        if (state.activeFeed === 'caderno') {
-            const notes = getCadernoNotes();
-            const filteredNotes = (tag && tag !== 'Todos') ? notes.filter(n => (n.tag || 'Geral') === tag) : notes;
-            return filteredNotes.map(n => ({
-                id: n.id,
-                content: n.content,
-                tag: n.tag || 'Geral',
-                citation: n.citation || '',
-                date: new Date(n.created_at).toLocaleDateString('pt-BR'),
-                authorName: state.authenticatedUser?.name || 'Você',
-                is_private: true
-            }));
-        }
+
 
         let query;
         if (state.activeFeed === 'favorites') {
@@ -551,9 +518,7 @@ export async function loadIdeas(reset = true) {
 
     if (feedKicker) feedKicker.textContent = state.activeFeed === 'profile' ? translate('profile') : translate('publicCollection');
     if (feedTitle) {
-        if (state.activeFeed === 'caderno') {
-            feedTitle.textContent = 'Meu Caderno Pessoal';
-        } else if (state.activeFeed === 'profile') {
+        if (state.activeFeed === 'profile') {
             feedTitle.textContent = `${translate('fragments')} de ${profileAccount?.name || translate('profile')}`;
         } else if (state.activeFeed === 'favorites') {
             feedTitle.textContent = translate('favoriteCollection');
@@ -586,11 +551,7 @@ export async function loadIdeas(reset = true) {
 
     if (firstPage.length === 0) {
         let emptyMsg = translate('empty');
-        if (state.activeFeed === 'caderno') {
-            emptyMsg = 'Seu caderno pessoal ainda está vazio. Anote ideias, citações de livros e insights com privacidade antes de publicar no acervo!';
-        } else if (state.activeFeed === 'favorites') {
-            emptyMsg = translate('emptyFavorites');
-        } else if (state.activeFeed === 'mine') {
+        if (state.activeFeed === 'mine') {
             emptyMsg = translate('emptyMine');
         } else if (state.activeFeed === 'profile') {
             emptyMsg = translate('emptyProfile');
@@ -1139,28 +1100,6 @@ export async function handleFeedClick(event, onNavigateProfile) {
             content: rawContent,
             authorName: authorName
         });
-        return;
-    }
-
-    if (action === 'promote-note') {
-        const noteId = button.dataset.noteId;
-        button.disabled = true;
-        button.textContent = 'Promovendo...';
-        const success = await promoteNoteToPublic(noteId);
-        if (success) {
-            await loadIdeas();
-        } else {
-            button.disabled = false;
-            button.textContent = 'Promover ao Acervo';
-        }
-        return;
-    }
-
-    if (action === 'delete-caderno') {
-        const noteId = button.dataset.noteId;
-        deleteCadernoNote(noteId);
-        showActionFeedback('Nota removida do seu Caderno.');
-        await loadIdeas();
         return;
     }
 

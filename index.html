@@ -227,24 +227,13 @@
         <!-- Barra de Modos Principais da Gnoteca -->
         <nav class="gnoteca-mode-tabs" role="tablist" aria-label="Navegação Principal">
             <button id="tab-mode-acervo" class="mode-tab-btn active" type="button" data-mode="acervo" data-i18n="acervoPublico">Acervo Público</button>
-            <button id="tab-mode-caderno" class="mode-tab-btn" type="button" data-mode="caderno" data-i18n="cadernoPessoal">Meu Caderno</button>
             <button id="tab-mode-balanca" class="mode-tab-btn" type="button" data-mode="balanca" data-i18n="balanca">A Balança</button>
             <button id="btn-open-zen-reader" class="mode-tab-btn zen-btn" type="button" title="Leitura com Respiração" data-i18n="contemplativeMode">Modo Contemplativo</button>
         </nav>
 
         <!-- Tela de Registro -->
         <section id="write-section" class="hidden">
-            <div class="composer-dest-toggle">
-                <label class="dest-option">
-                    <input type="radio" name="write-destination" id="dest-caderno" value="caderno" checked>
-                    <span class="dest-label">Caderno Pessoal (Privado)</span>
-                </label>
-                <label class="dest-option">
-                    <input type="radio" name="write-destination" id="dest-acervo" value="acervo">
-                    <span class="dest-label">Publicar no Acervo</span>
-                </label>
-            </div>
-            <textarea id="idea-input" maxlength="1000" placeholder="Qual conceito, hipótese ou insight deseja registrar?" data-i18n-placeholder="ideaPlaceholder"></textarea>
+            <textarea id="idea-input" maxlength="280" placeholder="Qual conceito, hipótese ou insight deseja registrar?" data-i18n-placeholder="ideaPlaceholder"></textarea>
             
             <div class="write-citation-row">
                 <input id="write-citation-input" class="citation-input" type="text" maxlength="120" placeholder="Origem / Citação / Livro (opcional. Ex: Sêneca, Da Brevidade da Vida)">
@@ -258,34 +247,34 @@
                         <div id="tag-autocomplete-dropdown" class="tag-autocomplete-dropdown hidden" role="listbox"></div>
                     </div>
                 </div>
-                <div id="char-counter">0 / 1000</div>
+                <div id="char-counter">0 / 280</div>
             </div>
-            <button id="btn-save" data-i18n="saveToGnoteca">Salvar no Caderno</button>
+            <button id="btn-save" data-i18n="saveToGnoteca">Publicar no Acervo</button>
             <p id="feedback-msg" class="hidden" data-i18n="ideaSaved">Ideia salva com sucesso!</p>
         </section>
 
         <!-- Painel Dialético: A Balança (Confronto de Perspectivas) -->
         <section id="balanca-section" class="balanca-section hidden" aria-label="A Balança">
             <div class="balanca-header">
-                <span class="balanca-kicker">Dialética Coletiva</span>
-                <h2 class="balanca-title">A Balança: Confronto de Perspectivas</h2>
-                <p class="balanca-description">O objetivo não é escolher um lado vencedor, mas forjar uma <strong>Síntese</strong> que concilie as duas verdades opostas.</p>
+                <span class="balanca-kicker">Reflexão Coletiva</span>
+                <h2 class="balanca-title">A Balança de Ideias</h2>
+                <p class="balanca-description">O objetivo não é escolher um lado vencedor, mas encontrar o <strong>Ponto de Equilíbrio</strong> entre duas visões diferentes.</p>
                 
                 <!-- Guia Rápido Como Funciona -->
                 <div class="balanca-how-it-works">
                     <div class="balanca-step">
                         <span class="step-num">1</span>
-                        <span class="step-text"><strong>Tese:</strong> Uma verdade observada</span>
+                        <span class="step-text"><strong>Visão A:</strong> Um ponto de vista</span>
                     </div>
                     <div class="balanca-step-arrow" aria-hidden="true">→</div>
                     <div class="balanca-step">
                         <span class="step-num">2</span>
-                        <span class="step-text"><strong>Antítese:</strong> O contraponto oposto</span>
+                        <span class="step-text"><strong>Visão B:</strong> O contraponto</span>
                     </div>
                     <div class="balanca-step-arrow" aria-hidden="true">→</div>
                     <div class="balanca-step active">
                         <span class="step-num">3</span>
-                        <span class="step-text"><strong>Síntese:</strong> Sua conciliação</span>
+                        <span class="step-text"><strong>Sua Conclusão:</strong> O equilíbrio</span>
                     </div>
                 </div>
 
@@ -300,30 +289,28 @@
             <div class="balanca-grid">
                 <div class="balanca-card balanca-thesis" id="balanca-thesis-card">
                     <div class="balanca-card-top">
-                        <span class="balanca-badge thesis">Tese</span>
-                        <span id="balanca-thesis-author" class="balanca-author-tag">Arthur Schopenhauer</span>
+                        <span class="balanca-badge thesis">Visão A</span>
+                        <span id="balanca-thesis-author" class="balanca-author-tag">Defensor do Remoto</span>
                     </div>
-                    <p class="balanca-content" id="balanca-thesis-content">"A solidão e o silêncio são os únicos santuários onde o pensamento pode amadurecer livre do ruído e da validação alheia."</p>
-                    <span class="balanca-citation">— Citação: Aforismos para a Sabedoria da Vida</span>
+                    <p class="balanca-content" id="balanca-thesis-content">"O trabalho remoto liberta as pessoas do trânsito, dando mais tempo para a família e qualidade de vida."</p>
                 </div>
                 <div class="balanca-scale-icon" aria-hidden="true">⇄</div>
                 <div class="balanca-card balanca-antithesis" id="balanca-antithesis-card">
                     <div class="balanca-card-top">
-                        <span class="balanca-badge antithesis">Antítese</span>
-                        <span id="balanca-antithesis-author" class="balanca-author-tag">Sêneca</span>
+                        <span class="balanca-badge antithesis">Visão B</span>
+                        <span id="balanca-antithesis-author" class="balanca-author-tag">Defensor do Presencial</span>
                     </div>
-                    <p class="balanca-content" id="balanca-antithesis-content">"O isolamento excessivo deforma o juízo; a sabedoria e a temperança só se desenvolvem no atrito diário com o outro."</p>
-                    <span class="balanca-citation">— Citação: Cartas a Lucílio</span>
+                    <p class="balanca-content" id="balanca-antithesis-content">"Trabalhar em casa nos isola. É no convívio presencial que a cultura, a amizade e as ideias criativas nascem."</p>
                 </div>
             </div>
 
             <div class="balanca-synthesis-box">
-                <h3 class="synthesis-title">Construir a Síntese</h3>
-                <p class="synthesis-prompt">Qual princípio superior é capaz de harmonizar esses dois polos aparentemente contrários?</p>
-                <textarea id="balanca-synthesis-input" class="synthesis-textarea" maxlength="280" placeholder="Redija sua síntese dialética..."></textarea>
+                <h3 class="synthesis-title">Qual é a sua conclusão?</h3>
+                <p class="synthesis-prompt">Como encontrar o equilíbrio entre esses dois pontos de vista?</p>
+                <textarea id="balanca-synthesis-input" class="synthesis-textarea" maxlength="280" placeholder="Escreva o que você acha que harmoniza as duas opiniões..."></textarea>
                 <div class="synthesis-actions">
                     <span id="balanca-char-counter">0 / 280</span>
-                    <button id="btn-submit-synthesis" class="gate-primary-button" type="button">Propor Síntese ao Acervo</button>
+                    <button id="btn-submit-synthesis" class="gate-primary-button" type="button">Compartilhar Conclusão</button>
                 </div>
             </div>
 

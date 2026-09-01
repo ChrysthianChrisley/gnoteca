@@ -11,7 +11,7 @@ import { initNotifications, openNotificationsDialog, closeNotificationsDialog, m
 import { fetchCommunityPulse, initCommunityPulse } from './pulse.js';
 import { initSettings, openSettingsDialog, closeSettingsDialog } from './settings.js';
 import { initTopics, normalizeTagName, fetchCommunityTopics } from './topics.js';
-import { saveCadernoNote } from './caderno.js';
+import { getTopicKeys, getTopicLabel } from './config.js';
 import { initZenReader } from './reader.js';
 import { initBalanca } from './balanca.js';
 
@@ -88,7 +88,7 @@ export function toggleSidebar(isOpen) {
 }
 
 export async function showFeed(feedType) {
-    if (feedType !== 'global' && feedType !== 'caderno' && !state.authenticatedUser) {
+    if (feedType !== 'global' && !state.authenticatedUser) {
         showAuthGate();
         return;
     }
@@ -96,34 +96,21 @@ export async function showFeed(feedType) {
     state.selectedProfileId = null;
     window.history.pushState({ feedType }, '', getHomePath());
     const isGlobal = feedType === 'global';
-    const isCaderno = feedType === 'caderno';
 
-    // Se for caderno ou se for global com usuário autenticado, exibe o composer
-    writeSection?.classList.toggle('hidden', (!state.authenticatedUser && !isCaderno) || (!isGlobal && !isCaderno));
+    // Se for global com usuário autenticado, exibe o composer
+    writeSection?.classList.toggle('hidden', !state.authenticatedUser || !isGlobal);
     readSection?.classList.remove('hidden');
     document.getElementById('balanca-section')?.classList.add('hidden');
 
     // Sincroniza abas de modo
     const tabAcervo = document.getElementById('tab-mode-acervo');
-    const tabCaderno = document.getElementById('tab-mode-caderno');
     const tabBalanca = document.getElementById('tab-mode-balanca');
     tabAcervo?.classList.toggle('active', isGlobal);
-    tabCaderno?.classList.toggle('active', isCaderno);
     tabBalanca?.classList.remove('active');
 
-    // Se entrou no caderno, marca o destino como caderno
-    if (isCaderno) {
-        const destCaderno = document.getElementById('dest-caderno');
-        if (destCaderno) {
-            destCaderno.checked = true;
-            destCaderno.dispatchEvent(new Event('change'));
-        }
-    }
-
-    // Esconder "Ordenar por" se estiver no Caderno (são notas privadas locais, não faz sentido ordenar por Votos ou Favoritos)
     const filterLabel = document.querySelector('.filter-label');
     if (filterLabel) {
-        filterLabel.classList.toggle('hidden', isCaderno);
+        filterLabel.classList.remove('hidden');
     }
 
     const communityPulseBar = document.getElementById('community-pulse-bar');
@@ -267,14 +254,13 @@ function setupEventListeners() {
     backToFeed?.addEventListener('click', () => showFeed('global'));
     feedFilter?.addEventListener('change', () => loadIdeas());
 
-    // Navegação entre Modos (Acervo Público, Meu Caderno, A Balança)
+    // Navegação entre Modos (Acervo Público, A Balança)
     const tabAcervo = document.getElementById('tab-mode-acervo');
-    const tabCaderno = document.getElementById('tab-mode-caderno');
     const tabBalanca = document.getElementById('tab-mode-balanca');
     const balancaSec = document.getElementById('balanca-section');
 
     function setActiveModeTab(activeTab) {
-        [tabAcervo, tabCaderno, tabBalanca].forEach(t => t?.classList.remove('active'));
+        [tabAcervo, tabBalanca].forEach(t => t?.classList.remove('active'));
         activeTab?.classList.add('active');
     }
 
@@ -285,13 +271,6 @@ function setupEventListeners() {
         showFeed('global');
     });
 
-    tabCaderno?.addEventListener('click', () => {
-        setActiveModeTab(tabCaderno);
-        balancaSec?.classList.add('hidden');
-        readSection?.classList.remove('hidden');
-        showFeed('caderno');
-    });
-
     tabBalanca?.addEventListener('click', () => {
         setActiveModeTab(tabBalanca);
         readSection?.classList.add('hidden');
@@ -299,25 +278,8 @@ function setupEventListeners() {
         balancaSec?.classList.remove('hidden');
     });
 
-    // Alternador de Destino no Composer (Caderno vs Acervo)
-    const destCaderno = document.getElementById('dest-caderno');
-    const destAcervo = document.getElementById('dest-acervo');
-    const citationInput = document.getElementById('write-citation-input');
-
-    const updateComposerDest = () => {
-        const isCaderno = destCaderno?.checked;
-        if (isCaderno) {
-            if (ideaInput) ideaInput.maxLength = 1000;
-            if (charCounter) charCounter.textContent = `${ideaInput?.value.length || 0} / 1000`;
-            if (btnSave) btnSave.textContent = 'Salvar no Caderno';
-        } else {
-            if (ideaInput) ideaInput.maxLength = 280;
-            if (charCounter) charCounter.textContent = `${ideaInput?.value.length || 0} / 280`;
-            if (btnSave) btnSave.textContent = 'Publicar no Acervo';
-        }
-    };
-    destCaderno?.addEventListener('change', updateComposerDest);
-    destAcervo?.addEventListener('change', updateComposerDest);
+    // Publicar Ideia
+    const btnSave = document.getElementById('btn-save');
 
     // Tema Noturno (Sidebar e Header Rápido)
     const btnThemeQuickToggle = document.getElementById('btn-theme-quick-toggle');
@@ -461,24 +423,6 @@ function setupEventListeners() {
         const rawTag = writeTagInput?.dataset?.canonicalTag || writeTagInput?.value || 'Geral';
         const selectedTag = normalizeTagName(rawTag);
         const citation = citationInput?.value.trim() || '';
-        const isCaderno = destCaderno?.checked;
-
-        // Se for para o Caderno Pessoal (privado no navegador)
-        if (isCaderno) {
-            saveCadernoNote({
-                content: text,
-                tag: selectedTag,
-                citation: citation
-            });
-            if (ideaInput) ideaInput.value = '';
-            if (citationInput) citationInput.value = '';
-            if (charCounter) charCounter.textContent = '0 / 1000';
-            showActionFeedback('Pensamento guardado no seu Caderno Pessoal!');
-            if (state.activeFeed === 'caderno') {
-                await loadIdeas();
-            }
-            return;
-        }
 
         // Se for para o Acervo Público
         if (!state.authenticatedUser) {
