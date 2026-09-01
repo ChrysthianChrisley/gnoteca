@@ -1490,3 +1490,110 @@ body.dark-mode .constellation-empty-slot {
     align-items: center;
     padding: 0.5rem;
 }
+
+/* Share Dialog & Social Grid */
+.share-dialog-card {
+    max-width: 440px;
+    width: 90vw;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.share-quote-card {
+    background: var(--soft-accent-color);
+    border: 1px solid var(--border-color);
+    border-left: 3px solid var(--accent-color);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.share-quote-text {
+    font-size: 1rem;
+    line-height: 1.5;
+    font-style: italic;
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.share-quote-author {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--muted-color);
+    text-align: right;
+}
+
+.share-social-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.share-network-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.85rem 0.5rem;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: var(--surface-color);
+    color: var(--primary-color);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.share-network-btn svg {
+    width: 22px;
+    height: 22px;
+    transition: transform 0.2s ease;
+}
+
+.share-network-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.share-network-btn.whatsapp:hover {
+    border-color: #25d366;
+    color: #25d366;
+    background: rgba(37, 211, 102, 0.08);
+}
+
+.share-network-btn.twitter:hover {
+    border-color: #1da1f2;
+    color: #1da1f2;
+    background: rgba(29, 161, 242, 0.08);
+}
+
+.share-network-btn.telegram:hover {
+    border-color: #229ed9;
+    color: #229ed9;
+    background: rgba(34, 158, 217, 0.08);
+}
+
+.share-button {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--muted-color);
+    border-radius: 6px;
+    padding: 4px 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+}
+
+.share-button:hover {
+    color: var(--accent-color);
+    background: var(--soft-accent-color);
+}

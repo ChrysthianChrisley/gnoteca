@@ -1,0 +1,26 @@
+# Dependências
+node_modules/
+package-lock.json
+
+# Supabase CLI e temporários
+supabase/.temp/
+.temp/
+
+# Logs e arquivos de sistema
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+Thumbs.db
+
+# Variáveis de ambiente e chaves locais
+.env
+.env.local
+.env.*.local
+*.env
+
+# VS Code e IDEs
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/

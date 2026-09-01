@@ -118,10 +118,10 @@ O banco de dados relacional e composto por quatro tabelas principais com Row Lev
 
 As regras de negocio estao protegidas em duas camadas:
 
-1. **Camada de Aplicacao (`app.js`)**:
-   - Bloqueio imediato na interface com mensagens de aviso antes do envio da requisicao.
+1. **Camada de Aplicacao (`js/`)**:
+   - Bloqueio imediato na interface com mensagens de aviso e calculo de marcos antes do envio da requisicao.
 2. **Camada de Banco de Dados (`supabase-schema.sql`)**:
-   - `enforce_max_favorites`: Impede que qualquer insercao ultrapasse 3 registros na tabela `favorites` por usuario.
+   - `enforce_max_favorites`: Valida dinamicamente a capacidade de favoritos por usuario de acordo com seu nivel de publicacoes (3, 5, 7, 10 ou 15 slots).
    - `enforce_max_daily_votes`: Impede mais de 5 insercoes diarias na tabela `votes` por usuario no mesmo dia (`date_trunc('day', now())`).
    - `handle_new_user`: Cria automaticamente o perfil publico quando um novo usuario se registra no Supabase Auth.
 
@@ -129,7 +129,7 @@ As regras de negocio estao protegidas em duas camadas:
 
 ## Instalacao e Execucao Local
 
-Por ser uma aplicacao puramente estatica, nao e necessario compilar ou instalar dependencias pesadas:
+Por ser uma aplicacao em ES Modules nativos (Zero Build), nao e necessario compilar ou instalar dependencias:
 
 1. Clone o repositorio:
 ```bash
@@ -138,6 +138,7 @@ cd gnoteca
 ```
 
 2. Execute um servidor HTTP local simples (exemplos):
+- Com Live Server (VS Code Extension)
 - Com Node.js / npx:
 ```bash
 npx serve .
@@ -159,7 +160,7 @@ python -m http.server 3000
 4. Copie todo o conteudo do arquivo `supabase-schema.sql` deste repositorio e cole no editor.
 5. Clique em **Run** para executar o script.
 6. Em **Authentication > Providers**, ative os provedores desejados (Email e Google).
-7. Caso utilize um projeto proprio, atualize a URL e a Publishable Key no topo do arquivo `app.js`.
+7. Caso utilize um projeto proprio, atualize a URL e a Publishable Key no arquivo `js/config.js`.
 
 ---
 
@@ -169,9 +170,19 @@ python -m http.server 3000
 gnoteca/
 |-- index.html            # Estrutura semantica principal e modais
 |-- style.css             # Folha de estilos, tokens de design, modo escuro e responsividade
-|-- app.js                # Logica de aplicacao, chamadas ao Supabase SDK, rotas e internacionalizacao
-|-- supabase-schema.sql   # Script SQL idempotente com tabelas, RLS, politicas e triggers
+|-- supabase-schema.sql   # Script SQL com tabelas, RLS, politicas e triggers
+|-- .gitignore            # Arquivos ignorados pelo Git
 |-- README.md             # Documentacao central do projeto
+|-- js/                   # Modulos JavaScript nativos (ES Modules)
+    |-- config.js         # Cliente Supabase, chaves e constantes
+    |-- state.js          # Estado global reativo e cache em memoria
+    |-- i18n.js           # Dicionarios e funcoes de internacionalizacao
+    |-- utils.js          # Utilitarios (escape, slugify, toast, dark mode)
+    |-- auth.js           # Gestao de login, sessao e modais de acesso
+    |-- profile.js        # Edicao de perfil e inventario de titulos
+    |-- favorites.js      # Gamificacao de slots e constelacao
+    |-- feed.js           # Paginacao, cards, votos e interacoes do feed
+    |-- main.js           # Orquestrador principal e roteamento
 ```
 
 ---
