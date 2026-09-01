@@ -111,8 +111,17 @@ export const translations = {
         topicPsychology: 'Psicologia',
         topicSociety: 'Sociedade',
         topicGeneral: 'Geral',
+        topicGames: 'Games',
+        topicArt: 'Arte',
+        topicLiterature: 'Literatura',
+        topicHistory: 'História',
+        topicEconomics: 'Economia',
+        topicMusic: 'Música',
+        topicCinema: 'Cinema',
+        topicPolitics: 'Política',
+        topicEducation: 'Educação',
         topicOther: '+ Outro tópico...',
-        topicCustomPlaceholder: '#SeuTópico',
+        topicCustomPlaceholder: 'Seu tópico',
 
         // Títulos de Prestígio Intelectual
         titleKnowledgeExplorer: 'Explorador de Conhecimento',
@@ -324,8 +333,17 @@ export const translations = {
         topicPsychology: 'Psychology',
         topicSociety: 'Society',
         topicGeneral: 'General',
+        topicGames: 'Games',
+        topicArt: 'Art',
+        topicLiterature: 'Literature',
+        topicHistory: 'History',
+        topicEconomics: 'Economics',
+        topicMusic: 'Music',
+        topicCinema: 'Cinema',
+        topicPolitics: 'Politics',
+        topicEducation: 'Education',
         topicOther: '+ Other topic...',
-        topicCustomPlaceholder: '#YourTopic',
+        topicCustomPlaceholder: 'Your topic',
 
         // Titles of Intellectual Prestige
         titleKnowledgeExplorer: 'Knowledge Explorer',
@@ -512,8 +530,17 @@ export const translations = {
         topicPsychology: 'Psicología',
         topicSociety: 'Sociedad',
         topicGeneral: 'General',
+        topicGames: 'Juegos',
+        topicArt: 'Arte',
+        topicLiterature: 'Literatura',
+        topicHistory: 'Historia',
+        topicEconomics: 'Economía',
+        topicMusic: 'Música',
+        topicCinema: 'Cine',
+        topicPolitics: 'Política',
+        topicEducation: 'Educación',
         topicOther: '+ Otro tema...',
-        topicCustomPlaceholder: '#TuTema',
+        topicCustomPlaceholder: 'Tu tema',
         topicLabel: 'Tema:',
         by: 'por',
         backToFeed: 'Volver a la colección',
@@ -717,8 +744,17 @@ export const translations = {
         topicPsychology: 'Psychologie',
         topicSociety: 'Société',
         topicGeneral: 'Général',
+        topicGames: 'Jeux',
+        topicArt: 'Art',
+        topicLiterature: 'Littérature',
+        topicHistory: 'Histoire',
+        topicEconomics: 'Économie',
+        topicMusic: 'Musique',
+        topicCinema: 'Cinéma',
+        topicPolitics: 'Politique',
+        topicEducation: 'Éducation',
         topicOther: '+ Autre sujet...',
-        topicCustomPlaceholder: '#VotreSujet',
+        topicCustomPlaceholder: 'Votre sujet',
         topicLabel: 'Sujet :',
         by: 'par',
         backToFeed: 'Retour à la collection',
@@ -869,6 +905,7 @@ export function setLanguage(lang) {
 // Helper para traduzir tópicos mantendo a chave original no banco
 export function getTranslatedTopic(tag) {
     if (!tag) return translate('topicGeneral');
+    const cleanTag = String(tag).trim().replace(/^#+/, '').trim();
     const topicMap = {
         'Todos': 'topicAll',
         'Ciência': 'topicScience',
@@ -878,10 +915,20 @@ export function getTranslatedTopic(tag) {
         'Física': 'topicPhysics',
         'Psicologia': 'topicPsychology',
         'Sociedade': 'topicSociety',
-        'Geral': 'topicGeneral'
+        'Geral': 'topicGeneral',
+        'Games': 'topicGames',
+        'Jogos': 'topicGames',
+        'Arte': 'topicArt',
+        'Literatura': 'topicLiterature',
+        'História': 'topicHistory',
+        'Economia': 'topicEconomics',
+        'Música': 'topicMusic',
+        'Cinema': 'topicCinema',
+        'Política': 'topicPolitics',
+        'Educação': 'topicEducation'
     };
-    const key = topicMap[tag];
-    return key ? translate(key) : tag;
+    const key = topicMap[cleanTag];
+    return key ? translate(key) : cleanTag;
 }
 
 // Helper para traduzir títulos de perfil mantendo o valor original no banco

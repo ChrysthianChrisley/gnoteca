@@ -380,7 +380,7 @@ function setupEventListeners() {
         if (!text) return;
 
         const writeTagInput = document.getElementById('write-tag-input');
-        const rawTag = writeTagInput?.value || 'Geral';
+        const rawTag = writeTagInput?.dataset?.canonicalTag || writeTagInput?.value || 'Geral';
         const selectedTag = normalizeTagName(rawTag);
 
         btnSave.disabled = true;
@@ -400,7 +400,10 @@ function setupEventListeners() {
             }
 
             if (ideaInput) ideaInput.value = '';
-            if (writeTagInput) writeTagInput.value = '#Geral';
+            if (writeTagInput) {
+                writeTagInput.value = 'Geral';
+                delete writeTagInput.dataset.canonicalTag;
+            }
             if (charCounter) {
                 charCounter.textContent = `0 / ${MAX_LENGTH}`;
                 charCounter.classList.remove('limit-reached');

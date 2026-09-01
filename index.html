@@ -227,10 +227,12 @@
         <section id="write-section" class="hidden">
             <textarea id="idea-input" maxlength="280" placeholder="Qual conceito, hipótese ou insight deseja registrar?" data-i18n-placeholder="ideaPlaceholder"></textarea>
             <div class="write-meta-bar">
-                <div class="tag-selector-wrapper">
+                <div class="tag-selector-wrapper" id="write-tag-autocomplete">
                     <label for="write-tag-input" class="tag-select-label" data-i18n="topicLabel">Tópico:</label>
-                    <input id="write-tag-input" class="tag-smart-input" list="available-topics-list" type="text" maxlength="20" placeholder="#Filosofia" value="#Geral">
-                    <datalist id="available-topics-list"></datalist>
+                    <div class="tag-input-relative">
+                        <input id="write-tag-input" class="tag-smart-input" type="text" maxlength="20" placeholder="Filosofia" value="Geral" autocomplete="off" spellcheck="false">
+                        <div id="tag-autocomplete-dropdown" class="tag-autocomplete-dropdown hidden" role="listbox"></div>
+                    </div>
                 </div>
                 <div id="char-counter">0 / 280</div>
             </div>

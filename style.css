@@ -1922,6 +1922,11 @@ body.dark-mode .card-tag-pill:hover {
     border-color: var(--accent-color);
 }
 
+.tag-input-relative {
+    position: relative;
+    display: inline-block;
+}
+
 .tag-smart-input,
 .tag-custom-input {
     background: var(--surface-color);
@@ -1940,6 +1945,55 @@ body.dark-mode .card-tag-pill:hover {
     outline: none;
     border-color: var(--accent-color);
     box-shadow: 0 0 0 2px var(--soft-accent-color);
+}
+
+.tag-autocomplete-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    width: max(180px, 100%);
+    max-height: 220px;
+    overflow-y: auto;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    z-index: 50;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.tag-suggestion-item {
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.84rem;
+    font-weight: 500;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.tag-suggestion-item:hover,
+.tag-suggestion-item.highlighted {
+    background-color: var(--soft-accent-color);
+    color: var(--accent-color);
+}
+
+.tag-suggestion-item strong {
+    color: var(--accent-color);
+}
+
+.tag-suggestion-badge {
+    font-size: 0.7rem;
+    color: var(--muted-color);
+    background: var(--bg-secondary-color);
+    padding: 1px 6px;
+    border-radius: 999px;
 }
 
 /* Threads de Comentários (Reddit Style) */

@@ -67,7 +67,7 @@ export function renderIdeaCard(idea) {
         <div class="idea-header">
             <span class="idea-date">${idea.date}<span class="idea-author">${translate('by')} ${authorHtml}</span></span>
             <div style="display: flex; align-items: center; gap: 0.25rem;">
-                <button class="card-tag-pill" type="button" data-action="tag" data-tag="${escapeHTML(rawTag)}">#${escapeHTML(displayTag)}</button>
+                <button class="card-tag-pill" type="button" data-action="tag" data-tag="${escapeHTML(rawTag)}">${escapeHTML(displayTag)}</button>
                 <div class="entry-actions${isAuthor ? '' : ' hidden'}">
                     <button class="entry-action" type="button" data-action="edit" data-idea-id="${idea.id}" aria-label="${translate('edit')} entrada">${translate('edit')}</button>
                     <button class="entry-action delete-action" type="button" data-action="delete" data-idea-id="${idea.id}" aria-label="${translate('delete')} entrada">${translate('delete')}</button>
@@ -682,22 +682,23 @@ export function enterEditMode(card, idea) {
 
     if (tagButton) {
         const currentTag = idea.tag || tagButton.dataset.tag || 'Geral';
-        const isStandard = ['Geral', 'Ciência', 'Filosofia', 'Tecnologia', 'Neurociência', 'Física', 'Psicologia', 'Sociedade'].includes(currentTag);
+        const isStandard = ['Geral', 'Filosofia', 'Ciência', 'Tecnologia', 'Games', 'Neurociência', 'Física', 'Psicologia', 'Sociedade'].includes(currentTag);
         const tagEditContainer = document.createElement('div');
         tagEditContainer.className = 'card-tag-editor';
         tagEditContainer.innerHTML = `
             <select class="card-tag-select">
-                <option value="Geral"${currentTag === 'Geral' ? ' selected' : ''}>#Geral</option>
-                <option value="Ciência"${currentTag === 'Ciência' ? ' selected' : ''}>#Ciência</option>
-                <option value="Filosofia"${currentTag === 'Filosofia' ? ' selected' : ''}>#Filosofia</option>
-                <option value="Tecnologia"${currentTag === 'Tecnologia' ? ' selected' : ''}>#Tecnologia</option>
-                <option value="Neurociência"${currentTag === 'Neurociência' ? ' selected' : ''}>#Neurociência</option>
-                <option value="Física"${currentTag === 'Física' ? ' selected' : ''}>#Física</option>
-                <option value="Psicologia"${currentTag === 'Psicologia' ? ' selected' : ''}>#Psicologia</option>
-                <option value="Sociedade"${currentTag === 'Sociedade' ? ' selected' : ''}>#Sociedade</option>
+                <option value="Geral"${currentTag === 'Geral' ? ' selected' : ''}>Geral</option>
+                <option value="Filosofia"${currentTag === 'Filosofia' ? ' selected' : ''}>Filosofia</option>
+                <option value="Ciência"${currentTag === 'Ciência' ? ' selected' : ''}>Ciência</option>
+                <option value="Tecnologia"${currentTag === 'Tecnologia' ? ' selected' : ''}>Tecnologia</option>
+                <option value="Games"${currentTag === 'Games' ? ' selected' : ''}>Games</option>
+                <option value="Neurociência"${currentTag === 'Neurociência' ? ' selected' : ''}>Neurociência</option>
+                <option value="Física"${currentTag === 'Física' ? ' selected' : ''}>Física</option>
+                <option value="Psicologia"${currentTag === 'Psicologia' ? ' selected' : ''}>Psicologia</option>
+                <option value="Sociedade"${currentTag === 'Sociedade' ? ' selected' : ''}>Sociedade</option>
                 <option value="__custom__"${!isStandard ? ' selected' : ''}>+ Outro...</option>
             </select>
-            <input class="card-tag-custom${isStandard ? ' hidden' : ''}" type="text" maxlength="20" placeholder="#Tag" value="${!isStandard ? escapeHTML(currentTag) : ''}">
+            <input class="card-tag-custom${isStandard ? ' hidden' : ''}" type="text" maxlength="20" placeholder="Tópico" value="${!isStandard ? escapeHTML(currentTag) : ''}">
         `;
         const selectEl = tagEditContainer.querySelector('.card-tag-select');
         const customEl = tagEditContainer.querySelector('.card-tag-custom');
