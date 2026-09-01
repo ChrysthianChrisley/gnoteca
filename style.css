@@ -2308,7 +2308,9 @@ body.dark-mode .comment-submit-btn {
     width: 100%;
     margin: 0 auto 2.5rem;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    user-select: none;
 }
 
 body.dark-mode .community-pulse-bar {
@@ -2317,6 +2319,12 @@ body.dark-mode .community-pulse-bar {
 
 .community-pulse-bar:hover {
     border-color: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+body.dark-mode .community-pulse-bar:hover {
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.4);
 }
 
 .pulse-indicator {

@@ -40,6 +40,7 @@ export async function fetchCommunityPulse() {
             events.push({
                 type: 'join',
                 actor: name,
+                actorId: p.id,
                 time: p.created_at || new Date().toISOString()
             });
         });
@@ -51,12 +52,15 @@ export async function fetchCommunityPulse() {
                 events.push({
                     type: 'comment',
                     actor: author,
+                    entryId: e.parent_id,
+                    commentId: e.id,
                     time: e.created_at
                 });
             } else {
                 events.push({
                     type: 'entry',
                     actor: author,
+                    entryId: e.id,
                     tag: e.tag || 'Geral',
                     time: e.created_at
                 });
@@ -132,12 +136,33 @@ function renderCurrentPulse() {
     }, 300);
 }
 
+let pulseCallbacks = {};
+
+async function handlePulseClick() {
+    if (pulseEvents.length === 0) return;
+    const event = pulseEvents[currentEventIndex];
+    if (!event) return;
+
+    if (event.type === 'join' && event.actorId) {
+        if (typeof pulseCallbacks.onNavigateProfile === 'function') {
+            await pulseCallbacks.onNavigateProfile(event.actorId);
+        }
+    } else if (event.entryId) {
+        if (typeof pulseCallbacks.onNavigateEntry === 'function') {
+            await pulseCallbacks.onNavigateEntry(event.entryId, event.type === 'comment');
+        }
+    }
+}
+
 // Inicialização da Barra de Atividade
-export function initCommunityPulse() {
-    const container = document.getElementById('pulse-ticker-container');
-    if (container) {
-        container.addEventListener('mouseenter', () => { isHovered = true; });
-        container.addEventListener('mouseleave', () => { isHovered = false; });
+export function initCommunityPulse(callbacks = {}) {
+    pulseCallbacks = callbacks;
+
+    const bar = document.getElementById('community-pulse-bar');
+    if (bar) {
+        bar.addEventListener('mouseenter', () => { isHovered = true; });
+        bar.addEventListener('mouseleave', () => { isHovered = false; });
+        bar.addEventListener('click', handlePulseClick);
     }
 
     fetchCommunityPulse();

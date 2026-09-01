@@ -527,13 +527,41 @@ function setupEventListeners() {
     });
 }
 
+// Navegação suave até um fragmento ou comentário com destaque pulsante
+async function navigateToEntry(entryId, isComment = false) {
+    if (state.activeFeed !== 'global') {
+        await showFeed('global');
+    }
+
+    let targetCard = document.querySelector(`.idea-card [data-idea-id="${entryId}"]`)?.closest('.idea-card')
+        || document.getElementById(`comment-${entryId}`);
+
+    if (isComment && targetCard) {
+        const commentBtn = targetCard.querySelector('[data-action="toggle-comments"]');
+        if (commentBtn && !commentBtn.classList.contains('open')) {
+            commentBtn.click();
+        }
+    }
+
+    if (targetCard) {
+        targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        targetCard.classList.remove('notif-target-pulse');
+        void targetCard.offsetWidth;
+        targetCard.classList.add('notif-target-pulse');
+        setTimeout(() => { targetCard.classList.remove('notif-target-pulse'); }, 2800);
+    }
+}
+
 // Inicialização Principal da Aplicação
 export async function initApp() {
     setDarkMode(localStorage.getItem('gnoteca_dark_mode') === 'true');
     applyLanguage(currentLanguage, false);
     setupEventListeners();
     initSettings();
-    initCommunityPulse();
+    initCommunityPulse({
+        onNavigateProfile: showProfile,
+        onNavigateEntry: navigateToEntry
+    });
     await refreshAuthState(undefined, async () => {
         await loadRouteFromUrl();
         initNotifications();
