@@ -53,11 +53,18 @@ export function setDarkMode(isDark) {
     localStorage.setItem('gnoteca_dark_mode', String(isDark));
     const themeLabel = document.getElementById('theme-label');
     const themeToggle = document.getElementById('theme-toggle');
+    const iconSun = document.getElementById('theme-icon-sun');
+    const iconMoon = document.getElementById('theme-icon-moon');
+
     if (themeLabel) {
         themeLabel.textContent = isDark ? translate('lightMode') : translate('nightMode');
     }
     if (themeToggle) {
         themeToggle.setAttribute('aria-pressed', String(isDark));
+    }
+    if (iconSun && iconMoon) {
+        iconSun.classList.toggle('hidden', !isDark);
+        iconMoon.classList.toggle('hidden', isDark);
     }
 }
 

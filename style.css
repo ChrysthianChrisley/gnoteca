@@ -110,8 +110,45 @@ header {
     }
 }
 
-.login-trigger {
+.header-right-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     margin-left: auto;
+}
+
+.theme-quick-toggle {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    color: var(--muted-color);
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-quick-toggle:hover {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+    background: var(--soft-accent-color);
+    transform: scale(1.05);
+}
+
+.theme-quick-icon {
+    width: 17px;
+    height: 17px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.login-trigger {
     padding: 0.45rem 0.75rem;
     border: 1px solid var(--accent-color);
     border-radius: 6px;
@@ -412,37 +449,100 @@ main {
     font-weight: 700;
 }
 
-.feed-filter {
-    margin-top: 0.35rem;
-    padding: 0.55rem 0.65rem;
-    font-size: 0.85rem;
+.filter-label {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--muted-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    gap: 0.25rem;
 }
 
-/* Formulário de Escrita */
-textarea {
+.feed-filter {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: var(--surface-color);
+    color: var(--primary-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 0.4rem 1.85rem 0.4rem 0.75rem;
+    font-size: 0.84rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 13px;
+    transition: all 0.2s ease;
+}
+
+body.dark-mode .feed-filter {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+
+.feed-filter:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+.feed-filter:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px var(--soft-accent-color);
+}
+
+.feed-filter option {
+    background-color: var(--surface-color);
+    color: var(--text-color);
+    padding: 0.5rem;
+}
+
+/* Formulário de Escrita Integrado no Topo */
+#write-section {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.25rem 1.35rem;
+    margin-bottom: 3.25rem;
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
+}
+
+body.dark-mode #write-section {
+    box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.35);
+}
+
+textarea#idea-input {
     width: 100%;
-    height: 200px;
-    padding: 1rem;
-    font-size: 1.1rem;
+    height: 85px;
+    min-height: 75px;
+    padding: 0.75rem 0.95rem;
+    font-size: 0.98rem;
+    line-height: 1.5;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     resize: vertical;
-    margin-bottom: 1rem;
+    margin-bottom: 0.65rem;
     background-color: var(--surface-color);
     color: var(--text-color);
+    transition: all 0.2s ease;
 }
 
-textarea:focus {
+textarea#idea-input:focus {
     outline: none;
     border-color: var(--accent-color);
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.14);
+    box-shadow: 0 0 0 3px var(--soft-accent-color);
+    height: 105px;
 }
 
 #char-counter {
     text-align: right;
     font-size: 0.8rem;
-    color: #888;
-    margin-bottom: 1rem;
+    color: var(--muted-color);
 }
 
 #char-counter.limit-reached {
@@ -451,26 +551,33 @@ textarea:focus {
 
 #btn-save {
     background-color: var(--accent-color);
-    color: #fff;
+    color: #ffffff;
     border: none;
-    padding: 0.8rem 1.5rem;
-    font-size: 1rem;
+    padding: 0.65rem 1.25rem;
+    font-size: 0.92rem;
     border-radius: 6px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 600;
     width: 100%;
-    transition: background-color 0.2s;
+    margin-top: 0.6rem;
+    transition: all 0.2s ease;
+}
+
+body.dark-mode #btn-save {
+    color: #090e17;
 }
 
 #btn-save:hover {
-    background-color: var(--accent-color);
+    opacity: 0.92;
+    transform: translateY(-1px);
 }
 
 #feedback-msg {
     color: #27ae60;
-    margin-top: 1rem;
+    margin-top: 0.75rem;
     text-align: center;
     font-weight: bold;
+    font-size: 0.88rem;
 }
 
 #action-feedback {
@@ -1659,6 +1766,34 @@ body.dark-mode .card-tag-pill:hover {
     color: #090e17;
 }
 
+.card-tag-editor {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.card-tag-select {
+    background: var(--surface-color);
+    border: 1px solid var(--accent-color);
+    color: var(--primary-color);
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 2px 6px;
+    cursor: pointer;
+}
+
+.card-tag-custom {
+    background: var(--surface-color);
+    border: 1px solid var(--accent-color);
+    color: var(--primary-color);
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 2px 6px;
+    width: 85px;
+}
+
 /* Barra de Metadados na Escrita */
 .write-meta-bar {
     display: flex;
@@ -1693,4 +1828,243 @@ body.dark-mode .card-tag-pill:hover {
 .tag-select-input:focus {
     outline: none;
     border-color: var(--accent-color);
+}
+
+.tag-custom-input {
+    background: var(--surface-color);
+    border: 1px solid var(--accent-color);
+    color: var(--primary-color);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    width: 130px;
+}
+
+.tag-custom-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--soft-accent-color);
+}
+
+/* Fios Dialéticos */
+.dialectic-toggle-btn {
+    display: inline-flex;
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.65rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--surface-color);
+    color: var(--muted-color);
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.dialectic-toggle-btn:hover,
+.dialectic-toggle-btn.open {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    background: var(--soft-accent-color);
+}
+
+.dialectic-thread-container {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    position: relative;
+    padding-left: 1rem;
+}
+
+.dialectic-thread-container::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1.5rem;
+    bottom: 1.5rem;
+    width: 2px;
+    background: var(--border-color);
+    border-radius: 1px;
+}
+
+.dialectic-item {
+    background: var(--surface-glass);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    position: relative;
+    font-size: 0.92rem;
+}
+
+.dialectic-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+}
+
+.dialectic-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.dialectic-badge.antithesis {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.dialectic-badge.synthesis {
+    background: var(--gold-soft);
+    color: var(--gold-accent);
+    border: 1px solid rgba(217, 119, 6, 0.25);
+}
+
+.dialectic-reply-form {
+    margin-top: 0.5rem;
+    background: var(--soft-accent-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.dialectic-type-selector {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.dialectic-type-btn {
+    flex: 1;
+    padding: 6px 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: var(--surface-color);
+    color: var(--muted-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dialectic-type-btn.active.antithesis {
+    background: #ef4444;
+    color: #ffffff;
+    border-color: #ef4444;
+}
+
+.dialectic-type-btn.active.synthesis {
+    background: var(--gold-accent);
+    color: #ffffff;
+    border-color: var(--gold-accent);
+}
+
+.dialectic-reply-input {
+    width: 100%;
+    min-height: 60px;
+    resize: vertical;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: var(--surface-color);
+    color: var(--text-color);
+    padding: 8px;
+    font-size: 0.88rem;
+    font-family: inherit;
+}
+
+.dialectic-reply-input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+.dialectic-submit-btn {
+    align-self: flex-end;
+    padding: 6px 14px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border-radius: 6px;
+    border: none;
+    background: var(--accent-color);
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+body.dark-mode .dialectic-submit-btn {
+    color: #090e17;
+}
+
+.dialectic-submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Card 4 Desfocado (Teaser de Curiosidade para Visitantes) */
+.idea-card.blurred-teaser {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    min-height: 170px;
+    border-style: dashed;
+    border-color: var(--accent-color);
+}
+
+.blurred-content-wrapper {
+    filter: blur(6px);
+    opacity: 0.45;
+    user-select: none;
+    pointer-events: none;
+    transform: scale(0.98);
+}
+
+.blurred-teaser-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    background: linear-gradient(180deg, rgba(var(--surface-color), 0.4) 0%, var(--surface-glass) 60%);
+    padding: 1.25rem;
+    text-align: center;
+    z-index: 5;
+    backdrop-filter: blur(2px);
+}
+
+.blurred-teaser-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    background: var(--soft-accent-color);
+    color: var(--accent-color);
+    padding: 3px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.blurred-teaser-text {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    max-width: 320px;
+    line-height: 1.4;
+    margin: 0;
 }

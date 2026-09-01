@@ -1,6 +1,7 @@
 import { supabaseClient } from './config.js';
 import { state } from './state.js';
 import { refreshAuthState } from './auth.js';
+import { getTranslatedTitle, translate } from './i18n.js';
 
 // Gerenciamento e Diálogo de Edição de Perfil
 export function closeProfileEditDialog() {
@@ -83,7 +84,7 @@ export async function openSelectTitleDialog() {
         unlocked.forEach(t => {
             const opt = document.createElement('option');
             opt.value = t;
-            opt.textContent = t;
+            opt.textContent = getTranslatedTitle(t);
             if (t === state.authenticatedUser.title) opt.selected = true;
             selectEditTitle.appendChild(opt);
         });

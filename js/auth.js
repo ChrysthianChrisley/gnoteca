@@ -1,6 +1,6 @@
 import { supabaseClient } from './config.js';
 import { state, invalidateCache } from './state.js';
-import { translate } from './i18n.js';
+import { translate, getTranslatedTitle } from './i18n.js';
 import { slugify, updateAvatarDisplay, showActionFeedback, getHomePath } from './utils.js';
 
 // Extração de Metadados do Usuário do Provedor de Autenticação
@@ -212,7 +212,7 @@ export async function refreshAuthState(incomingUser = undefined, onStateRefreshe
                 if (profileName) profileName.textContent = state.authenticatedUser.name;
                 if (headerUserName) headerUserName.textContent = state.authenticatedUser.name;
                 if (profileUsername) profileUsername.textContent = '@' + state.authenticatedUser.username;
-                if (profileSubtitle) profileSubtitle.textContent = state.authenticatedUser.title || translate('profileSubtitle');
+                if (profileSubtitle) profileSubtitle.textContent = getTranslatedTitle(state.authenticatedUser.title);
                 profileAvatars.forEach(avatar => {
                     updateAvatarDisplay(avatar, state.authenticatedUser.avatar_url, state.authenticatedUser.name);
                 });
@@ -224,6 +224,7 @@ export async function refreshAuthState(incomingUser = undefined, onStateRefreshe
         }
 
         const authenticated = Boolean(state.authenticatedUser);
+        const writeSection = document.getElementById('write-section');
 
         if (authPanel) authPanel.classList.toggle('hidden', authenticated);
         if (authStatus) authStatus.textContent = authenticated ? (state.authenticatedUser.email || state.authenticatedUser.name) : translate('notAuthenticated');
@@ -233,6 +234,7 @@ export async function refreshAuthState(incomingUser = undefined, onStateRefreshe
         if (btnSignout) btnSignout.classList.toggle('hidden', !authenticated);
         if (loginTrigger) loginTrigger.classList.toggle('hidden', authenticated);
         if (loadMoreFeed) loadMoreFeed.classList.toggle('hidden', authenticated || state.activeFeed !== 'global');
+        if (writeSection) writeSection.classList.toggle('hidden', !authenticated);
 
         if (authenticated) {
             hideAuthGate();

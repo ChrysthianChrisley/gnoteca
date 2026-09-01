@@ -1,6 +1,6 @@
 import { supabaseClient, MAX_LENGTH, PROJECT_BASE_PATH } from './config.js';
 import { state, invalidateCache } from './state.js';
-import { translate, setLanguage, currentLanguage } from './i18n.js';
+import { translate, setLanguage, currentLanguage, getTranslatedTitle } from './i18n.js';
 import { slugify, updateAvatarDisplay, showActionFeedback, setDarkMode, getProfilePath, getHomePath } from './utils.js';
 import { showAuthGate, hideAuthGate, handleGoogleSignIn, handleEmailSignIn, handleEmailSignUp, handleSignOut, refreshAuthState } from './auth.js';
 import { updateProfileStats } from './favorites.js';
@@ -88,10 +88,9 @@ export async function showFeed(feedType) {
     state.activeFeed = feedType;
     state.selectedProfileId = null;
     window.history.pushState({ feedType }, '', getHomePath());
-    writeSection?.classList.add('hidden');
+    const isGlobal = feedType === 'global';
+    writeSection?.classList.toggle('hidden', !state.authenticatedUser || !isGlobal);
     readSection?.classList.remove('hidden');
-    btnWrite?.classList.remove('active');
-    btnRead?.classList.toggle('active', feedType === 'mine');
     await loadIdeas();
 }
 
@@ -175,10 +174,17 @@ export async function loadRouteFromUrl() {
     await loadIdeas();
 }
 
-export function applyLanguage(language) {
+export function applyLanguage(language, reload = true) {
     setLanguage(language);
     document.querySelectorAll('[data-i18n]').forEach(element => {
-        element.textContent = translate(element.dataset.i18n);
+        const translated = translate(element.dataset.i18n);
+        if (element.classList.contains('topic-pill')) {
+            element.textContent = element.dataset.tag === 'Todos' ? translated : `#${translated}`;
+        } else if (element.tagName === 'OPTION' && element.closest('#write-tag-select')) {
+            element.textContent = element.value === '__custom__' || element.value === 'Todos' ? translated : `#${translated}`;
+        } else {
+            element.textContent = translated;
+        }
     });
     document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
         element.placeholder = translate(element.dataset.i18nPlaceholder);
@@ -188,7 +194,13 @@ export function applyLanguage(language) {
     if (themeLabel) {
         themeLabel.textContent = document.body.classList.contains('dark-mode') ? translate('lightMode') : translate('nightMode');
     }
-    loadIdeas();
+    const profileSubtitle = document.getElementById('profile-subtitle');
+    if (profileSubtitle && state.authenticatedUser) {
+        profileSubtitle.textContent = getTranslatedTitle(state.authenticatedUser.title);
+    }
+    if (reload) {
+        loadIdeas();
+    }
 }
 
 // Configuração dos Event Listeners Globais
@@ -209,10 +221,11 @@ function setupEventListeners() {
     backToFeed?.addEventListener('click', () => showFeed('global'));
     feedFilter?.addEventListener('change', () => loadIdeas());
 
-    // Tema Noturno
-    themeToggle?.addEventListener('click', () => {
-        setDarkMode(!document.body.classList.contains('dark-mode'));
-    });
+    // Tema Noturno (Sidebar e Header Rápido)
+    const btnThemeQuickToggle = document.getElementById('btn-theme-quick-toggle');
+    const toggleTheme = () => setDarkMode(!document.body.classList.contains('dark-mode'));
+    themeToggle?.addEventListener('click', toggleTheme);
+    btnThemeQuickToggle?.addEventListener('click', toggleTheme);
 
     // Idiomas
     languageOptions.forEach(option => option.addEventListener('click', () => {
@@ -310,7 +323,12 @@ function setupEventListeners() {
         if (!text) return;
 
         const tagSelect = document.getElementById('write-tag-select');
-        const selectedTag = tagSelect?.value || 'Geral';
+        const customTagInput = document.getElementById('write-custom-tag');
+        let selectedTag = tagSelect?.value || 'Geral';
+        if (selectedTag === '__custom__') {
+            const customVal = customTagInput?.value.trim().replace(/^#+/, '');
+            selectedTag = customVal ? customVal.slice(0, 20) : 'Geral';
+        }
 
         btnSave.disabled = true;
         try {
@@ -329,6 +347,9 @@ function setupEventListeners() {
             }
 
             if (ideaInput) ideaInput.value = '';
+            if (customTagInput) customTagInput.value = '';
+            if (tagSelect) tagSelect.value = 'Geral';
+            customTagInput?.classList.add('hidden');
             if (charCounter) {
                 charCounter.textContent = `0 / ${MAX_LENGTH}`;
                 charCounter.classList.remove('limit-reached');
@@ -361,6 +382,19 @@ function setupEventListeners() {
             p.classList.toggle('active', p === pill);
         });
         await loadIdeas();
+    });
+
+    // Seletor de Tópicos e Campo Personalizado
+    const writeTagSelect = document.getElementById('write-tag-select');
+    const writeCustomTag = document.getElementById('write-custom-tag');
+    writeTagSelect?.addEventListener('change', () => {
+        if (writeTagSelect.value === '__custom__') {
+            writeCustomTag?.classList.remove('hidden');
+            writeCustomTag?.focus();
+        } else {
+            writeCustomTag?.classList.add('hidden');
+            if (writeCustomTag) writeCustomTag.value = '';
+        }
     });
 
     // Feed Event Delegation
@@ -421,7 +455,7 @@ function setupEventListeners() {
 // Inicialização Principal da Aplicação
 export async function initApp() {
     setDarkMode(localStorage.getItem('gnoteca_dark_mode') === 'true');
-    applyLanguage(currentLanguage);
+    applyLanguage(currentLanguage, false);
     setupEventListeners();
     await refreshAuthState(undefined, async () => {
         await loadRouteFromUrl();

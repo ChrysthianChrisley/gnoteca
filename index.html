@@ -13,15 +13,17 @@
 <body>
     <header>
         <button id="btn-home" class="brand-button" type="button">Gnoteca</button>
-        <nav>
-            <button id="btn-write" class="hidden" data-i18n="newIdea">Nova Ideia</button>
-            <button id="btn-read" class="hidden" data-i18n="myCollection">Meu Acervo</button>
-        </nav>
-        <button id="login-trigger" class="login-trigger" type="button" data-i18n="signIn">Entrar</button>
-        <button id="btn-profile" class="profile-trigger hidden" aria-label="Abrir perfil" aria-expanded="false">
-            <span class="profile-avatar" data-profile-avatar>?</span>
-            <span id="header-user-name" class="header-user-name"></span>
-        </button>
+        <div class="header-right-actions">
+            <button id="btn-theme-quick-toggle" class="theme-quick-toggle" type="button" aria-label="Alternar modo noturno" title="Alternar modo noturno">
+                <svg id="theme-icon-sun" class="theme-quick-icon hidden" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                <svg id="theme-icon-moon" class="theme-quick-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            </button>
+            <button id="login-trigger" class="login-trigger" type="button" data-i18n="signIn">Entrar</button>
+            <button id="btn-profile" class="profile-trigger hidden" aria-label="Abrir perfil" aria-expanded="false">
+                <span class="profile-avatar" data-profile-avatar>?</span>
+                <span id="header-user-name" class="header-user-name"></span>
+            </button>
+        </div>
     </header>
 
     <div id="sidebar-overlay" class="sidebar-overlay hidden"></div>
@@ -135,22 +137,24 @@
             <textarea id="idea-input" maxlength="280" placeholder="Qual conceito, hipótese ou insight deseja registrar?" data-i18n-placeholder="ideaPlaceholder"></textarea>
             <div class="write-meta-bar">
                 <div class="tag-selector-wrapper">
-                    <label for="write-tag-select" class="tag-select-label">Tópico:</label>
+                    <label for="write-tag-select" class="tag-select-label" data-i18n="topicLabel">Tópico:</label>
                     <select id="write-tag-select" class="tag-select-input">
-                        <option value="Geral">#Geral</option>
-                        <option value="Ciência">#Ciência</option>
-                        <option value="Filosofia">#Filosofia</option>
-                        <option value="Tecnologia">#Tecnologia</option>
-                        <option value="Neurociência">#Neurociência</option>
-                        <option value="Física">#Física</option>
-                        <option value="Psicologia">#Psicologia</option>
-                        <option value="Sociedade">#Sociedade</option>
+                        <option value="Geral" data-i18n="topicGeneral">#Geral</option>
+                        <option value="Ciência" data-i18n="topicScience">#Ciência</option>
+                        <option value="Filosofia" data-i18n="topicPhilosophy">#Filosofia</option>
+                        <option value="Tecnologia" data-i18n="topicTechnology">#Tecnologia</option>
+                        <option value="Neurociência" data-i18n="topicNeuroscience">#Neurociência</option>
+                        <option value="Física" data-i18n="topicPhysics">#Física</option>
+                        <option value="Psicologia" data-i18n="topicPsychology">#Psicologia</option>
+                        <option value="Sociedade" data-i18n="topicSociety">#Sociedade</option>
+                        <option value="__custom__" data-i18n="topicOther">+ Outro tópico...</option>
                     </select>
+                    <input id="write-custom-tag" class="tag-custom-input hidden" type="text" maxlength="20" placeholder="#SeuTópico" data-i18n-placeholder="topicCustomPlaceholder">
                 </div>
                 <div id="char-counter">0 / 280</div>
             </div>
             <button id="btn-save" data-i18n="saveToGnoteca">Salvar na Gnoteca</button>
-            <p id="feedback-msg" class="hidden">Ideia salva com sucesso!</p>
+            <p id="feedback-msg" class="hidden" data-i18n="ideaSaved">Ideia salva com sucesso!</p>
         </section>
 
         <!-- Tela de Leitura -->
@@ -172,15 +176,15 @@
 
             <!-- Barra de Filtro de Tópicos / Tags -->
             <div id="topic-filter-bar" class="topic-filter-bar" role="tablist" aria-label="Filtrar por tópico">
-                <button class="topic-pill active" data-tag="Todos" type="button">Todos</button>
-                <button class="topic-pill" data-tag="Ciência" type="button">#Ciência</button>
-                <button class="topic-pill" data-tag="Filosofia" type="button">#Filosofia</button>
-                <button class="topic-pill" data-tag="Tecnologia" type="button">#Tecnologia</button>
-                <button class="topic-pill" data-tag="Neurociência" type="button">#Neurociência</button>
-                <button class="topic-pill" data-tag="Física" type="button">#Física</button>
-                <button class="topic-pill" data-tag="Psicologia" type="button">#Psicologia</button>
-                <button class="topic-pill" data-tag="Sociedade" type="button">#Sociedade</button>
-                <button class="topic-pill" data-tag="Geral" type="button">#Geral</button>
+                <button class="topic-pill active" data-tag="Todos" data-i18n="topicAll" type="button">Todos</button>
+                <button class="topic-pill" data-tag="Ciência" data-i18n="topicScience" type="button">#Ciência</button>
+                <button class="topic-pill" data-tag="Filosofia" data-i18n="topicPhilosophy" type="button">#Filosofia</button>
+                <button class="topic-pill" data-tag="Tecnologia" data-i18n="topicTechnology" type="button">#Tecnologia</button>
+                <button class="topic-pill" data-tag="Neurociência" data-i18n="topicNeuroscience" type="button">#Neurociência</button>
+                <button class="topic-pill" data-tag="Física" data-i18n="topicPhysics" type="button">#Física</button>
+                <button class="topic-pill" data-tag="Psicologia" data-i18n="topicPsychology" type="button">#Psicologia</button>
+                <button class="topic-pill" data-tag="Sociedade" data-i18n="topicSociety" type="button">#Sociedade</button>
+                <button class="topic-pill" data-tag="Geral" data-i18n="topicGeneral" type="button">#Geral</button>
             </div>
             <div id="profile-constellation" class="profile-constellation hidden"></div>
             <div id="ideas-list">
@@ -203,50 +207,37 @@
                 </div>
             </div>
 
-            <!-- Banner de Bloqueio para Visitantes Deslogados (Abaixo da 3a Postagem) -->
-            <div id="unauth-gate-banner" class="unauth-gate-banner hidden">
-                <div class="unauth-gate-card">
-                    <span class="unauth-gate-pill" data-i18n="unauthGateBadge">Acervo Restrito a Visitantes</span>
-                    <h3 class="unauth-gate-title" data-i18n="unauthGateTitle">Deseja continuar explorando?</h3>
-                    <p class="unauth-gate-text" data-i18n="unauthGateText">Voce visualizou os 3 ultimos fragmentos. Faca login ou crie sua conta gratuita para desbloquear o acervo infinito, publicar suas ideias e votar.</p>
-                    <div class="unauth-gate-actions">
-                        <button id="gate-banner-auth" class="gate-banner-primary" type="button" data-i18n="signInToContinue">Entrar ou Criar Conta</button>
-                        <button id="gate-banner-google" class="gate-banner-google" type="button"><span class="google-mark" aria-hidden="true">G</span> <span data-i18n="continueGoogle">Continuar com Google</span></button>
-                    </div>
-                </div>
-            </div>
-
             <div id="feed-sentinel" class="feed-sentinel"></div>
             <button id="btn-back-to-top" class="back-to-top hidden" type="button" aria-label="Voltar ao topo" title="Voltar ao topo">^</button>
         </section>
     <div id="edit-profile-dialog" class="auth-gate hidden" role="dialog" aria-modal="true" aria-labelledby="edit-profile-title">
         <div class="auth-gate-card">
             <button id="close-edit-dialog" class="auth-gate-close" type="button" aria-label="Fechar">x</button>
-            <h2 id="edit-profile-title" class="dialog-eyebrow">Editar Perfil</h2>
+            <h2 id="edit-profile-title" class="dialog-eyebrow" data-i18n="editProfile">Editar Perfil</h2>
             
             <div id="edit-name-section" class="hidden">
-                <p>Alterar Nome de Exibição</p>
-                <input id="input-edit-name" class="auth-input" type="text" placeholder="Seu Nome">
-                <p class="form-hint">Este é o nome que aparece no topo do seu perfil (permite espaços e letras maiúsculas).</p>
+                <p data-i18n="changeDisplayName">Alterar Nome de Exibição</p>
+                <input id="input-edit-name" class="auth-input" type="text" placeholder="Seu Nome" data-i18n-placeholder="namePlaceholder">
+                <p class="form-hint" data-i18n="nameHint">Este é o nome que aparece no topo do seu perfil (permite espaços e letras maiúsculas).</p>
             </div>
             
             <div id="edit-avatar-section" class="hidden">
-                <p>Alterar foto de perfil</p>
-                <input id="input-edit-avatar" class="auth-input" type="url" placeholder="https://link-da-imagem.com/foto.jpg">
-                <p class="form-hint">Cole o link (URL) direto de uma imagem.</p>
+                <p data-i18n="changeAvatar">Alterar Foto de Perfil</p>
+                <input id="input-edit-avatar" class="auth-input" type="url" placeholder="https://link-da-imagem.com/foto.jpg" data-i18n-placeholder="avatarPlaceholder">
+                <p class="form-hint" data-i18n="avatarHint">Cole o link (URL) direto de uma imagem (jpg, png, webp).</p>
             </div>
 
             <div id="edit-title-section" class="hidden">
-                <p>Escolha seu Título</p>
+                <p data-i18n="chooseTitle">Escolha seu Título</p>
                 <select id="select-edit-title" class="auth-input">
                     <!-- Options preenchidas dinamicamente pelo JS -->
                 </select>
-                <p class="form-hint">Desbloqueie novos títulos participando da Gnoteca.</p>
+                <p class="form-hint" data-i18n="unlockTitlesHint">Desbloqueie novos títulos participando da Gnoteca.</p>
             </div>
 
             <p id="edit-profile-feedback" class="gate-auth-feedback" role="status"></p>
             <div class="dialog-actions">
-                <button id="btn-save-profile" class="gate-primary-button" type="button">Salvar</button>
+                <button id="btn-save-profile" class="gate-primary-button" type="button" data-i18n="save">Salvar</button>
             </div>
         </div>
     </div>
@@ -255,7 +246,7 @@
     <div id="share-card-dialog" class="auth-gate hidden" role="dialog" aria-modal="true" aria-labelledby="share-card-title">
         <div class="auth-gate-card share-dialog-card">
             <button id="close-share-dialog" class="auth-gate-close" type="button" aria-label="Fechar">x</button>
-            <h2 id="share-card-title" class="dialog-eyebrow">Compartilhar Fragmento</h2>
+            <h2 id="share-card-title" class="dialog-eyebrow" data-i18n="shareTitle">Compartilhar Fragmento</h2>
             
             <div class="share-quote-card">
                 <p id="share-quote-preview" class="share-quote-text">“...”</p>
@@ -278,7 +269,7 @@
             </div>
 
             <div class="dialog-actions">
-                <button id="btn-share-copy" class="gate-primary-button" type="button">Copiar Citação com Link</button>
+                <button id="btn-share-copy" class="gate-primary-button" type="button" data-i18n="copyQuote">Copiar Citação com Link</button>
             </div>
         </div>
     </div>

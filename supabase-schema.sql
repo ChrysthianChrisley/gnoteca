@@ -18,6 +18,8 @@ create table if not exists public.entries (
     author_id uuid not null references public.profiles(id) on delete cascade,
     content text not null check (char_length(trim(content)) between 1 and 280),
     tag text not null default 'Geral',
+    parent_id bigint references public.entries(id) on delete cascade,
+    dialectic_type text check (dialectic_type in ('antithesis', 'synthesis')),
     created_at timestamptz not null default now()
 );
 
@@ -42,6 +44,7 @@ create table if not exists public.favorites (
 create index if not exists entries_created_at_idx on public.entries (created_at desc);
 create index if not exists entries_author_id_idx on public.entries (author_id);
 create index if not exists entries_tag_idx on public.entries (tag);
+create index if not exists entries_parent_id_idx on public.entries (parent_id);
 create index if not exists votes_entry_id_idx on public.votes (entry_id);
 create index if not exists favorites_entry_id_idx on public.favorites (entry_id);
 
