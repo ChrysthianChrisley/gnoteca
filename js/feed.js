@@ -1,4 +1,4 @@
-import { supabaseClient, PAGE_SIZE, PUBLIC_FEED_LIMIT, MAX_LENGTH } from './config.js';
+import { supabaseClient, PAGE_SIZE, PUBLIC_FEED_LIMIT, MAX_LENGTH, STORAGE_KEYS } from './config.js';
 import { state, getCacheKey, getCachedData, setCachedData, invalidateCache } from './state.js';
 import { translate, currentLanguage, getTranslatedTopic } from './i18n.js';
 import { escapeHTML, showActionFeedback } from './utils.js';
@@ -116,7 +116,7 @@ export function renderBlurredTeaserCard(idea) {
 // Busca Comentários da Thread Sob Demanda (Lazy Loading) com Votos
 export async function fetchComments(entryId) {
     try {
-        let { data, error } = await supabaseClient
+        const { data, error } = await supabaseClient
             .from('entries')
             .select(`
                 id,
@@ -137,32 +137,6 @@ export async function fetchComments(entryId) {
                 )
             `)
             .eq('parent_id', entryId);
-
-        // Fallback transparente se a coluna is_edited ainda não tiver sido criada via SQL
-        if (error && error.message && error.message.includes('is_edited')) {
-            const fallback = await supabaseClient
-                .from('entries')
-                .select(`
-                    id,
-                    content,
-                    tag,
-                    created_at,
-                    author_id,
-                    profiles:author_id (
-                        id,
-                        username,
-                        display_name,
-                        avatar_url
-                    ),
-                    votes (
-                        user_id,
-                        vote_type
-                    )
-                `)
-                .eq('parent_id', entryId);
-            data = fallback.data;
-            error = fallback.error;
-        }
 
         if (error) {
             console.error('fetchComments error:', error);
@@ -908,7 +882,7 @@ export async function handleFeedClick(event, onNavigateProfile) {
         const commentId = Number(button.dataset.commentId);
         const parentId = Number(button.dataset.parentId);
 
-        const confirmPref = localStorage.getItem('gnoteca_setting_confirm_delete') !== 'false';
+        const confirmPref = localStorage.getItem(STORAGE_KEYS.CONFIRM_DELETE) !== 'false';
         if (confirmPref) {
             const confirmed = window.confirm('Deseja realmente apagar este comentário?');
             if (!confirmed) return;
@@ -990,57 +964,10 @@ export async function handleFeedClick(event, onNavigateProfile) {
 
             showActionFeedback(translate('commentPublished'));
 
-            // Notificações: se for resposta, notifica o autor do comentário respondido!
+            // As notificações de comentário/resposta são geridas automaticamente
+            // pelo trigger `trigger_notify_entry` no banco de dados (supabase-schema.sql).
+
             const card = form.closest('.idea-card');
-            let targetAuthorId = null;
-            let notifType = 'comment';
-
-            if (replyToId) {
-                try {
-                    const { data: targetComment } = await supabaseClient
-                        .from('entries')
-                        .select('author_id')
-                        .eq('id', replyToId)
-                        .maybeSingle();
-                    targetAuthorId = targetComment?.author_id;
-                    notifType = 'reply';
-                } catch (rErr) {
-                    console.warn('fetch reply author warn:', rErr);
-                }
-            }
-
-            // Se for comentário direto no post (sem ser resposta), notifica o autor do post
-            if (!targetAuthorId) {
-                targetAuthorId = card?.dataset.authorId;
-                if (!targetAuthorId) {
-                    try {
-                        const { data: parentEntry } = await supabaseClient
-                            .from('entries')
-                            .select('author_id')
-                            .eq('id', parentId)
-                            .maybeSingle();
-                        targetAuthorId = parentEntry?.author_id;
-                    } catch (peErr) {
-                        console.warn('fetch parent author warn:', peErr);
-                    }
-                }
-            }
-
-            if (targetAuthorId && targetAuthorId !== state.authenticatedUser.id) {
-                try {
-                    await supabaseClient
-                        .from('notifications')
-                        .insert({
-                            user_id: targetAuthorId,
-                            actor_id: state.authenticatedUser.id,
-                            type: notifType,
-                            entry_id: insertedComment?.id || parentId
-                        });
-                } catch (notifErr) {
-                    console.warn('notif comment/reply warn:', notifErr);
-                }
-            }
-
             const countBadge = card?.querySelector('.comment-toggle-btn .action-count');
             if (countBadge) {
                 const cur = parseInt(countBadge.textContent || '0', 10);
@@ -1312,37 +1239,8 @@ export async function handleFeedClick(event, onNavigateProfile) {
                     });
                 if (error) throw error;
 
-                // Notificação direta para o autor do post
-                if (targetType === 'up') {
-                    let targetAuthorId = card?.dataset.authorId;
-                    if (!targetAuthorId) {
-                        try {
-                            const { data: targetEntry } = await supabaseClient
-                                .from('entries')
-                                .select('author_id')
-                                .eq('id', ideaId)
-                                .maybeSingle();
-                            targetAuthorId = targetEntry?.author_id;
-                        } catch (e) {
-                            console.warn('target author warn:', e);
-                        }
-                    }
-
-                    if (targetAuthorId && targetAuthorId !== state.authenticatedUser.id) {
-                        try {
-                            await supabaseClient
-                                .from('notifications')
-                                .insert({
-                                    user_id: targetAuthorId,
-                                    actor_id: state.authenticatedUser.id,
-                                    type: 'vote_up',
-                                    entry_id: ideaId
-                                });
-                        } catch (notifErr) {
-                            console.warn('notif vote warn:', notifErr);
-                        }
-                    }
-                }
+                // As notificações de voto são geridas automaticamente
+                // pelo trigger `trigger_notify_vote` no banco de dados (supabase-schema.sql).
             }
             invalidateCache();
         } catch (err) {
@@ -1404,35 +1302,8 @@ export async function handleFeedClick(event, onNavigateProfile) {
                     });
                 if (error) throw error;
 
-                // Notificação direta para o autor do post
-                let targetAuthorId = card?.dataset.authorId;
-                if (!targetAuthorId) {
-                    try {
-                        const { data: targetEntry } = await supabaseClient
-                            .from('entries')
-                            .select('author_id')
-                            .eq('id', ideaId)
-                            .maybeSingle();
-                        targetAuthorId = targetEntry?.author_id;
-                    } catch (e) {
-                        console.warn('target author fav warn:', e);
-                    }
-                }
-
-                if (targetAuthorId && targetAuthorId !== state.authenticatedUser.id) {
-                    try {
-                        await supabaseClient
-                            .from('notifications')
-                            .insert({
-                                user_id: targetAuthorId,
-                                actor_id: state.authenticatedUser.id,
-                                type: 'favorite',
-                                entry_id: ideaId
-                            });
-                    } catch (notifErr) {
-                        console.warn('notif fav warn:', notifErr);
-                    }
-                }
+                // As notificações de favorito são geridas automaticamente
+                // pelo trigger `trigger_notify_favorite` no banco de dados (supabase-schema.sql).
             }
             invalidateCache();
             await updateProfileStats();

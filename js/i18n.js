@@ -1,4 +1,5 @@
 // Dicionário de Traduções e Internacionalização (i18n)
+import { STORAGE_KEYS } from './config.js';
 export const translations = {
     'pt-BR': {
         // Cabeçalho e Perfil
@@ -875,7 +876,7 @@ export const translations = {
 
 // Detecção inteligente de idioma pelo navegador / sistema operacional do visitante
 export function detectBrowserLanguage() {
-    const saved = localStorage.getItem('gnoteca_language');
+    const saved = localStorage.getItem(STORAGE_KEYS.LANGUAGE);
     if (saved && translations[saved]) return saved;
 
     const navLanguages = navigator.languages || [navigator.language || navigator.userLanguage || ''];
@@ -898,7 +899,7 @@ export function translate(key) {
 
 export function setLanguage(lang) {
     currentLanguage = translations[lang] ? lang : 'pt-BR';
-    localStorage.setItem('gnoteca_language', currentLanguage);
+    localStorage.setItem(STORAGE_KEYS.LANGUAGE, currentLanguage);
     document.documentElement.lang = currentLanguage;
 }
 

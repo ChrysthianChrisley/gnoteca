@@ -1,6 +1,22 @@
-// Configurações do Supabase e Constantes Globais
-export const SUPABASE_URL = 'https://vavitcyykwqqmjqkhyna.supabase.co';
-export const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_5hBpKXPuMB0HmAuyww6WcA_I7C55xwa';
+// =============================================================================
+// Gnoteca — Configuração do Ambiente (TEMPLATE)
+// =============================================================================
+// Este é o arquivo de TEMPLATE. Para rodar o projeto:
+//   1. Copie este arquivo: cp js/config.example.js js/config.js
+//   2. Substitua os valores abaixo pelas suas chaves reais do Supabase.
+//   3. O arquivo js/config.js está no .gitignore e NAO deve ser versionado.
+//
+// Onde encontrar as chaves:
+//   Painel Supabase > Project Settings > API
+// =============================================================================
+
+// URL do seu projeto Supabase
+export const SUPABASE_URL = 'https://SEU_PROJETO.supabase.co';
+
+// Chave pública (anon/publishable) — NAO é a service_role key.
+// Esta chave é segura para o frontend pois o acesso aos dados
+// é controlado pelo Row Level Security (RLS) no banco de dados.
+export const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_SUA_CHAVE_AQUI';
 
 // Instância do Cliente Supabase com persistência de sessão e auto-refresh ativados
 export const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {

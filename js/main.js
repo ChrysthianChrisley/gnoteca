@@ -1,4 +1,4 @@
-import { supabaseClient, MAX_LENGTH, PROJECT_BASE_PATH } from './config.js';
+import { supabaseClient, MAX_LENGTH, PROJECT_BASE_PATH, STORAGE_KEYS } from './config.js';
 import { state, invalidateCache } from './state.js';
 import { translate, setLanguage, currentLanguage, getTranslatedTitle } from './i18n.js';
 import { slugify, updateAvatarDisplay, showActionFeedback, setDarkMode, getProfilePath, getHomePath } from './utils.js';
@@ -98,7 +98,7 @@ export async function showFeed(feedType) {
 
     const communityPulseBar = document.getElementById('community-pulse-bar');
     if (communityPulseBar) {
-        const isPulseEnabled = localStorage.getItem('gnoteca_setting_pulse') !== 'false';
+        const isPulseEnabled = localStorage.getItem(STORAGE_KEYS.PULSE) !== 'false';
         communityPulseBar.classList.toggle('hidden', !state.authenticatedUser || !isGlobal || !isPulseEnabled);
     }
 
@@ -646,20 +646,20 @@ function initCookieBanner() {
     const btnAccept = document.getElementById('btn-accept-cookies');
     if (!banner || !btnAccept) return;
 
-    const hasConsented = localStorage.getItem('gnoteca_cookie_consent') === 'true';
+    const hasConsented = localStorage.getItem(STORAGE_KEYS.COOKIE_CONSENT) === 'true';
     if (!hasConsented) {
         banner.classList.remove('hidden');
     }
 
     btnAccept.addEventListener('click', () => {
-        localStorage.setItem('gnoteca_cookie_consent', 'true');
+        localStorage.setItem(STORAGE_KEYS.COOKIE_CONSENT, 'true');
         banner.classList.add('hidden');
     });
 }
 
 // Inicialização Principal da Aplicação
 export async function initApp() {
-    setDarkMode(localStorage.getItem('gnoteca_dark_mode') === 'true');
+    setDarkMode(localStorage.getItem(STORAGE_KEYS.DARK_MODE) === 'true');
     applyLanguage(currentLanguage, false);
     setupEventListeners();
     initSettings();

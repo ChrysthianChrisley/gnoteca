@@ -1,7 +1,13 @@
-import { PROJECT_BASE_PATH } from './config.js';
+import { PROJECT_BASE_PATH, STORAGE_KEYS } from './config.js';
 import { translate } from './i18n.js';
 
 // Utilitários de Segurança e Formatação
+
+/**
+ * Escapa caracteres especiais HTML para prevenir XSS.
+ * @param {string} str - String a ser escapada.
+ * @returns {string}
+ */
 export function escapeHTML(str) {
     if (!str) return '';
     return String(str)
@@ -12,6 +18,11 @@ export function escapeHTML(str) {
         .replace(/'/g, '&#039;');
 }
 
+/**
+ * Converte um nome/string em slug URL-amigável (ASCII, lowercase, hífens).
+ * @param {string} name
+ * @returns {string}
+ */
 export function slugify(name) {
     return (name || '')
         .normalize('NFD')
@@ -22,6 +33,12 @@ export function slugify(name) {
 }
 
 // Manipulação de Exibição de Avatar
+/**
+ * Atualiza um elemento de avatar com imagem ou inicial do nome.
+ * @param {HTMLElement} avatarEl - O elemento que representa o avatar.
+ * @param {string|null} avatarUrl - URL da imagem do avatar.
+ * @param {string} name - Nome do usuário (usado como fallback).
+ */
 export function updateAvatarDisplay(avatarEl, avatarUrl, name) {
     if (!avatarEl) return;
     const initial = (name || 'U').charAt(0).toUpperCase();
@@ -39,6 +56,10 @@ export function updateAvatarDisplay(avatarEl, avatarUrl, name) {
 }
 
 // Notificações Toast / Action Feedback
+/**
+ * Exibe uma mensagem toast temporária de feedback de ação (3 segundos).
+ * @param {string} message - Mensagem a exibir.
+ */
 export function showActionFeedback(message) {
     const actionFeedback = document.getElementById('action-feedback');
     if (!actionFeedback) return;
@@ -48,9 +69,13 @@ export function showActionFeedback(message) {
 }
 
 // Controle do Tema Escuro
+/**
+ * Ativa ou desativa o modo escuro na aplicação.
+ * @param {boolean} isDark
+ */
 export function setDarkMode(isDark) {
     document.body.classList.toggle('dark-mode', isDark);
-    localStorage.setItem('gnoteca_dark_mode', String(isDark));
+    localStorage.setItem(STORAGE_KEYS.DARK_MODE, String(isDark));
     const themeLabel = document.getElementById('theme-label');
     const themeToggle = document.getElementById('theme-toggle');
     const iconSun = document.getElementById('theme-icon-sun');
@@ -69,6 +94,11 @@ export function setDarkMode(isDark) {
 }
 
 // Helpers de Rotas e URLs
+/**
+ * Gera o caminho de perfil de um usuário baseado no seu username.
+ * @param {{ username?: string, name?: string }} account
+ * @returns {string}
+ */
 export function getProfilePath(account) {
     const profileSlug = slugify(account.username || account.name || '');
     return window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
@@ -76,6 +106,10 @@ export function getProfilePath(account) {
         : `${PROJECT_BASE_PATH}/${profileSlug}`;
 }
 
+/**
+ * Retorna o caminho raíz da aplicação.
+ * @returns {string}
+ */
 export function getHomePath() {
     return `${PROJECT_BASE_PATH}/`;
 }

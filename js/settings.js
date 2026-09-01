@@ -1,14 +1,7 @@
 // Gerenciador de Configurações da Experiência do Usuário
 import { state } from './state.js';
+import { STORAGE_KEYS } from './config.js';
 
-const STORAGE_KEYS = {
-    PULSE: 'gnoteca_setting_pulse',
-    DENSITY: 'gnoteca_setting_density',
-    FONT_SIZE: 'gnoteca_setting_fontsize',
-    AUTOSAVE: 'gnoteca_setting_autosave',
-    CONFIRM_DELETE: 'gnoteca_setting_confirm_delete',
-    DRAFT: 'gnoteca_draft_idea'
-};
 
 // Estado das Configurações
 export const userSettings = {

@@ -1,4 +1,4 @@
-import { supabaseClient } from './config.js';
+import { supabaseClient, STORAGE_KEYS } from './config.js';
 import { state } from './state.js';
 import { translate } from './i18n.js';
 import { escapeHTML } from './utils.js';
@@ -184,13 +184,13 @@ function formatPulseText(event) {
 
 // Inicia a Rotação Suave do Ticker
 function startPulseRotation() {
-    if (localStorage.getItem('gnoteca_setting_pulse') === 'false') return;
+    if (localStorage.getItem(STORAGE_KEYS.PULSE) === 'false') return;
     if (rotationTimer) clearInterval(rotationTimer);
 
     renderCurrentPulse();
 
     rotationTimer = setInterval(() => {
-        if (localStorage.getItem('gnoteca_setting_pulse') === 'false') {
+        if (localStorage.getItem(STORAGE_KEYS.PULSE) === 'false') {
             clearInterval(rotationTimer);
             rotationTimer = null;
             return;
@@ -203,7 +203,7 @@ function startPulseRotation() {
 
 // Renderiza o Evento Atual com Efeito Fade
 function renderCurrentPulse() {
-    if (localStorage.getItem('gnoteca_setting_pulse') === 'false') return;
+    if (localStorage.getItem(STORAGE_KEYS.PULSE) === 'false') return;
     const textEl = document.getElementById('pulse-ticker-text');
     if (!textEl) return;
 

@@ -5,7 +5,6 @@ import { escapeHTML } from './utils.js';
 
 let notificationsList = [];
 let realtimeSubscription = null;
-let pollTimer = null;
 
 // Busca Notificações do Usuário Autenticado
 export async function fetchUserNotifications() {
@@ -206,15 +205,11 @@ export async function clearAllNotifications() {
     }
 }
 
-// Inicia Escuta Realtime e Polling Periódico de Notificações
+// Inicia Escuta Realtime de Notificações (WebSocket)
 export function setupNotificationsRealtime() {
     if (realtimeSubscription) {
         supabaseClient.removeChannel(realtimeSubscription);
         realtimeSubscription = null;
-    }
-    if (pollTimer) {
-        clearInterval(pollTimer);
-        pollTimer = null;
     }
 
     if (!state.authenticatedUser) return;
@@ -238,13 +233,6 @@ export function setupNotificationsRealtime() {
     } catch (err) {
         console.warn('setupNotificationsRealtime catch:', err);
     }
-
-    // Polling de redundância a cada 8 segundos
-    pollTimer = setInterval(() => {
-        if (state.authenticatedUser && !document.hidden) {
-            fetchUserNotifications();
-        }
-    }, 8000);
 }
 
 // Inicialização Geral do Módulo

@@ -1,10 +1,15 @@
-import { supabaseClient } from './config.js';
+import { supabaseClient, STORAGE_KEYS } from './config.js';
 import { state, invalidateCache } from './state.js';
 import { translate, getTranslatedTitle } from './i18n.js';
 import { slugify, updateAvatarDisplay, showActionFeedback, getHomePath } from './utils.js';
 import { fetchUserNotifications, updateNotificationsBadge } from './notifications.js';
 
 // Extração de Metadados do Usuário do Provedor de Autenticação
+/**
+ * Normaliza metadados de usuário vindos de diferentes provedores OAuth (Google, email).
+ * @param {object} user - Objeto de usuário do Supabase Auth.
+ * @returns {{ avatarUrl: string|null, name: string, username: string }}
+ */
 export function extractUserMetadata(user) {
     if (!user) return { avatarUrl: null, name: 'Usuário', username: 'usuario' };
     const meta = user.user_metadata || user.raw_user_meta_data || {};
@@ -43,6 +48,11 @@ let currentAuthGateMode = 'signin';
 let currentChallengeAnswer = null;
 
 // Validador de Política de Senhas (8+ chars, maiúscula, minúscula, número e símbolo)
+/**
+ * Valida uma senha contra a política de segurança do Gnoteca.
+ * @param {string} password
+ * @returns {{ isValid: boolean, hasMinLength: boolean, hasCases: boolean, hasNumSym: boolean }}
+ */
 export function validatePasswordPolicy(password) {
     if (!password) {
         return {
@@ -514,6 +524,23 @@ export async function handleSignOut(onAfterSignOut = null) {
 }
 
 // Sincronização do Estado de Autenticação com a Interface e Supabase
+
+/** Helper interno: sincroniza os elementos do DOM com o usuário autenticado atual. */
+function syncUserDOM(profileName, headerUserName, profileUsername, profileSubtitle, profileAvatars) {
+    const u = state.authenticatedUser;
+    if (!u) return;
+    if (profileName) profileName.textContent = u.name;
+    if (headerUserName) headerUserName.textContent = u.name;
+    if (profileUsername) profileUsername.textContent = '@' + u.username;
+    if (profileSubtitle) profileSubtitle.textContent = getTranslatedTitle(u.title);
+    profileAvatars.forEach(avatar => updateAvatarDisplay(avatar, u.avatar_url, u.name));
+}
+
+/**
+ * Sincroniza o estado de autenticação completo: lê sessão, busca perfil e atualiza o DOM.
+ * @param {object|null|undefined} [incomingUser] - Usuário já resolvido (undefined = busca do Supabase).
+ * @param {Function|null} [onStateRefreshed] - Callback executado após a sincronização.
+ */
 export async function refreshAuthState(incomingUser = undefined, onStateRefreshed = null) {
     try {
         let user = incomingUser;
@@ -544,8 +571,13 @@ export async function refreshAuthState(incomingUser = undefined, onStateRefreshe
             const { avatarUrl, name, username } = extractUserMetadata(user);
             let cachedProfile = null;
             try {
-                const rawCache = localStorage.getItem('gnoteca_profile_cache_' + user.id);
-                if (rawCache) cachedProfile = JSON.parse(rawCache);
+                const rawCache = localStorage.getItem(STORAGE_KEYS.PROFILE_CACHE(user.id));
+                if (rawCache) {
+                    const parsed = JSON.parse(rawCache);
+                    // Invalida cache após 24 horas para evitar dados obsoletos
+                    const isStale = parsed.cachedAt && (Date.now() - parsed.cachedAt > 24 * 60 * 60 * 1000);
+                    if (!isStale) cachedProfile = parsed.data || parsed;
+                }
             } catch (e) {}
 
             state.authenticatedUser = {
@@ -558,13 +590,7 @@ export async function refreshAuthState(incomingUser = undefined, onStateRefreshe
             };
 
             // Atualiza o DOM imediatamente com os dados cacheados (Zero Flicker)
-            if (profileName) profileName.textContent = state.authenticatedUser.name;
-            if (headerUserName) headerUserName.textContent = state.authenticatedUser.name;
-            if (profileUsername) profileUsername.textContent = '@' + state.authenticatedUser.username;
-            if (profileSubtitle) profileSubtitle.textContent = getTranslatedTitle(state.authenticatedUser.title);
-            profileAvatars.forEach(avatar => {
-                updateAvatarDisplay(avatar, state.authenticatedUser.avatar_url, state.authenticatedUser.name);
-            });
+            syncUserDOM(profileName, headerUserName, profileUsername, profileSubtitle, profileAvatars);
 
             // Consulta perfil em public.profiles e sincroniza em background
             try {
@@ -581,7 +607,10 @@ export async function refreshAuthState(incomingUser = undefined, onStateRefreshe
                     state.authenticatedUser.title = profile.current_title || 'Explorador de Conhecimento';
 
                     try {
-                        localStorage.setItem('gnoteca_profile_cache_' + user.id, JSON.stringify(profile));
+                        localStorage.setItem(STORAGE_KEYS.PROFILE_CACHE(user.id), JSON.stringify({
+                            data: profile,
+                            cachedAt: Date.now()
+                        }));
                     } catch (e) {}
                 } else {
                     await supabaseClient.from('profiles').upsert({
@@ -593,14 +622,8 @@ export async function refreshAuthState(incomingUser = undefined, onStateRefreshe
                     }, { onConflict: 'id' });
                 }
 
-                // Re-atualiza a interface com os dados do banco
-                if (profileName) profileName.textContent = state.authenticatedUser.name;
-                if (headerUserName) headerUserName.textContent = state.authenticatedUser.name;
-                if (profileUsername) profileUsername.textContent = '@' + state.authenticatedUser.username;
-                if (profileSubtitle) profileSubtitle.textContent = getTranslatedTitle(state.authenticatedUser.title);
-                profileAvatars.forEach(avatar => {
-                    updateAvatarDisplay(avatar, state.authenticatedUser.avatar_url, state.authenticatedUser.name);
-                });
+                // Re-atualiza a interface com os dados definitivos do banco
+                syncUserDOM(profileName, headerUserName, profileUsername, profileSubtitle, profileAvatars);
             } catch (dbErr) {
                 console.warn('Sync profile with Supabase warn:', dbErr);
             }
@@ -625,24 +648,18 @@ export async function refreshAuthState(incomingUser = undefined, onStateRefreshe
         if (writeSection) writeSection.classList.toggle('hidden', !authenticated);
 
         if (communityPulseBar) {
-            const isPulseEnabled = localStorage.getItem('gnoteca_setting_pulse') !== 'false';
+            const isPulseEnabled = localStorage.getItem(STORAGE_KEYS.PULSE) !== 'false';
             communityPulseBar.classList.toggle('hidden', !authenticated || !isPulseEnabled);
         }
 
         if (authenticated) {
             hideAuthGate();
-            if (profileName) profileName.textContent = state.authenticatedUser.name;
-            if (headerUserName) headerUserName.textContent = state.authenticatedUser.name;
-            profileAvatars.forEach(avatar => {
-                updateAvatarDisplay(avatar, state.authenticatedUser.avatar_url, state.authenticatedUser.name);
-            });
+            syncUserDOM(profileName, headerUserName, profileUsername, profileSubtitle, profileAvatars);
             fetchUserNotifications();
         } else {
             if (profileName) profileName.textContent = translate('notAuthenticated');
             if (headerUserName) headerUserName.textContent = '';
-            profileAvatars.forEach(avatar => {
-                avatar.textContent = '?';
-            });
+            profileAvatars.forEach(avatar => { avatar.textContent = '?'; });
             updateNotificationsBadge();
         }
 

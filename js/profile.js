@@ -1,4 +1,4 @@
-import { supabaseClient } from './config.js';
+import { supabaseClient, STORAGE_KEYS } from './config.js';
 import { state } from './state.js';
 import { refreshAuthState } from './auth.js';
 import { getTranslatedTitle, translate } from './i18n.js';
@@ -139,10 +139,11 @@ export async function saveProfileEdits() {
         if (mode === 'title') state.authenticatedUser.title = updateData.current_title;
 
         try {
-            const cached = JSON.parse(localStorage.getItem('gnoteca_profile_cache_' + state.authenticatedUser.id) || '{}');
-            localStorage.setItem('gnoteca_profile_cache_' + state.authenticatedUser.id, JSON.stringify({
-                ...cached,
-                ...updateData
+            const rawCached = localStorage.getItem(STORAGE_KEYS.PROFILE_CACHE(state.authenticatedUser.id));
+            const existingData = rawCached ? (JSON.parse(rawCached).data || JSON.parse(rawCached)) : {};
+            localStorage.setItem(STORAGE_KEYS.PROFILE_CACHE(state.authenticatedUser.id), JSON.stringify({
+                data: { ...existingData, ...updateData },
+                cachedAt: Date.now()
             }));
         } catch (e) {}
 
