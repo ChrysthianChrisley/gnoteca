@@ -3306,19 +3306,20 @@ body[data-font-size="large"] .idea-content {
 
 .mode-tab-btn:hover {
     color: var(--text-color);
-    background: var(--hover-bg, rgba(0,0,0,0.03));
+    background: var(--bg-secondary-color);
 }
 
 .mode-tab-btn.active {
-    color: var(--text-color);
-    background: var(--card-bg, #ffffff);
+    color: var(--primary-color);
+    background: var(--surface-color);
     border-color: var(--border-color);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.05));
+    box-shadow: var(--shadow-subtle);
 }
 
 body.dark-mode .mode-tab-btn.active {
-    background: var(--soft-accent-color);
-    border-color: rgba(255,255,255,0.12);
+    background: var(--surface-color);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
 }
 
 .mode-tab-btn.zen-btn {
@@ -3366,13 +3367,13 @@ body.dark-mode .mode-tab-btn.active {
 .citation-input {
     width: 100%;
     padding: 0.45rem 0.85rem;
-    font-family: var(--font-secondary, serif);
+    font-family: var(--font-quote);
     font-style: italic;
     font-size: 0.85rem;
     color: var(--text-color);
-    background: var(--input-bg, rgba(0,0,0,0.02));
+    background: var(--bg-secondary-color);
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm, 6px);
+    border-radius: var(--radius-sm);
     transition: border-color 0.2s ease;
 }
 
@@ -3381,46 +3382,63 @@ body.dark-mode .mode-tab-btn.active {
     border-color: var(--accent-color);
 }
 
-/* 3. Card: Citação e Caderno Pessoal */
+/* 3. Card: Citação e Caderno Pessoal (Ajustado no Tom para Dark Mode) */
 .card-citation {
     margin-top: 0.6rem;
     padding-top: 0.45rem;
     border-top: 1px dashed var(--border-color);
-    font-family: var(--font-secondary, serif);
+    font-family: var(--font-quote);
     font-style: italic;
-    font-size: 0.83rem;
+    font-size: 0.84rem;
     color: var(--muted-color);
-    line-height: 1.4;
+    line-height: 1.45;
 }
 
 .caderno-card {
-    border-left: 3px solid var(--accent-color);
-    background: var(--card-bg, #ffffff);
+    background-color: var(--surface-color) !important;
+    border: 1px solid var(--border-color) !important;
+    border-left: 4px solid var(--gold-accent) !important;
+    box-shadow: var(--shadow-subtle);
+}
+
+body.dark-mode .caderno-card {
+    background-color: var(--surface-color) !important;
+    border-color: var(--border-color) !important;
+    border-left-color: var(--gold-accent) !important;
 }
 
 .caderno-badge {
     display: inline-block;
     margin-left: 0.5rem;
-    padding: 0.15rem 0.45rem;
-    border-radius: 4px;
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-sm);
     font-size: 0.72rem;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    background: var(--soft-accent-color);
-    color: var(--accent-color);
+    background: var(--gold-soft);
+    color: var(--gold-accent);
+}
+
+body.dark-mode .caderno-badge {
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
 }
 
 .promote-action {
     color: var(--accent-color) !important;
-    font-weight: 600;
-    border-color: var(--accent-color) !important;
+    font-weight: 600 !important;
+    border: 1px solid var(--accent-color) !important;
+    background: transparent !important;
+    border-radius: var(--radius-sm);
+    padding: 0.2rem 0.6rem;
+    transition: all 0.2s ease;
 }
 .promote-action:hover {
     background: var(--soft-accent-color) !important;
 }
 
-/* 4. Métricas de Impacto Reflexivo (Adeus Up/Downvote) */
+/* 4. Métricas de Impacto Reflexivo */
 .reflex-button {
     display: inline-flex;
     align-items: center;
@@ -3429,8 +3447,8 @@ body.dark-mode .mode-tab-btn.active {
     border: 1px solid var(--border-color);
     background: transparent;
     color: var(--muted-color);
-    border-radius: var(--radius-full, 9999px);
-    font-family: var(--font-primary, sans-serif);
+    border-radius: 9999px;
+    font-family: var(--font-ui);
     font-size: 0.78rem;
     font-weight: 500;
     cursor: pointer;
@@ -3456,36 +3474,36 @@ body.dark-mode .mode-tab-btn.active {
 }
 
 .reflex-insight.selected {
-    border-color: #d97706;
-    color: #d97706;
-    background: rgba(217, 119, 6, 0.08);
+    border-color: var(--gold-accent);
+    color: var(--gold-accent);
+    background: var(--gold-soft);
 }
 body.dark-mode .reflex-insight.selected {
     border-color: #fbbf24;
     color: #fbbf24;
-    background: rgba(251, 191, 36, 0.12);
+    background: rgba(251, 191, 36, 0.15);
 }
 
 .reflex-solid.selected {
     border-color: #2563eb;
     color: #2563eb;
-    background: rgba(37, 99, 235, 0.08);
+    background: rgba(37, 99, 235, 0.1);
 }
 body.dark-mode .reflex-solid.selected {
-    border-color: #60a5fa;
-    color: #60a5fa;
-    background: rgba(96, 165, 250, 0.12);
+    border-color: #38bdf8;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.15);
 }
 
 .reflex-provocative.selected {
     border-color: #7c3aed;
     color: #7c3aed;
-    background: rgba(124, 58, 237, 0.08);
+    background: rgba(124, 58, 237, 0.1);
 }
 body.dark-mode .reflex-provocative.selected {
     border-color: #a78bfa;
     color: #a78bfa;
-    background: rgba(167, 139, 250, 0.12);
+    background: rgba(167, 139, 250, 0.15);
 }
 
 /* 5. Modo de Leitura Contemplativa (Zen Reader / Anti-Scroll) */
@@ -3493,7 +3511,7 @@ body.dark-mode .reflex-provocative.selected {
     position: fixed;
     inset: 0;
     z-index: 9999;
-    background: rgba(15, 15, 17, 0.88);
+    background: rgba(9, 14, 23, 0.92);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     display: flex;
@@ -3503,7 +3521,7 @@ body.dark-mode .reflex-provocative.selected {
 }
 
 body:not(.dark-mode) .zen-reader-overlay {
-    background: rgba(248, 247, 244, 0.92);
+    background: rgba(248, 250, 252, 0.94);
 }
 
 .zen-reader-container {
@@ -3526,7 +3544,7 @@ body:not(.dark-mode) .zen-reader-overlay {
     text-transform: uppercase;
     letter-spacing: 1.5px;
     font-size: 0.72rem;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--accent-color);
 }
 
@@ -3535,7 +3553,7 @@ body:not(.dark-mode) .zen-reader-overlay {
     border: 1px solid var(--border-color);
     color: var(--muted-color);
     padding: 0.35rem 0.75rem;
-    border-radius: var(--radius-sm, 6px);
+    border-radius: var(--radius-sm);
     cursor: pointer;
     font-size: 0.8rem;
     transition: all 0.2s ease;
@@ -3546,19 +3564,14 @@ body:not(.dark-mode) .zen-reader-overlay {
 }
 
 .zen-card {
-    background: var(--card-bg, #ffffff);
+    background-color: var(--surface-color);
     padding: 3rem 2.5rem;
-    border-radius: var(--radius-lg, 16px);
+    border-radius: var(--radius-lg);
     border: 1px solid var(--border-color);
-    box-shadow: 0 20px 40px -15px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow-hover);
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
-}
-
-body.dark-mode .zen-card {
-    background: #18181b;
-    border-color: rgba(255,255,255,0.08);
 }
 
 .zen-meta {
@@ -3570,20 +3583,20 @@ body.dark-mode .zen-card {
 }
 
 .zen-tag {
-    font-weight: 600;
+    font-weight: 700;
     color: var(--accent-color);
 }
 
 .zen-content {
-    font-family: var(--font-secondary, 'Lora', Georgia, serif);
+    font-family: var(--font-quote);
     font-size: 1.45rem;
     line-height: 1.75;
     color: var(--text-color);
-    letter-spacing: -0.2px;
+    letter-spacing: -0.01em;
 }
 
 .zen-citation {
-    font-family: var(--font-secondary, serif);
+    font-family: var(--font-quote);
     font-style: italic;
     font-size: 0.95rem;
     color: var(--muted-color);
@@ -3623,28 +3636,27 @@ body.dark-mode .zen-card {
 .zen-nav-btn {
     flex: 1;
     padding: 0.75rem 1.25rem;
-    border-radius: var(--radius-md, 8px);
+    border-radius: var(--radius-md);
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
-    background: var(--card-bg, #ffffff);
+    background-color: var(--surface-color);
     color: var(--text-color);
     border: 1px solid var(--border-color);
     transition: all 0.2s ease;
 }
 
 .zen-nav-btn:hover {
-    filter: brightness(0.96);
     border-color: var(--accent-color);
 }
 
 .zen-nav-btn.primary {
-    background: var(--accent-color);
+    background-color: var(--accent-color);
     color: #ffffff;
     border-color: var(--accent-color);
 }
 
-/* 6. A Balança: Confronto Dialético */
+/* 6. A Balança: Confronto Dialético & Síntese */
 .balanca-section {
     max-width: 840px;
     margin: 0 auto 3rem auto;
@@ -3655,8 +3667,12 @@ body.dark-mode .zen-card {
 
 .balanca-header {
     text-align: center;
-    max-width: 600px;
+    max-width: 660px;
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
 }
 
 .balanca-kicker {
@@ -3668,16 +3684,96 @@ body.dark-mode .zen-card {
 }
 
 .balanca-title {
-    font-family: var(--font-header, 'Cinzel', serif);
+    font-family: var(--font-brand);
     font-size: 1.8rem;
-    margin: 0.4rem 0 0.6rem 0;
-    color: var(--text-color);
+    color: var(--primary-color);
 }
 
 .balanca-description {
     font-size: 0.95rem;
     color: var(--muted-color);
     line-height: 1.5;
+}
+
+/* Guia Pedagógico de 3 Passos */
+.balanca-how-it-works {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+    padding: 0.6rem 1rem;
+    background-color: var(--bg-secondary-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full, 9999px);
+    font-size: 0.8rem;
+}
+
+.balanca-step {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--muted-color);
+}
+
+.balanca-step.active {
+    color: var(--accent-color);
+}
+
+.step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    font-weight: 700;
+    font-size: 0.75rem;
+}
+
+.balanca-step.active .step-num {
+    background-color: var(--accent-color);
+    color: #ffffff;
+    border-color: var(--accent-color);
+}
+
+.balanca-step-arrow {
+    color: var(--muted-color);
+    opacity: 0.6;
+}
+
+/* Barra de Dilemas */
+.balanca-dilemma-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 0.75rem;
+}
+
+.dilemma-nav-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--muted-color);
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dilemma-nav-btn:hover {
+    color: var(--text-color);
+    border-color: var(--accent-color);
+}
+
+.dilemma-indicator {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--primary-color);
 }
 
 .balanca-grid {
@@ -3695,18 +3791,27 @@ body.dark-mode .zen-card {
 }
 
 .balanca-card {
-    background: var(--card-bg, #ffffff);
+    background-color: var(--surface-color);
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-md, 10px);
+    border-radius: var(--radius-md);
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
-    min-height: 180px;
+    min-height: 190px;
+    box-shadow: var(--shadow-subtle);
 }
 
-body.dark-mode .balanca-card {
-    background: #18181b;
+.balanca-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.balanca-author-tag {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted-color);
 }
 
 .balanca-card.balanca-thesis {
@@ -3718,7 +3823,6 @@ body.dark-mode .balanca-card {
 }
 
 .balanca-badge {
-    align-self: flex-start;
     font-size: 0.72rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -3738,7 +3842,7 @@ body.dark-mode .balanca-card {
 }
 
 .balanca-content {
-    font-family: var(--font-secondary, serif);
+    font-family: var(--font-quote);
     font-size: 1.05rem;
     line-height: 1.6;
     color: var(--text-color);
@@ -3752,24 +3856,20 @@ body.dark-mode .balanca-card {
 }
 
 .balanca-synthesis-box {
-    background: var(--card-bg, #ffffff);
+    background-color: var(--surface-color);
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg, 12px);
+    border-radius: var(--radius-lg);
     padding: 1.75rem;
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-}
-
-body.dark-mode .balanca-synthesis-box {
-    background: #1c1917;
-    border-color: rgba(217, 119, 6, 0.25);
+    box-shadow: var(--shadow-subtle);
 }
 
 .synthesis-title {
-    font-family: var(--font-header, serif);
+    font-family: var(--font-brand);
     font-size: 1.25rem;
-    color: var(--accent-color);
+    color: var(--gold-accent);
 }
 
 .synthesis-prompt {
@@ -3781,13 +3881,18 @@ body.dark-mode .balanca-synthesis-box {
     width: 100%;
     min-height: 90px;
     padding: 0.85rem;
-    font-family: var(--font-primary, sans-serif);
+    font-family: var(--font-ui);
     font-size: 0.95rem;
     color: var(--text-color);
-    background: var(--input-bg, rgba(0,0,0,0.02));
+    background-color: var(--bg-secondary-color);
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm, 6px);
+    border-radius: var(--radius-sm);
     resize: vertical;
+}
+
+.synthesis-textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
 }
 
 .synthesis-actions {
@@ -3805,24 +3910,21 @@ body.dark-mode .balanca-synthesis-box {
 }
 
 .syntheses-feed-title {
-    font-family: var(--font-header, serif);
+    font-family: var(--font-brand);
     font-size: 1.1rem;
-    color: var(--text-color);
+    color: var(--primary-color);
 }
 
 .synthesis-card {
-    background: var(--card-bg, #ffffff);
+    background-color: var(--surface-color);
     border: 1px solid var(--border-color);
-    border-left: 3px solid var(--accent-color);
+    border-left: 3px solid var(--gold-accent);
     padding: 1.15rem;
-    border-radius: var(--radius-sm, 6px);
+    border-radius: var(--radius-sm);
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-}
-
-body.dark-mode .synthesis-card {
-    background: #18181b;
+    box-shadow: var(--shadow-subtle);
 }
 
 .synthesis-card-header {
@@ -3832,8 +3934,8 @@ body.dark-mode .synthesis-card {
 }
 
 .synthesis-badge {
-    font-weight: 600;
-    color: var(--accent-color);
+    font-weight: 700;
+    color: var(--gold-accent);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -3843,7 +3945,7 @@ body.dark-mode .synthesis-card {
 }
 
 .synthesis-card-text {
-    font-family: var(--font-secondary, serif);
+    font-family: var(--font-quote);
     font-size: 0.98rem;
     line-height: 1.55;
     color: var(--text-color);
@@ -3857,10 +3959,19 @@ body.dark-mode .synthesis-card {
         transform: rotate(90deg);
         margin: -0.5rem 0;
     }
+    .balanca-how-it-works {
+        flex-direction: column;
+        border-radius: var(--radius-md);
+        align-items: flex-start;
+    }
+    .balanca-step-arrow {
+        display: none;
+    }
     .zen-card {
         padding: 1.75rem 1.25rem;
     }
     .zen-content {
         font-size: 1.2rem;
     }
-}
+}
+

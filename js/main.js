@@ -120,6 +120,12 @@ export async function showFeed(feedType) {
         }
     }
 
+    // Esconder "Ordenar por" se estiver no Caderno (são notas privadas locais, não faz sentido ordenar por Votos ou Favoritos)
+    const filterLabel = document.querySelector('.filter-label');
+    if (filterLabel) {
+        filterLabel.classList.toggle('hidden', isCaderno);
+    }
+
     const communityPulseBar = document.getElementById('community-pulse-bar');
     if (communityPulseBar) {
         const isPulseEnabled = localStorage.getItem(STORAGE_KEYS.PULSE) !== 'false';

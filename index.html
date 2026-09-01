@@ -269,21 +269,54 @@
             <div class="balanca-header">
                 <span class="balanca-kicker">Dialética Coletiva</span>
                 <h2 class="balanca-title">A Balança: Confronto de Perspectivas</h2>
-                <p class="balanca-description">Duas visões opostas. O propósito não é escolher um lado, mas forjar uma síntese que concilie as duas verdades.</p>
+                <p class="balanca-description">O objetivo não é escolher um lado vencedor, mas forjar uma <strong>Síntese</strong> que concilie as duas verdades opostas.</p>
+                
+                <!-- Guia Rápido Como Funciona -->
+                <div class="balanca-how-it-works">
+                    <div class="balanca-step">
+                        <span class="step-num">1</span>
+                        <span class="step-text"><strong>Tese:</strong> Uma verdade observada</span>
+                    </div>
+                    <div class="balanca-step-arrow" aria-hidden="true">→</div>
+                    <div class="balanca-step">
+                        <span class="step-num">2</span>
+                        <span class="step-text"><strong>Antítese:</strong> O contraponto oposto</span>
+                    </div>
+                    <div class="balanca-step-arrow" aria-hidden="true">→</div>
+                    <div class="balanca-step active">
+                        <span class="step-num">3</span>
+                        <span class="step-text"><strong>Síntese:</strong> Sua conciliação</span>
+                    </div>
+                </div>
+
+                <!-- Seletor de Dilemas -->
+                <div class="balanca-dilemma-bar">
+                    <button id="btn-balanca-prev" class="dilemma-nav-btn" type="button" aria-label="Dilema anterior">← Anterior</button>
+                    <span id="balanca-dilemma-indicator" class="dilemma-indicator">Dilema 1 de 3</span>
+                    <button id="btn-balanca-next" class="dilemma-nav-btn" type="button" aria-label="Próximo dilema">Próximo →</button>
+                </div>
             </div>
+
             <div class="balanca-grid">
                 <div class="balanca-card balanca-thesis" id="balanca-thesis-card">
-                    <span class="balanca-badge thesis">Tese</span>
+                    <div class="balanca-card-top">
+                        <span class="balanca-badge thesis">Tese</span>
+                        <span id="balanca-thesis-author" class="balanca-author-tag">Arthur Schopenhauer</span>
+                    </div>
                     <p class="balanca-content" id="balanca-thesis-content">"A solidão e o silêncio são os únicos santuários onde o pensamento pode amadurecer livre do ruído e da validação alheia."</p>
-                    <span class="balanca-citation">— Citação: Schopenhauer, Aforismos</span>
+                    <span class="balanca-citation">— Citação: Aforismos para a Sabedoria da Vida</span>
                 </div>
                 <div class="balanca-scale-icon" aria-hidden="true">⇄</div>
                 <div class="balanca-card balanca-antithesis" id="balanca-antithesis-card">
-                    <span class="balanca-badge antithesis">Antítese</span>
+                    <div class="balanca-card-top">
+                        <span class="balanca-badge antithesis">Antítese</span>
+                        <span id="balanca-antithesis-author" class="balanca-author-tag">Sêneca</span>
+                    </div>
                     <p class="balanca-content" id="balanca-antithesis-content">"O isolamento excessivo deforma o juízo; a sabedoria e a temperança só se desenvolvem no atrito diário com o outro."</p>
-                    <span class="balanca-citation">— Citação: Sêneca, Cartas a Lucílio</span>
+                    <span class="balanca-citation">— Citação: Cartas a Lucílio</span>
                 </div>
             </div>
+
             <div class="balanca-synthesis-box">
                 <h3 class="synthesis-title">Construir a Síntese</h3>
                 <p class="synthesis-prompt">Qual princípio superior é capaz de harmonizar esses dois polos aparentemente contrários?</p>
@@ -293,6 +326,7 @@
                     <button id="btn-submit-synthesis" class="gate-primary-button" type="button">Propor Síntese ao Acervo</button>
                 </div>
             </div>
+
             <div class="balanca-community-syntheses" id="balanca-syntheses-list">
                 <h4 class="syntheses-feed-title">Sínteses Forjadas</h4>
                 <div id="syntheses-items" class="syntheses-items"></div>
@@ -319,10 +353,10 @@
                 </div>
                 <label class="filter-label" for="feed-filter"><span data-i18n="sortBy">Ordenar por</span>
                     <select id="feed-filter" class="feed-filter">
-                        <option value="newest" data-i18n="newest">Mais novas</option>
-                        <option value="voted" data-i18n="mostVoted">Mais votadas</option>
+                        <option value="newest" data-i18n="newest">Mais recentes</option>
+                        <option value="voted" data-i18n="mostInsight">Maior Insight</option>
                         <option value="favorite" data-i18n="mostFavorited">Mais favoritas</option>
-                        <option value="most_commented" data-i18n="mostCommented">Mais comentadas</option>
+                        <option value="most_commented" data-i18n="mostCommented">Mais debatidas</option>
                     </select>
                 </label>
             </div>
