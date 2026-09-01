@@ -3800,7 +3800,7 @@ body:not(.dark-mode) .zen-reader-overlay {
 
 .balanca-content {
     font-family: var(--font-quote);
-    font-size: 1.05rem;
+    font-size: 1.25rem;
     line-height: 1.6;
     color: var(--text-color);
     flex: 1;
