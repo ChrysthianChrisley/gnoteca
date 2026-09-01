@@ -11,7 +11,7 @@ import { initNotifications, openNotificationsDialog, closeNotificationsDialog, m
 import { fetchCommunityPulse, initCommunityPulse } from './pulse.js';
 import { initSettings, openSettingsDialog, closeSettingsDialog } from './settings.js';
 import { initTopics, normalizeTagName, fetchCommunityTopics } from './topics.js';
-import { getTopicKeys, getTopicLabel } from './config.js';
+
 import { initZenReader } from './reader.js';
 import { initBalanca } from './balanca.js';
 
@@ -422,6 +422,7 @@ function setupEventListeners() {
         const writeTagInput = document.getElementById('write-tag-input');
         const rawTag = writeTagInput?.dataset?.canonicalTag || writeTagInput?.value || 'Geral';
         const selectedTag = normalizeTagName(rawTag);
+        const citationInput = document.getElementById('write-citation-input');
         const citation = citationInput?.value.trim() || '';
 
         // Se for para o Acervo Público
