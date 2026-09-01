@@ -1,6 +1,6 @@
 # Gnoteca
 
-Gnoteca e uma plataforma minimalista de registro, compartilhamento e contemplacao de pensamentos, aforismos e ideias filosoficas. O projeto foi concebido para ser uma rede social centrada nas ideias e no conhecimento, e nao no culto a personalidade ou em metricas superficiais de vaidade.
+Gnoteca e uma plataforma minimalista de registro, compartilhamento e analise de conceitos, hipoteses, descobertas e ideias cientificas e intelectuais. O projeto foi concebido para ser uma rede centrada no conhecimento, no rigor conceitual e no valor das ideias, e nao no culto a personalidade ou em metricas superficiais de vaidade.
 
 ---
 
@@ -20,12 +20,12 @@ Gnoteca e uma plataforma minimalista de registro, compartilhamento e contemplaca
 
 ## Visao Geral
 
-Diferente das redes sociais convencionais que priorizam o engajamento desenfreado e algoritmos de dopamina, a Gnoteca opera sob o principio da escassez consciente e do valor intrinseco das ideias:
+Diferente das redes sociais convencionais que priorizam o engajamento desenfreado e algoritmos de dopamina, a Gnoteca opera sob o principio da sintese consciente e da solidez do conhecimento:
 
-- Cada fragmento possui limite de 280 caracteres para estimular sintese e clareza.
-- Votos diarios limitados para incentivar a ponderacao antes de apoiar ou criticar uma ideia.
-- Favoritos estritamente limitados a 3 pilares por pensador, formando uma constelacao representativa de sua mente.
-- Design editorial que remete a uma biblioteca classica digital, com foco total na legibilidade.
+- Cada fragmento possui limite de 280 caracteres para estimular clareza, sintese e precisao conceitual.
+- Votos diarios limitados para incentivar a ponderacao e analise critica antes de validar ou refutar uma hipotese.
+- Favoritos estritamente limitados a 3 pilares fundamentais por autor, formando uma constelacao representativa de seus principios basilares.
+- Design editorial limpo e focado na legibilidade e na reflexao analitica.
 
 ---
 

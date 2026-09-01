@@ -19,7 +19,8 @@
         </nav>
         <button id="login-trigger" class="login-trigger" type="button" data-i18n="signIn">Entrar</button>
         <button id="btn-profile" class="profile-trigger hidden" aria-label="Abrir perfil" aria-expanded="false">
-            <span class="profile-avatar" data-profile-avatar>C</span>
+            <span class="profile-avatar" data-profile-avatar>?</span>
+            <span id="header-user-name" class="header-user-name"></span>
         </button>
     </header>
 
@@ -30,9 +31,29 @@
                 <button id="btn-close-sidebar" class="icon-button" aria-label="Fechar menu">x</button>
         </div>
         <div class="profile-summary">
-            <span class="profile-avatar profile-avatar-large" data-profile-avatar>C</span>
-            <h3 id="profile-name">Seu nome</h3>
-            <p data-i18n="profileSubtitle">colecionador de ideias</p>
+            <div class="avatar-wrapper">
+                <span class="profile-avatar profile-avatar-large" data-profile-avatar>?</span>
+                <button id="btn-edit-avatar" class="edit-avatar-btn" type="button" aria-label="Alterar foto de perfil">
+                    <svg viewBox="0 0 24 24" class="icon-small" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                </button>
+            </div>
+            <div class="name-wrapper">
+                <div style="display: flex; align-items: center; gap: 0.25rem;">
+                    <h3 id="profile-name">—</h3>
+                    <button id="btn-edit-name" class="icon-button-small" type="button" aria-label="Alterar nome de exibição">
+                        <svg viewBox="0 0 24 24" class="icon-tiny" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                    </button>
+                </div>
+                <div class="username-wrapper">
+                    <span id="profile-username">@—</span>
+                </div>
+            </div>
+            <div class="title-wrapper">
+                <button id="btn-select-title" class="title-selector-btn" type="button" aria-label="Escolher Título">
+                    <span id="profile-subtitle" data-i18n="profileSubtitle">explorador de conhecimento</span>
+                    <svg viewBox="0 0 24 24" class="icon-tiny" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+            </div>
         </div>
         <div id="auth-panel" class="auth-panel">
             <p id="auth-status" class="auth-status" data-i18n="notAuthenticated">Não autenticado</p>
@@ -45,8 +66,12 @@
             <button id="google-sign-in" class="google-button" type="button" data-i18n="continueGoogle">Continuar com Google</button>
         </div>
         <div class="profile-stats" aria-label="Resumo do acervo">
-            <div><strong id="ideas-count">0</strong><span data-i18n="fragments">fragmentos</span></div>
-            <div><strong id="favorites-count">0/3</strong><span data-i18n="favorites">favoritos</span></div>
+            <button id="stat-fragments" class="stat-button" type="button">
+                <strong id="ideas-count">0</strong><span data-i18n="fragments">fragmentos</span>
+            </button>
+            <button id="stat-favorites" class="stat-button" type="button">
+                <strong id="favorites-count">0/3</strong><span data-i18n="favorites">favoritos</span>
+            </button>
         </div>
         <nav class="sidebar-menu" aria-label="Opções do perfil">
                 <button id="overview-menu" class="menu-item active" type="button" data-i18n="overview">Visão geral</button>
@@ -100,14 +125,14 @@
 
         <!-- Hero de Boas-Vindas para Visitantes Deslogados -->
         <div id="visitor-hero" class="visitor-hero hidden">
-            <span class="visitor-hero-pill" data-i18n="heroBadge">Acervo Filosofico</span>
+            <span class="visitor-hero-pill" data-i18n="heroBadge">Acervo de Conhecimento & Ciência</span>
             <h1 class="visitor-hero-title" data-i18n="heroTitle">Onde as ideias ganham forma</h1>
-            <p class="visitor-hero-subtitle" data-i18n="heroSubtitle">Uma biblioteca viva de pensamentos e aforismos. Leia, reflita e guarde os pilares que guiam a sua mente.</p>
+            <p class="visitor-hero-subtitle" data-i18n="heroSubtitle">Um repositório dinâmico de hipóteses, conceitos e pensamentos fundamentais. Explore, analise e guarde os pilares que sustentam o conhecimento.</p>
         </div>
 
         <!-- Tela de Registro -->
         <section id="write-section" class="hidden">
-            <textarea id="idea-input" maxlength="280" placeholder="O que quer registrar?" data-i18n-placeholder="ideaPlaceholder"></textarea>
+            <textarea id="idea-input" maxlength="280" placeholder="Qual conceito, hipótese ou insight deseja registrar?" data-i18n-placeholder="ideaPlaceholder"></textarea>
             <div id="char-counter">0 / 280</div><button id="btn-save" data-i18n="saveToGnoteca">Salvar na Gnoteca</button>
             <p id="feedback-msg" class="hidden">Ideia salva com sucesso!</p>
         </section>
@@ -165,7 +190,37 @@
             <div id="feed-sentinel" class="feed-sentinel"></div>
             <button id="btn-back-to-top" class="back-to-top hidden" type="button" aria-label="Voltar ao topo" title="Voltar ao topo">^</button>
         </section>
-    </main>
+    <div id="edit-profile-dialog" class="auth-gate hidden" role="dialog" aria-modal="true" aria-labelledby="edit-profile-title">
+        <div class="auth-gate-card">
+            <button id="close-edit-dialog" class="auth-gate-close" type="button" aria-label="Fechar">x</button>
+            <h2 id="edit-profile-title" class="dialog-eyebrow">Editar Perfil</h2>
+            
+            <div id="edit-name-section" class="hidden">
+                <p>Alterar Nome de Exibição</p>
+                <input id="input-edit-name" class="auth-input" type="text" placeholder="Seu Nome">
+                <p class="form-hint">Este é o nome que aparece no topo do seu perfil (permite espaços e letras maiúsculas).</p>
+            </div>
+            
+            <div id="edit-avatar-section" class="hidden">
+                <p>Alterar foto de perfil</p>
+                <input id="input-edit-avatar" class="auth-input" type="url" placeholder="https://link-da-imagem.com/foto.jpg">
+                <p class="form-hint">Cole o link (URL) direto de uma imagem.</p>
+            </div>
+
+            <div id="edit-title-section" class="hidden">
+                <p>Escolha seu Título</p>
+                <select id="select-edit-title" class="auth-input">
+                    <!-- Options preenchidas dinamicamente pelo JS -->
+                </select>
+                <p class="form-hint">Desbloqueie novos títulos participando da Gnoteca.</p>
+            </div>
+
+            <p id="edit-profile-feedback" class="gate-auth-feedback" role="status"></p>
+            <div class="dialog-actions">
+                <button id="btn-save-profile" class="gate-primary-button" type="button">Salvar</button>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js"></script>

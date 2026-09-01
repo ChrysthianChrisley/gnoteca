@@ -8,6 +8,7 @@ create table if not exists public.profiles (
     username text not null unique,
     display_name text not null,
     avatar_url text,
+    current_title text not null default 'Explorador de Conhecimento',
     created_at timestamptz not null default now()
 );
 
@@ -111,7 +112,7 @@ create trigger on_auth_user_created
 after insert on auth.users
 for each row execute procedure public.handle_new_user();
 
--- 8. Trigger: Limite de no máximo 3 favoritos por pensador
+-- 8. Trigger: Limite de favoritos por progressão de pensador
 create or replace function public.check_max_favorites()
 returns trigger
 language plpgsql
@@ -119,13 +120,34 @@ security definer set search_path = public
 as $$
 declare
     fav_count int;
+    entry_count int;
+    max_favs int := 3;
 begin
+    -- Conta fragmentos publicados pelo usuário
+    select count(*) into entry_count
+    from public.entries
+    where author_id = new.user_id;
+
+    -- Define limite por progressão
+    if entry_count >= 50 then
+        max_favs := 15;
+    elsif entry_count >= 25 then
+        max_favs := 10;
+    elsif entry_count >= 10 then
+        max_favs := 7;
+    elsif entry_count >= 3 then
+        max_favs := 5;
+    else
+        max_favs := 3;
+    end if;
+
+    -- Conta favoritos atuais
     select count(*) into fav_count
     from public.favorites
     where user_id = new.user_id;
 
-    if fav_count >= 3 then
-        raise exception 'Limite de 3 favoritos atingido por usuário.';
+    if fav_count >= max_favs then
+        raise exception 'Limite de % favoritos atingido para o seu nível.', max_favs;
     end if;
     return new;
 end;

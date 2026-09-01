@@ -80,6 +80,34 @@ header {
 .profile-trigger {
     background: transparent;
     margin-left: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.2rem 0.5rem 0.2rem 0.2rem;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.profile-trigger:hover {
+    background-color: var(--soft-accent-color);
+    border-color: var(--border-color);
+}
+
+.header-user-name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+    .header-user-name {
+        display: none;
+    }
 }
 
 .login-trigger {
@@ -1325,4 +1353,140 @@ body.dark-mode .constellation-empty-slot {
     transform: translateY(-3px);
     background: var(--soft-accent-color);
     border-color: var(--accent-color);
+}
+
+/* Edit Profile Styles */
+.avatar-wrapper {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+}
+
+.edit-avatar-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--muted-color);
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.edit-avatar-btn:hover {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.name-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.username-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--muted-color);
+    font-size: 0.85rem;
+}
+
+.icon-button-small {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--muted-color);
+    display: flex;
+    align-items: center;
+    padding: 2px;
+    border-radius: 4px;
+    transition: color 0.2s;
+}
+
+.icon-button-small:hover {
+    color: var(--accent-color);
+    background: var(--soft-accent-color);
+}
+
+.icon-small {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.icon-tiny {
+    width: 12px;
+    height: 12px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.title-wrapper {
+    margin-top: 0.5rem;
+}
+
+.title-selector-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 0.25rem 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+    margin: 0 auto;
+    transition: all 0.2s;
+}
+
+.title-selector-btn span {
+    color: var(--accent-color);
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+.title-selector-btn svg {
+    color: var(--accent-color);
+}
+
+.title-selector-btn:hover {
+    background: var(--soft-accent-color);
+}
+
+.stat-button {
+    background: transparent;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.stat-button:hover {
+    background: var(--soft-accent-color);
+}
+
+.stat-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem;
 }

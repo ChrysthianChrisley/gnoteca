@@ -24,6 +24,7 @@ const cancelDelete = document.getElementById('cancel-delete');
 const confirmDelete = document.getElementById('confirm-delete');
 const btnHome = document.getElementById('btn-home');
 const profileName = document.getElementById('profile-name');
+const headerUserName = document.getElementById('header-user-name');
 const profileAvatars = document.querySelectorAll('[data-profile-avatar]');
 const feedFilter = document.getElementById('feed-filter');
 const feedTitle = document.getElementById('feed-title');
@@ -57,6 +58,25 @@ const unauthGateBanner = document.getElementById('unauth-gate-banner');
 const gateBannerAuth = document.getElementById('gate-banner-auth');
 const gateBannerGoogle = document.getElementById('gate-banner-google');
 const feedSentinel = document.getElementById('feed-sentinel');
+
+// Novos Elementos para Edição de Perfil
+const btnEditAvatar = document.getElementById('btn-edit-avatar');
+const btnEditName = document.getElementById('btn-edit-name');
+const btnSelectTitle = document.getElementById('btn-select-title');
+const profileUsername = document.getElementById('profile-username');
+const profileSubtitle = document.getElementById('profile-subtitle');
+const editProfileDialog = document.getElementById('edit-profile-dialog');
+const closeEditDialog = document.getElementById('close-edit-dialog');
+const btnSaveProfile = document.getElementById('btn-save-profile');
+const editNameSection = document.getElementById('edit-name-section');
+const editAvatarSection = document.getElementById('edit-avatar-section');
+const editTitleSection = document.getElementById('edit-title-section');
+const inputEditName = document.getElementById('input-edit-name');
+const inputEditAvatar = document.getElementById('input-edit-avatar');
+const selectEditTitle = document.getElementById('select-edit-title');
+const editProfileFeedback = document.getElementById('edit-profile-feedback');
+const statFragments = document.getElementById('stat-fragments');
+const statFavorites = document.getElementById('stat-favorites');
 const btnBackToTop = document.getElementById('btn-back-to-top');
 
 const charCounter = document.getElementById('char-counter');
@@ -104,86 +124,86 @@ const supabaseClient = window.supabase.createClient(supabaseUrl, supabasePublish
 // Dicionário de Traduções
 const translations = {
     'pt-BR': {
-        profileTitle: 'Meu perfil', profileSubtitle: 'colecionador de ideias',
+        profileTitle: 'Meu perfil', profileSubtitle: 'explorador de conhecimento',
         newIdea: 'Nova Ideia', myCollection: 'Meu Acervo', notAuthenticated: 'Não autenticado', emailPlaceholder: 'Seu e-mail', passwordPlaceholder: 'Sua senha',
         signIn: 'Entrar', createAccount: 'Criar conta', continueGoogle: 'Continuar com Google', signOutShort: 'Sair', or: 'ou', signInToContinue: 'Entre para continuar',
-        authDescription: 'Crie sua conta ou entre para publicar, votar e explorar todo o acervo.', loginSuccess: 'Login realizado', confirmEmail: 'Confirme seu e-mail para continuar', save: 'Salvar', saveToGnoteca: 'Salvar na Gnoteca', signInToSeeMore: 'Entrar para ver mais', by: 'por', edit: 'Editar', delete: 'Apagar',
+        authDescription: 'Crie sua conta ou entre para publicar, validar hipóteses e explorar todo o acervo.', loginSuccess: 'Login realizado', confirmEmail: 'Confirme seu e-mail para continuar', save: 'Salvar', saveToGnoteca: 'Salvar na Gnoteca', signInToSeeMore: 'Entrar para ver mais', by: 'por', edit: 'Editar', delete: 'Apagar',
         fragments: 'fragmentos', favorites: 'favoritos', overview: 'Visão geral', settings: 'Configurações', signOut: 'Sair da conta',
         language: 'Idioma', removeEntry: 'Remover entrada', deleteQuestion: 'Apagar este fragmento?', deleteWarning: 'Essa ação não poderá ser desfeita.',
-        cancel: 'Cancelar', delete: 'Apagar', ideaPlaceholder: 'O que quer registrar?', backToFeed: 'Voltar ao acervo', publicCollection: 'Acervo público',
+        cancel: 'Cancelar', delete: 'Apagar', ideaPlaceholder: 'Qual conceito, hipótese ou insight deseja registrar?', backToFeed: 'Voltar ao acervo', publicCollection: 'Acervo público',
         latestFragments: 'Últimos fragmentos', sortBy: 'Ordenar por', newest: 'Mais novas', mostVoted: 'Mais votadas', mostFavorited: 'Mais favoritas',
         nightMode: 'Modo noturno', lightMode: 'Modo claro', profile: 'Perfil', favoriteCollection: 'Meus favoritos', empty: 'Nenhum fragmento salvo ainda. Comece a escrever!',
         authorOnly: 'Apenas o autor pode alterar esta entrada.', emptyEntry: 'A entrada não pode ficar vazia.',
         loading: 'Carregando fragmentos...', errorLoading: 'Erro ao carregar os fragmentos.', errorSaving: 'Erro ao salvar. Tente novamente.',
-        voteLimitReached: 'Você atingiu o limite de 5 votos por dia. Escolha com sabedoria quais ideias apoiar!',
-        favoriteLimitReached: 'Você só pode guardar 3 fragmentos favoritos por vez. Desmarque um para adicionar este.',
-        constellationTitle: 'Constelação de Pensamentos',
-        constellationSubtitle: 'Os 3 pilares filosóficos guardados por este pensador',
+        voteLimitReached: 'Você atingiu o limite de 5 votos por dia. Escolha com critério quais ideias validar!',
+        favoriteLimitReached: 'Você só pode guardar 3 fragmentos fundamentais por vez. Desmarque um para adicionar este.',
+        constellationTitle: 'Constelação de Conhecimento',
+        constellationSubtitle: 'Os 3 pilares fundamentais guardados por este autor',
         emptyConstellationSlot: 'Pilar',
-        emptyConstellationHelp: 'Escolha mais uma ideia favorita para completar sua tríade.',
-        emptyConstellationOther: 'Espaço aberto para uma nova ideia norteadora.',
+        emptyConstellationHelp: 'Selecione mais uma ideia favorita para completar sua tríade fundamental.',
+        emptyConstellationOther: 'Espaço aberto para um novo princípio fundamental.',
         pillar: 'Pilar',
         pillars: 'Pilares',
-        heroBadge: 'Acervo Filosofico',
+        heroBadge: 'Acervo de Conhecimento & Ciência',
         heroTitle: 'Onde as ideias ganham forma',
-        heroSubtitle: 'Uma biblioteca viva de pensamentos e aforismos. Leia, reflita e guarde os pilares que guiam a sua mente.',
-        unauthGateBadge: 'Acervo Restrito a Visitantes',
+        heroSubtitle: 'Um repositório dinâmico de hipóteses, conceitos e pensamentos fundamentais. Explore, analise e guarde os pilares que sustentam o conhecimento.',
+        unauthGateBadge: 'Acesso para Visitantes',
         unauthGateTitle: 'Deseja continuar explorando?',
-        unauthGateText: 'Voce visualizou os 3 ultimos fragmentos. Faca login ou crie sua conta gratuita para desbloquear o acervo infinito, publicar suas ideias e votar.'
+        unauthGateText: 'Você visualizou os 3 últimos fragmentos. Faça login ou crie sua conta gratuita para desbloquear o acervo completo, compartilhar descobertas e votar.'
     },
     'en-US': {
-        profileTitle: 'My profile', profileSubtitle: 'idea collector', fragments: 'fragments', favorites: 'favorites',
+        profileTitle: 'My profile', profileSubtitle: 'knowledge explorer', fragments: 'fragments', favorites: 'favorites',
         newIdea: 'New Idea', myCollection: 'My Collection', notAuthenticated: 'Not authenticated', emailPlaceholder: 'Your email', passwordPlaceholder: 'Your password',
         signIn: 'Sign in', createAccount: 'Create account', continueGoogle: 'Continue with Google', signOutShort: 'Sign out', or: 'or', signInToContinue: 'Sign in to continue',
-        authDescription: 'Create an account or sign in to publish, vote, and explore the entire collection.', loginSuccess: 'Signed in', confirmEmail: 'Confirm your email to continue', save: 'Save', saveToGnoteca: 'Save to Gnoteca', signInToSeeMore: 'Sign in to see more', by: 'by', edit: 'Edit', delete: 'Delete',
+        authDescription: 'Create an account or sign in to publish, validate hypotheses, and explore the entire collection.', loginSuccess: 'Signed in', confirmEmail: 'Confirm your email to continue', save: 'Save', saveToGnoteca: 'Save to Gnoteca', signInToSeeMore: 'Sign in to see more', by: 'by', edit: 'Edit', delete: 'Delete',
         overview: 'Overview', settings: 'Settings', signOut: 'Sign out', language: 'Language', removeEntry: 'Remove entry', deleteQuestion: 'Delete this fragment?',
-        deleteWarning: 'This action cannot be undone.', cancel: 'Cancel', delete: 'Delete', ideaPlaceholder: 'What would you like to record?', backToFeed: 'Back to collection',
+        deleteWarning: 'This action cannot be undone.', cancel: 'Cancel', delete: 'Delete', ideaPlaceholder: 'What concept, hypothesis, or insight would you like to record?', backToFeed: 'Back to collection',
         publicCollection: 'Public collection', latestFragments: 'Latest fragments', sortBy: 'Sort by', newest: 'Newest', mostVoted: 'Most voted', mostFavorited: 'Most favorited',
         nightMode: 'Dark mode', lightMode: 'Light mode', profile: 'Profile', favoriteCollection: 'My favorites', empty: 'No fragments saved yet. Start writing!',
         authorOnly: 'Only the author can change this entry.', emptyEntry: 'The entry cannot be empty.',
         loading: 'Loading fragments...', errorLoading: 'Error loading fragments.', errorSaving: 'Error saving. Please try again.',
-        voteLimitReached: 'You have reached the limit of 5 votes per day. Choose wisely which ideas to support!',
-        favoriteLimitReached: 'You can only keep 3 favorite fragments at a time. Unfavorite one to add this.',
-        constellationTitle: 'Constellation of Thoughts',
-        constellationSubtitle: 'The 3 philosophical pillars kept by this thinker',
+        voteLimitReached: 'You have reached the limit of 5 votes per day. Choose carefully which ideas to validate!',
+        favoriteLimitReached: 'You can only keep 3 fundamental fragments at a time. Unfavorite one to add this.',
+        constellationTitle: 'Constellation of Knowledge',
+        constellationSubtitle: 'The 3 fundamental pillars kept by this author',
         emptyConstellationSlot: 'Pillar',
-        emptyConstellationHelp: 'Choose another favorite idea to complete your triad.',
-        emptyConstellationOther: 'Open space for a new guiding idea.',
+        emptyConstellationHelp: 'Select another key idea to complete your fundamental triad.',
+        emptyConstellationOther: 'Open slot for a new foundational principle.',
         pillar: 'Pillar',
         pillars: 'Pillars',
-        heroBadge: 'Philosophical Collection',
+        heroBadge: 'Knowledge & Science Archive',
         heroTitle: 'Where ideas take shape',
-        heroSubtitle: 'A living library of thoughts and aphorisms. Read, reflect, and keep the pillars that guide your mind.',
-        unauthGateBadge: 'Collection Restricted for Visitors',
+        heroSubtitle: 'A dynamic repository of hypotheses, concepts, and fundamental insights. Explore, analyze, and save the core pillars of knowledge.',
+        unauthGateBadge: 'Visitor Access',
         unauthGateTitle: 'Want to keep exploring?',
-        unauthGateText: 'You have viewed the last 3 fragments. Sign in or create a free account to unlock the infinite collection, publish your ideas, and vote.'
+        unauthGateText: 'You have viewed the last 3 entries. Sign in or create a free account to unlock the full archive, share discoveries, and vote.'
     },
     'es-ES': {
-        profileTitle: 'Mi perfil', profileSubtitle: 'coleccionista de ideas', fragments: 'fragmentos', favorites: 'favoritos',
+        profileTitle: 'Mi perfil', profileSubtitle: 'explorador de conocimiento', fragments: 'fragmentos', favorites: 'favoritos',
         newIdea: 'Nueva idea', myCollection: 'Mi acervo', notAuthenticated: 'No autenticado', emailPlaceholder: 'Tu correo', passwordPlaceholder: 'Tu contraseña',
         signIn: 'Entrar', createAccount: 'Crear cuenta', continueGoogle: 'Continuar com Google', signOutShort: 'Salir', or: 'o', signInToContinue: 'Inicia sesión para continuar',
-        authDescription: 'Crea una cuenta o inicia sesión para publicar, votar y explorar todo el acervo.', loginSuccess: 'Sesión iniciada', confirmEmail: 'Confirma tu correo para continuar', save: 'Guardar', saveToGnoteca: 'Guardar en Gnoteca', signInToSeeMore: 'Inicia sesión para ver más', by: 'por', edit: 'Editar', delete: 'Eliminar',
+        authDescription: 'Crea una cuenta o inicia sesión para publicar, validar hipótesis y explorar todo el acervo.', loginSuccess: 'Sesión iniciada', confirmEmail: 'Confirma tu correo para continuar', save: 'Guardar', saveToGnoteca: 'Guardar en Gnoteca', signInToSeeMore: 'Inicia sesión para ver más', by: 'por', edit: 'Editar', delete: 'Eliminar',
         overview: 'Vista general', settings: 'Configuración', signOut: 'Cerrar sesión', language: 'Idioma', removeEntry: 'Eliminar entrada', deleteQuestion: '¿Eliminar este fragmento?',
-        deleteWarning: 'Esta acción no se puede deshacer.', cancel: 'Cancelar', delete: 'Eliminar', ideaPlaceholder: '¿Qué quieres registrar?', backToFeed: 'Volver al acervo',
+        deleteWarning: 'Esta acción no se puede deshacer.', cancel: 'Cancelar', delete: 'Eliminar', ideaPlaceholder: '¿Qué concepto, hipótesis o insight deseas registrar?', backToFeed: 'Volver al acervo',
         publicCollection: 'Acervo público', latestFragments: 'Últimos fragmentos', sortBy: 'Ordenar por', newest: 'Más novos', mostVoted: 'Más votados', mostFavorited: 'Más favoritos',
         nightMode: 'Modo nocturno', lightMode: 'Modo claro', profile: 'Perfil', favoriteCollection: 'Mis favoritos', empty: 'Aún no hay fragmentos guardados. ¡Empieza a escrever!',
         authorOnly: 'Solo el autor puede modificar esta entrada.', emptyEntry: 'La entrada no puede estar vacía.',
         loading: 'Cargando fragmentos...', errorLoading: 'Error al cargar los fragmentos.', errorSaving: 'Error al guardar. Inténtelo de nuevo.',
-        voteLimitReached: 'Has alcanzado el límite de 5 votos por día. ¡Elige sabiamente qué ideas apoyar!',
-        favoriteLimitReached: 'Solo puedes guardar 3 fragmentos favoritos a la vez. Desmarca uno para añadir este.',
-        constellationTitle: 'Constelación de Pensamientos',
-        constellationSubtitle: 'Los 3 pilares filosóficos guardados por este pensador',
+        voteLimitReached: 'Has alcanzado el límite de 5 votos por día. ¡Elige con criterio qué ideas validar!',
+        favoriteLimitReached: 'Solo puedes guardar 3 fragmentos fundamentales a la vez. Desmarca uno para añadir este.',
+        constellationTitle: 'Constelación de Conocimiento',
+        constellationSubtitle: 'Los 3 pilares fundamentales guardados por este autor',
         emptyConstellationSlot: 'Pilar',
-        emptyConstellationHelp: 'Elige otra idea favorita para completar tu tríada.',
-        emptyConstellationOther: 'Espacio abierto para una nueva idea guía.',
+        emptyConstellationHelp: 'Selecciona otra idea para completar tu tríada fundamental.',
+        emptyConstellationOther: 'Espacio abierto para un nuevo principio fundamental.',
         pillar: 'Pilar',
         pillars: 'Pilares',
-        heroBadge: 'Acervo Filosofico',
+        heroBadge: 'Acervo de Conocimiento y Ciencia',
         heroTitle: 'Donde las ideas toman forma',
-        heroSubtitle: 'Una biblioteca viva de pensamientos y aforismos. Lee, reflexiona y guarda los pilares que guian tu mente.',
-        unauthGateBadge: 'Acervo Restringido para Visitantes',
-        unauthGateTitle: 'Deseas continuar explorando?',
-        unauthGateText: 'Has visualizado los ultimos 3 fragmentos. Inicia sesion o crea tu cuenta gratuita para desbloquear el acervo infinito, publicar tus ideas y votar.'
+        heroSubtitle: 'Un repositorio dinámico de hipótesis, conceptos y descubrimientos fundamentales. Explora, analiza y guarda los pilares que sustentan el conocimiento.',
+        unauthGateBadge: 'Acceso para Visitantes',
+        unauthGateTitle: '¿Deseas continuar explorando?',
+        unauthGateText: 'Has visualizado los últimos 3 fragmentos. Inicia sesión o crea tu cuenta gratuita para desbloquear el acervo completo, compartir descubrimientos y votar.'
     }
 };
 
@@ -232,12 +252,53 @@ function slugify(name) {
 }
 
 function extractUserMetadata(user) {
-    const meta = user.user_metadata || {};
-    const identityData = user.identities?.[0]?.identity_data || {};
-    const avatarUrl = meta.avatar_url || meta.picture || identityData.avatar_url || identityData.picture || null;
-    const name = meta.full_name || meta.name || identityData.full_name || identityData.name || user.email?.split('@')[0] || 'Usuário';
-    const username = meta.user_name || meta.preferred_username || identityData.user_name || slugify(name) || user.id.slice(0, 8);
+    if (!user) return { avatarUrl: null, name: 'Usuário', username: 'usuario' };
+    const meta = user.user_metadata || user.raw_user_meta_data || {};
+    const identities = user.identities || [];
+    const googleIdentity = identities.find(i => i.provider === 'google') || identities[0] || {};
+    const identityData = googleIdentity.identity_data || {};
+
+    const avatarUrl = meta.avatar_url
+        || meta.picture
+        || meta.avatar
+        || identityData.avatar_url
+        || identityData.picture
+        || identityData.avatar
+        || null;
+
+    const name = meta.full_name
+        || meta.name
+        || meta.display_name
+        || identityData.full_name
+        || identityData.name
+        || identityData.display_name
+        || (user.email ? user.email.split('@')[0] : 'Usuário');
+
+    const username = meta.user_name
+        || meta.preferred_username
+        || identityData.user_name
+        || identityData.preferred_username
+        || slugify(name)
+        || (user.email ? user.email.split('@')[0] : '')
+        || user.id.slice(0, 8);
+
     return { avatarUrl, name, username };
+}
+
+function updateAvatarDisplay(avatarEl, avatarUrl, name) {
+    if (!avatarEl) return;
+    const initial = (name || 'U').charAt(0).toUpperCase();
+    if (avatarUrl) {
+        avatarEl.innerHTML = `<img src="${escapeHTML(avatarUrl)}" alt="${escapeHTML(name || '')}" referrerpolicy="no-referrer">`;
+        const img = avatarEl.querySelector('img');
+        if (img) {
+            img.onerror = () => {
+                avatarEl.textContent = initial;
+            };
+        }
+    } else {
+        avatarEl.textContent = initial;
+    }
 }
 
 async function getAccountBySlug(slug) {
@@ -293,45 +354,80 @@ themeToggle.addEventListener('click', () => {
 });
 
 // Gestão de Estado de Autenticação
-async function refreshAuthState() {
+async function refreshAuthState(incomingUser = undefined) {
     try {
-        const { data: { user } } = await supabaseClient.auth.getUser();
+        let user = incomingUser;
+        if (incomingUser === undefined) {
+            const { data: sessionData } = await supabaseClient.auth.getSession();
+            user = sessionData?.session?.user || null;
+            if (!user) {
+                const { data: userData } = await supabaseClient.auth.getUser();
+                user = userData?.user || null;
+            }
+        }
+
         if (user) {
             const { avatarUrl, name, username } = extractUserMetadata(user);
-
-            // Garante que o perfil existe em public.profiles
-            const { data: profile } = await supabaseClient
-                .from('profiles')
-                .select('id, username, display_name, avatar_url')
-                .eq('id', user.id)
-                .maybeSingle();
-
-            let finalDisplayName = profile?.display_name || name;
-            let finalUsername = profile?.username || username;
-            let finalAvatarUrl = avatarUrl || profile?.avatar_url || null;
-
-            if (!profile) {
-                await supabaseClient.from('profiles').upsert({
-                    id: user.id,
-                    username: finalUsername,
-                    display_name: finalDisplayName,
-                    avatar_url: finalAvatarUrl
-                }, { onConflict: 'id' });
-            } else if (avatarUrl && profile.avatar_url !== avatarUrl) {
-                // Mantém o avatar atualizado caso o login Google tenha imagem recente
-                await supabaseClient.from('profiles').update({
-                    avatar_url: avatarUrl
-                }).eq('id', user.id);
-                finalAvatarUrl = avatarUrl;
-            }
 
             authenticatedUser = {
                 id: user.id,
                 email: user.email,
-                name: finalDisplayName,
-                username: finalUsername,
-                avatar_url: finalAvatarUrl
+                name: name || user.email?.split('@')[0] || 'Pensador',
+                username: username || slugify(name) || user.id.slice(0, 8),
+                avatar_url: avatarUrl || null
             };
+
+            // Atualiza o DOM imediatamente
+            if (profileName) profileName.textContent = authenticatedUser.name;
+            if (headerUserName) headerUserName.textContent = authenticatedUser.name;
+            profileAvatars.forEach(avatar => {
+                updateAvatarDisplay(avatar, authenticatedUser.avatar_url, authenticatedUser.name);
+            });
+
+            // Consulta perfil em public.profiles e sincroniza em background
+            try {
+                const { data: profile } = await supabaseClient
+                    .from('profiles')
+                    .select('id, username, display_name, avatar_url, current_title')
+                    .eq('id', user.id)
+                    .maybeSingle();
+
+                if (profile) {
+                    if (profile.display_name) {
+                        authenticatedUser.name = profile.display_name;
+                    }
+                    if (profile.avatar_url) {
+                        authenticatedUser.avatar_url = profile.avatar_url;
+                    }
+                    if (profile.username) {
+                        authenticatedUser.username = profile.username;
+                    }
+                    if (profile.current_title) {
+                        authenticatedUser.title = profile.current_title;
+                    } else {
+                        authenticatedUser.title = 'Explorador de Conhecimento';
+                    }
+                } else {
+                    await supabaseClient.from('profiles').upsert({
+                        id: user.id,
+                        username: authenticatedUser.username,
+                        display_name: authenticatedUser.name,
+                        avatar_url: authenticatedUser.avatar_url,
+                        current_title: 'Explorador de Conhecimento'
+                    }, { onConflict: 'id' });
+                }
+
+                // Re-atualiza a interface
+                if (profileName) profileName.textContent = authenticatedUser.name;
+                if (headerUserName) headerUserName.textContent = authenticatedUser.name;
+                if (profileUsername) profileUsername.textContent = '@' + authenticatedUser.username;
+                if (profileSubtitle) profileSubtitle.textContent = authenticatedUser.title || translate('profileSubtitle');
+                profileAvatars.forEach(avatar => {
+                    updateAvatarDisplay(avatar, authenticatedUser.avatar_url, authenticatedUser.name);
+                });
+            } catch (dbErr) {
+                console.warn('Sync profile with Supabase warn:', dbErr);
+            }
         } else {
             authenticatedUser = null;
         }
@@ -341,26 +437,24 @@ async function refreshAuthState() {
         // Oculta o formulário de login na sidebar quando o usuário está logado
         if (authPanel) authPanel.classList.toggle('hidden', authenticated);
 
-        authStatus.textContent = authenticated ? authenticatedUser.email : translate('notAuthenticated');
-        btnWrite.classList.toggle('hidden', !authenticated);
-        btnRead.classList.toggle('hidden', !authenticated);
-        btnProfile.classList.toggle('hidden', !authenticated);
+        if (authStatus) authStatus.textContent = authenticated ? (authenticatedUser.email || authenticatedUser.name) : translate('notAuthenticated');
+        if (btnWrite) btnWrite.classList.toggle('hidden', !authenticated);
+        if (btnRead) btnRead.classList.toggle('hidden', !authenticated);
+        if (btnProfile) btnProfile.classList.toggle('hidden', !authenticated);
         if (btnSignout) btnSignout.classList.toggle('hidden', !authenticated);
-        loginTrigger.classList.toggle('hidden', authenticated);
-        loadMoreFeed.classList.toggle('hidden', authenticated || activeFeed !== 'global');
+        if (loginTrigger) loginTrigger.classList.toggle('hidden', authenticated);
+        if (loadMoreFeed) loadMoreFeed.classList.toggle('hidden', authenticated || activeFeed !== 'global');
 
         if (authenticatedUser) {
             hideAuthGate();
-            profileName.textContent = authenticatedUser.name;
+            if (profileName) profileName.textContent = authenticatedUser.name;
+            if (headerUserName) headerUserName.textContent = authenticatedUser.name;
             profileAvatars.forEach(avatar => {
-                if (authenticatedUser.avatar_url) {
-                    avatar.innerHTML = `<img src="${escapeHTML(authenticatedUser.avatar_url)}" alt="${escapeHTML(authenticatedUser.name)}" referrerpolicy="no-referrer" onerror="this.remove()">`;
-                } else {
-                    avatar.textContent = authenticatedUser.name.charAt(0).toUpperCase();
-                }
+                updateAvatarDisplay(avatar, authenticatedUser.avatar_url, authenticatedUser.name);
             });
         } else {
-            profileName.textContent = translate('notAuthenticated');
+            if (profileName) profileName.textContent = translate('notAuthenticated');
+            if (headerUserName) headerUserName.textContent = '';
             profileAvatars.forEach(avatar => {
                 avatar.textContent = '?';
             });
@@ -411,15 +505,85 @@ async function handleGoogleSignIn() {
 googleSignIn.addEventListener('click', handleGoogleSignIn);
 gateGoogleSignIn.addEventListener('click', handleGoogleSignIn);
 
+gateEmailSignIn.addEventListener('click', async () => {
+    const email = gateEmail.value.trim();
+    const password = gatePassword.value;
+    if (!email || !password) return;
+    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    gateAuthFeedback.textContent = error ? error.message : translate('loginSuccess') + '.';
+    if (!error) {
+        hideAuthGate();
+        await refreshAuthState();
+    }
+});
+
+gateEmailSignUp.addEventListener('click', async () => {
+    const email = gateEmail.value.trim();
+    const password = gatePassword.value;
+    if (!email || !password) return;
+    const { error } = await supabaseClient.auth.signUp({ email, password });
+    gateAuthFeedback.textContent = error ? error.message : translate('confirmEmail') + '.';
+});
+
+if (loadMoreFeed) loadMoreFeed.addEventListener('click', showAuthGate);
+if (loginTrigger) loginTrigger.addEventListener('click', showAuthGate);
+
+if (emailSignIn) {
+    emailSignIn.addEventListener('click', async () => {
+        const email = authEmail.value.trim();
+        const password = authPassword.value;
+        if (!email || !password) return;
+        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        showAuthMessage(error ? error.message : translate('loginSuccess'));
+        if (!error) await refreshAuthState();
+    });
+}
+
+if (emailSignUp) {
+    emailSignUp.addEventListener('click', async () => {
+        const email = authEmail.value.trim();
+        const password = authPassword.value;
+        if (!email || !password) return;
+        const { error } = await supabaseClient.auth.signUp({ email, password });
+        showAuthMessage(error ? error.message : translate('confirmEmail'));
+    });
+}
+
 async function handleSignOut() {
-    await supabaseClient.auth.signOut();
+    authenticatedUser = null;
+    invalidateCache();
+    activeFeed = 'global';
+    selectedProfileId = null;
+    window.history.replaceState({ feedType: 'global' }, '', getHomePath());
     toggleSidebar(false);
-    await refreshAuthState();
+    writeSection?.classList.add('hidden');
+    readSection?.classList.remove('hidden');
+    btnWrite?.classList.remove('active');
+    btnRead?.classList.remove('active');
+    window.scrollTo({ top: 0 });
+
+    try {
+        await supabaseClient.auth.signOut();
+    } catch (err) {
+        console.warn('Sign out warning:', err);
+    }
+
+    await refreshAuthState(null);
 }
 
 if (btnSignout) btnSignout.addEventListener('click', handleSignOut);
 
-supabaseClient.auth.onAuthStateChange(() => refreshAuthState());
+supabaseClient.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_OUT') {
+        authenticatedUser = null;
+        invalidateCache();
+        activeFeed = 'global';
+        selectedProfileId = null;
+        await refreshAuthState(null);
+    } else if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED') {
+        await refreshAuthState(session?.user || undefined);
+    }
+});
 
 // Diálogo de Confirmação de Exclusão
 function openDeleteDialog(ideaId, card) {
@@ -485,6 +649,13 @@ function toggleSidebar(isOpen) {
     profileSidebar.setAttribute('aria-hidden', String(!isOpen));
     btnProfile.setAttribute('aria-expanded', String(isOpen));
     if (isOpen) {
+        if (authenticatedUser) {
+            if (profileName) profileName.textContent = authenticatedUser.name;
+            if (headerUserName) headerUserName.textContent = authenticatedUser.name;
+            profileAvatars.forEach(avatar => {
+                updateAvatarDisplay(avatar, authenticatedUser.avatar_url, authenticatedUser.name);
+            });
+        }
         updateProfileStats();
     }
 }
@@ -735,9 +906,6 @@ async function fetchEntriesPage(page = 0) {
                         user_id,
                         vote_type
                     ),
-                    favorites (
-                        user_id
-                    ),
                     favorites!inner (
                         user_id
                     )
@@ -791,12 +959,16 @@ async function fetchEntriesPage(page = 0) {
             return null;
         }
 
-        const formatted = (entries || []).map(formatIdeaEntry);
+        let formatted = (entries || []).map(formatIdeaEntry);
 
         if (filter === 'voted') {
             formatted.sort((a, b) => (b.upvotes + b.downvotes) - (a.upvotes + a.downvotes));
         } else if (filter === 'favorite') {
             formatted.sort((a, b) => b.favoritesCount - a.favoritesCount);
+        }
+
+        if (isPublicVisitor && formatted.length > publicFeedLimit) {
+            formatted = formatted.slice(0, publicFeedLimit);
         }
 
         setCachedData(cacheKey, formatted);
@@ -851,12 +1023,16 @@ async function loadIdeas(reset = true) {
         feedLoader?.classList.remove('hidden');
     }
 
-    const firstPage = await fetchEntriesPage(0);
+    let firstPage = await fetchEntriesPage(0);
     feedLoader?.classList.add('hidden');
 
     if (firstPage === null) {
         ideasList.innerHTML = `<p class="empty-state">${translate('errorLoading')}</p>`;
         return;
+    }
+
+    if (isPublicVisitor && firstPage.length > publicFeedLimit) {
+        firstPage = firstPage.slice(0, publicFeedLimit);
     }
 
     if (firstPage.length === 0) {
@@ -1011,6 +1187,35 @@ async function renderProfileConstellation(profileId, profileAccountName) {
     }
 }
 
+// Capacidade de Favoritos por Gamificação e Progressão
+function getMaxFavorites(entryCount = 0) {
+    if (entryCount >= 50) return 15;
+    if (entryCount >= 25) return 10;
+    if (entryCount >= 10) return 7;
+    if (entryCount >= 3) return 5;
+    return 3;
+}
+
+function getNextFavoriteMilestoneInfo(entryCount = 0) {
+    if (entryCount < 3) {
+        const remaining = 3 - entryCount;
+        return `Limite de 3 favoritos atingido. Publique mais ${remaining} ${remaining === 1 ? 'fragmento' : 'fragmentos'} para desbloquear 5 slots!`;
+    }
+    if (entryCount < 10) {
+        const remaining = 10 - entryCount;
+        return `Limite de 5 favoritos atingido. Publique mais ${remaining} ${remaining === 1 ? 'fragmento' : 'fragmentos'} para desbloquear 7 slots!`;
+    }
+    if (entryCount < 25) {
+        const remaining = 25 - entryCount;
+        return `Limite de 7 favoritos atingido. Publique mais ${remaining} ${remaining === 1 ? 'fragmento' : 'fragmentos'} para desbloquear 10 slots!`;
+    }
+    if (entryCount < 50) {
+        const remaining = 50 - entryCount;
+        return `Limite de 10 favoritos atingido. Publique mais ${remaining} ${remaining === 1 ? 'fragmento' : 'fragmentos'} para desbloquear 15 slots!`;
+    }
+    return 'Limite máximo de 15 favoritos atingido. Você é um mestre da Gnoteca!';
+}
+
 // Atualizar Estatísticas de Perfil
 async function updateProfileStats() {
     if (!authenticatedUser) {
@@ -1030,8 +1235,12 @@ async function updateProfileStats() {
                 .eq('user_id', authenticatedUser.id)
         ]);
 
-        ideasCount.textContent = entriesRes.count !== null ? String(entriesRes.count) : '0';
-        favoritesCount.textContent = favsRes.count !== null ? `${favsRes.count}/3` : '0/3';
+        const entriesTotal = entriesRes.count !== null ? entriesRes.count : 0;
+        const favsTotal = favsRes.count !== null ? favsRes.count : 0;
+        const maxFavs = getMaxFavorites(entriesTotal);
+
+        ideasCount.textContent = String(entriesTotal);
+        favoritesCount.textContent = `${favsTotal}/${maxFavs}`;
     } catch (err) {
         console.error('updateProfileStats error:', err);
     }
@@ -1182,15 +1391,21 @@ ideasList.addEventListener('click', async event => {
                     .eq('user_id', authenticatedUser.id);
                 if (error) throw error;
             } else {
-                // Verifica limite de 3 favoritos
-                const { count: favCount, error: countErr } = await supabaseClient
-                    .from('favorites')
-                    .select('entry_id', { count: 'exact', head: true })
-                    .eq('user_id', authenticatedUser.id);
+                // Verifica limite dinâmico de favoritos por progressão
+                const [{ count: entryCount }, { count: favCount }] = await Promise.all([
+                    supabaseClient
+                        .from('entries')
+                        .select('id', { count: 'exact', head: true })
+                        .eq('author_id', authenticatedUser.id),
+                    supabaseClient
+                        .from('favorites')
+                        .select('entry_id', { count: 'exact', head: true })
+                        .eq('user_id', authenticatedUser.id)
+                ]);
 
-                if (countErr) console.warn('Count favorites warning:', countErr);
-                if (favCount !== null && favCount >= 3) {
-                    showActionFeedback(translate('favoriteLimitReached'));
+                const maxAllowed = getMaxFavorites(entryCount || 0);
+                if (favCount !== null && favCount >= maxAllowed) {
+                    showActionFeedback(getNextFavoriteMilestoneInfo(entryCount || 0));
                     button.disabled = false;
                     return;
                 }
@@ -1277,7 +1492,136 @@ btnBackToTop?.addEventListener('click', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
+// ==========================================
+// Edição de Perfil e Progressão de Títulos
+// ==========================================
+
+function closeProfileEditDialog() {
+    editProfileDialog?.classList.add('hidden');
+    editNameSection?.classList.add('hidden');
+    editAvatarSection?.classList.add('hidden');
+    editTitleSection?.classList.add('hidden');
+    if(editProfileFeedback) editProfileFeedback.textContent = '';
+}
+
+closeEditDialog?.addEventListener('click', closeProfileEditDialog);
+
+btnEditName?.addEventListener('click', () => {
+    if (!authenticatedUser) return;
+    inputEditName.value = authenticatedUser.name;
+    editNameSection.classList.remove('hidden');
+    editAvatarSection.classList.add('hidden');
+    editTitleSection.classList.add('hidden');
+    editProfileDialog.classList.remove('hidden');
+    btnSaveProfile.dataset.mode = 'name';
+});
+
+btnEditAvatar?.addEventListener('click', () => {
+    if (!authenticatedUser) return;
+    inputEditAvatar.value = authenticatedUser.avatar_url || '';
+    editAvatarSection.classList.remove('hidden');
+    editNameSection.classList.add('hidden');
+    editTitleSection.classList.add('hidden');
+    editProfileDialog.classList.remove('hidden');
+    btnSaveProfile.dataset.mode = 'avatar';
+});
+
+btnSelectTitle?.addEventListener('click', async () => {
+    if (!authenticatedUser) return;
+    editTitleSection.classList.remove('hidden');
+    editNameSection.classList.add('hidden');
+    editAvatarSection.classList.add('hidden');
+    editProfileDialog.classList.remove('hidden');
+    btnSaveProfile.dataset.mode = 'title';
+    selectEditTitle.innerHTML = '<option>Carregando...</option>';
+    
+    // Obter estatísticas do usuário (usando os valores carregados na sidebar)
+    let fragments = parseInt(ideasCount.textContent) || 0;
+    let favoritesStr = favoritesCount.textContent || "0";
+    let favorites = parseInt(favoritesStr.split('/')[0]) || 0;
+    
+    let unlocked = ['Explorador de Conhecimento'];
+    if (fragments >= 3) unlocked.push('Curador de Ideias');
+    if (fragments >= 10 && favorites >= 1) unlocked.push('Arquiteto do Saber');
+    if (fragments >= 20) unlocked.push('Luz da Gnoteca');
+    
+    selectEditTitle.innerHTML = '';
+    unlocked.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t;
+        opt.textContent = t;
+        if (t === authenticatedUser.title) opt.selected = true;
+        selectEditTitle.appendChild(opt);
+    });
+});
+
+btnSaveProfile?.addEventListener('click', async () => {
+    if (!authenticatedUser) return;
+    btnSaveProfile.disabled = true;
+    editProfileFeedback.textContent = 'Salvando...';
+    editProfileFeedback.style.color = 'var(--muted-color)';
+    
+    const mode = btnSaveProfile.dataset.mode;
+    try {
+        let updateData = {};
+        
+        if (mode === 'name') {
+            let val = inputEditName.value.trim();
+            if (!val) {
+                throw new Error("O nome não pode ficar vazio.");
+            }
+            updateData.display_name = val;
+        } else if (mode === 'avatar') {
+            updateData.avatar_url = inputEditAvatar.value.trim();
+        } else if (mode === 'title') {
+            updateData.current_title = selectEditTitle.value;
+        }
+
+        const { error } = await supabaseClient.from('profiles').update(updateData).eq('id', authenticatedUser.id);
+        if (error) {
+            if (error.code === '23505') throw new Error("Este arroba (@) já está em uso.");
+            throw error;
+        }
+
+        editProfileFeedback.textContent = 'Salvo com sucesso!';
+        editProfileFeedback.style.color = 'var(--accent-color)';
+        
+        // Atualizar estado em memoria rapidamente sem recarregar a tela inteira se puder
+        if (mode === 'name') authenticatedUser.name = updateData.display_name;
+        if (mode === 'avatar') authenticatedUser.avatar_url = updateData.avatar_url;
+        if (mode === 'title') authenticatedUser.title = updateData.current_title;
+        
+        setTimeout(async () => {
+            closeProfileEditDialog();
+            await refreshAuthState(); 
+        }, 1000);
+    } catch (e) {
+        editProfileFeedback.textContent = e.message || 'Erro ao salvar.';
+        editProfileFeedback.style.color = 'var(--danger-color)';
+    } finally {
+        btnSaveProfile.disabled = false;
+    }
+});
+
+statFragments?.addEventListener('click', () => {
+    if (authenticatedUser && authenticatedUser.username) {
+        window.location.hash = '#/' + authenticatedUser.username;
+        toggleSidebar(false);
+    }
+});
+
+statFavorites?.addEventListener('click', () => {
+    if (authenticatedUser) {
+        toggleSidebar(false);
+        showFeed('favorites');
+    }
+});
+
 // Inicialização
-applyLanguage(currentLanguage);
-loadRouteFromUrl();
-refreshAuthState();
+async function initApp() {
+    applyLanguage(currentLanguage);
+    await refreshAuthState();
+    await loadRouteFromUrl();
+}
+
+initApp();
