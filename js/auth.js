@@ -611,6 +611,7 @@ export async function refreshAuthState(incomingUser = undefined, onStateRefreshe
         const authenticated = Boolean(state.authenticatedUser);
         const writeSection = document.getElementById('write-section');
         const btnNotifications = document.getElementById('btn-notifications');
+        const communityPulseBar = document.getElementById('community-pulse-bar');
 
         if (authPanel) authPanel.classList.toggle('hidden', authenticated);
         if (authStatus) authStatus.textContent = authenticated ? (state.authenticatedUser.email || state.authenticatedUser.name) : translate('notAuthenticated');
@@ -622,6 +623,11 @@ export async function refreshAuthState(incomingUser = undefined, onStateRefreshe
         if (loginTrigger) loginTrigger.classList.toggle('hidden', authenticated);
         if (loadMoreFeed) loadMoreFeed.classList.toggle('hidden', authenticated || state.activeFeed !== 'global');
         if (writeSection) writeSection.classList.toggle('hidden', !authenticated);
+
+        if (communityPulseBar) {
+            const isPulseEnabled = localStorage.getItem('gnoteca_setting_pulse') !== 'false';
+            communityPulseBar.classList.toggle('hidden', !authenticated || !isPulseEnabled);
+        }
 
         if (authenticated) {
             hideAuthGate();

@@ -1,4 +1,5 @@
 // Gerenciador de Configurações da Experiência do Usuário
+import { state } from './state.js';
 
 const STORAGE_KEYS = {
     PULSE: 'gnoteca_setting_pulse',
@@ -31,10 +32,10 @@ export function loadSettings() {
 
 // Aplica as Configurações na Interface
 export function applyAllSettings() {
-    // 1. Pulso da Comunidade
+    // 1. Pulso da Comunidade (Apenas visível se o usuário estiver autenticado)
     const pulseBar = document.getElementById('community-pulse-bar');
     if (pulseBar) {
-        if (userSettings.pulseEnabled) {
+        if (state.authenticatedUser && userSettings.pulseEnabled) {
             pulseBar.classList.remove('hidden');
         } else {
             pulseBar.classList.add('hidden');
