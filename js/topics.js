@@ -95,6 +95,10 @@ const TOPIC_ALIASES = {
 
 let cachedSortedTopics = [...BASE_TOPICS];
 
+function removeAccents(str) {
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
 // Normaliza uma tag removendo #, tratando espaços e mapeando para forma canônica
 export function normalizeTagName(rawTag) {
     if (!rawTag) return 'Geral';
@@ -104,6 +108,10 @@ export function normalizeTagName(rawTag) {
     const lower = clean.toLowerCase();
     if (TOPIC_ALIASES[lower]) {
         return TOPIC_ALIASES[lower];
+    }
+    const unaccented = removeAccents(lower);
+    if (TOPIC_ALIASES[unaccented]) {
+        return TOPIC_ALIASES[unaccented];
     }
 
     // Se for um novo tópico criado pelo usuário, capitaliza a primeira letra
@@ -183,16 +191,17 @@ export function setupTopicAutocomplete() {
     let currentSuggestions = [];
 
     function renderSuggestions(query = '') {
-        const cleanQuery = query.trim().replace(/^#+/, '').toLowerCase();
+        const cleanQuery = removeAccents(query.trim().replace(/^#+/, '').toLowerCase());
 
         currentSuggestions = cachedSortedTopics.filter(tag => {
-            const displayLabel = getTranslatedTopic(tag).toLowerCase();
-            const raw = tag.toLowerCase();
+            const displayLabel = removeAccents(getTranslatedTopic(tag).toLowerCase());
+            const raw = removeAccents(tag.toLowerCase());
             return !cleanQuery || displayLabel.includes(cleanQuery) || raw.includes(cleanQuery);
         });
 
         // Se o que foi digitado não estiver na lista de sugestões, adiciona opção de "Criar novo tópico"
-        if (cleanQuery && !currentSuggestions.some(t => t.toLowerCase() === cleanQuery)) {
+        const exactMatch = currentSuggestions.some(t => removeAccents(t.toLowerCase()) === cleanQuery);
+        if (cleanQuery && !exactMatch) {
             const newTagName = normalizeTagName(query);
             currentSuggestions.unshift(newTagName);
         }
