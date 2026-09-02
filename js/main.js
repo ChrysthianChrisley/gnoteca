@@ -545,6 +545,7 @@ function setupEventListeners() {
 
     // Fechar thread de comentários ao clicar fora
     document.addEventListener('click', event => {
+        if (!event.target || !event.target.isConnected) return;
         if (event.target.closest('.comments-thread-container') || event.target.closest('[data-action="toggle-comments"]')) {
             return;
         }

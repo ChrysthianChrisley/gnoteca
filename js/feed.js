@@ -184,21 +184,18 @@ export async function fetchComments(entryId) {
 
             let replyToCommentId = null;
             let replyToAuthorName = null;
-            if (c.source && c.source.startsWith('reply_to:')) {
-                const raw = c.source.replace('reply_to:', '');
-                const sepIdx = raw.indexOf('|');
-                if (sepIdx !== -1) {
-                    replyToCommentId = Number(raw.slice(0, sepIdx));
-                    replyToAuthorName = raw.slice(sepIdx + 1);
-                } else {
-                    replyToCommentId = Number(raw);
+            if (c.source && typeof c.source === 'string' && c.source.includes('reply_to:')) {
+                const match = c.source.match(/reply_to:\s*(\d+)(?:[|:](.*))?/i);
+                if (match) {
+                    replyToCommentId = Number(match[1]);
+                    replyToAuthorName = match[2] ? match[2].trim() : null;
                 }
             }
 
             const isEdited = !!(c.updated_at && (new Date(c.updated_at).getTime() - new Date(c.created_at).getTime() > 1000));
 
             return {
-                id: c.id,
+                id: Number(c.id),
                 content: c.content,
                 rawContent: c.content,
                 tag: c.knowledge_type || 'Aprofundamento',
@@ -223,51 +220,57 @@ export async function fetchComments(entryId) {
     }
 }
 
-// Renderiza Conteúdo da Thread de Comentários (Modelo Encadeado com Linhas Guia e @Destinatário)
+// Formatação de Tempo Relativo para Comentários
+function formatCommentTime(dateString) {
+    if (!dateString) return '';
+    const diff = Math.floor((Date.now() - new Date(dateString).getTime()) / 1000);
+    if (diff < 60) return 'agora';
+    if (diff < 3600) return `há ${Math.floor(diff / 60)} min`;
+    if (diff < 86400) return `há ${Math.floor(diff / 3600)} h`;
+    return `há ${Math.floor(diff / 86400)} d`;
+}
+
+// Renderiza Conteúdo da Thread de Comentários (Estilo Cascata Reddit com Fio Conector)
 export function renderCommentsContent(container, entryId, comments) {
     if (!container) return;
 
-    // Indexa todos os comentários por ID
-    const commentMap = {};
-    comments.forEach(c => { commentMap[c.id] = c; });
+    // Indexa todos os comentários por ID numérico
+    const commentMap = new Map();
+    comments.forEach(c => {
+        commentMap.set(Number(c.id), c);
+    });
 
     // Garante nome do destinatário se não salvo previamente
     comments.forEach(c => {
-        if (c.replyToCommentId && !c.replyToAuthorName && commentMap[c.replyToCommentId]) {
-            c.replyToAuthorName = commentMap[c.replyToCommentId].authorName;
+        if (c.replyToCommentId) {
+            const parentComment = commentMap.get(Number(c.replyToCommentId));
+            if (parentComment && !c.replyToAuthorName) {
+                c.replyToAuthorName = parentComment.authorName;
+            }
         }
     });
 
-    // Determina o comentário raiz de cada resposta (para agrupar visualmente em 1 nível limpo)
-    function getRootCommentId(comment) {
-        let curr = comment;
-        let visited = new Set();
-        while (curr && curr.replyToCommentId && commentMap[curr.replyToCommentId]) {
-            if (visited.has(curr.id)) break;
-            visited.add(curr.id);
-            curr = commentMap[curr.replyToCommentId];
-        }
-        return curr?.id || comment.id;
-    }
-
+    // Mapeamento de Filhos (Hierarquia Completa em Árvore)
+    const childrenMap = new Map();
     const rootComments = [];
-    const repliesByRoot = {};
 
     comments.forEach(c => {
-        if (!c.replyToCommentId || !commentMap[c.replyToCommentId]) {
-            rootComments.push(c);
+        const targetParentId = c.replyToCommentId ? Number(c.replyToCommentId) : null;
+        if (targetParentId && commentMap.has(targetParentId)) {
+            if (!childrenMap.has(targetParentId)) {
+                childrenMap.set(targetParentId, []);
+            }
+            childrenMap.get(targetParentId).push(c);
         } else {
-            const rootId = getRootCommentId(c);
-            repliesByRoot[rootId] = repliesByRoot[rootId] || [];
-            repliesByRoot[rootId].push(c);
+            rootComments.push(c);
         }
     });
 
-    // Ordenação: Raízes mais antigas primeiro ou por votos
+    // Ordenação: Raízes mais antigas primeiro
     rootComments.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
-    // Renderiza um card individual de comentário
-    function renderSingleComment(c, isReply = false) {
+    // Renderiza Nó Recursivo (Cascata Reddit com Linha Lateral e Recuo)
+    function renderCommentNode(c, depth = 0) {
         const authorImg = c.authorAvatarUrl
             ? `<img class="comment-author-avatar" src="${escapeHTML(c.authorAvatarUrl)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`
             : '';
@@ -278,6 +281,7 @@ export function renderCommentsContent(container, entryId, comments) {
         const editedBadge = c.isEdited
             ? `<span class="comment-edited-badge">(${translate('edited')})</span>`
             : '';
+        const timeAgo = formatCommentTime(c.createdAt);
         const authorActions = isAuthor
             ? `
                 <div class="comment-author-actions">
@@ -287,49 +291,44 @@ export function renderCommentsContent(container, entryId, comments) {
             `
             : '';
 
+        const children = childrenMap.get(Number(c.id)) || [];
+        children.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        const childrenHtml = children.map(child => renderCommentNode(child, depth + 1)).join('');
+
         return `
-            <div class="comment-card${isReply ? ' is-reply' : ''}" id="comment-${c.id}">
-                <div class="comment-header">
-                    <span class="comment-author">
-                        <button class="author-link" type="button" data-action="profile" data-profile-id="${c.authorId}">${authorImg}${escapeHTML(c.authorName)}</button>
-                        ${editedBadge}
-                    </span>
-                    ${authorActions}
+            <div class="comment-thread-item${depth > 0 ? ' is-reply' : ''}" id="comment-thread-${c.id}">
+                <div class="comment-card" id="comment-${c.id}">
+                    <div class="comment-header">
+                        <div class="comment-header-meta">
+                            <span class="comment-author">
+                                <button class="author-link" type="button" data-action="profile" data-profile-id="${c.authorId}">${authorImg}${escapeHTML(c.authorName)}</button>
+                                ${editedBadge}
+                            </span>
+                            <span class="comment-time">${timeAgo}</span>
+                        </div>
+                        ${authorActions}
+                    </div>
+                    <div class="comment-body-wrapper" id="comment-body-${c.id}">
+                        <p class="comment-content">${replyBadge}${escapeHTML(c.content).replace(/\n/g, '<br>')}</p>
+                    </div>
+                    <div class="comment-actions">
+                        <button class="comment-sparkle-btn${c.userVote === 'up' ? ' selected' : ''}" type="button" data-action="comment-appreciate" data-comment-id="${c.id}" data-parent-id="${entryId}" aria-label="${translate('appreciate')}" title="${translate('appreciate')}">
+                            <span class="sparkle-symbol-mini" aria-hidden="true">✦</span>
+                            <span class="comment-score${c.score > 0 ? ' positive' : ''}">${c.score || 0}</span>
+                        </button>
+                        <button class="comment-reply-action-btn" type="button" data-action="open-reply-box" data-comment-id="${c.id}" data-author-id="${c.authorId}" data-author-name="${escapeHTML(c.authorName)}" data-parent-id="${entryId}">
+                            <svg viewBox="0 0 24 24" class="icon-tiny" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 5 5v5"/></svg>
+                            ${translate('reply')}
+                        </button>
+                    </div>
+                    <div class="comment-inline-reply-slot" id="reply-slot-${c.id}"></div>
                 </div>
-                <div class="comment-body-wrapper" id="comment-body-${c.id}">
-                    <p class="comment-content">${replyBadge}${escapeHTML(c.content).replace(/\n/g, '<br>')}</p>
-                </div>
-                <div class="comment-actions">
-                    <button class="comment-sparkle-btn${c.userVote === 'up' ? ' selected' : ''}" type="button" data-action="comment-appreciate" data-comment-id="${c.id}" data-parent-id="${entryId}" aria-label="${translate('appreciate')}" title="${translate('appreciate')}">
-                        <span class="sparkle-symbol-mini" aria-hidden="true">✦</span>
-                        <span class="comment-score${c.score > 0 ? ' positive' : ''}">${c.score || 0}</span>
-                    </button>
-                    <button class="comment-reply-action-btn" type="button" data-action="open-reply-box" data-comment-id="${c.id}" data-author-id="${c.authorId}" data-author-name="${escapeHTML(c.authorName)}" data-parent-id="${entryId}">
-                        <svg viewBox="0 0 24 24" class="icon-tiny" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 5 5v5"/></svg>
-                        ${translate('reply')}
-                    </button>
-                </div>
-                <div class="comment-inline-reply-slot" id="reply-slot-${c.id}"></div>
+                ${children.length > 0 ? `<div class="comment-thread-children">${childrenHtml}</div>` : ''}
             </div>
         `;
     }
 
-    // Renderiza a lista de comentários encadeados
-    const commentsListHtml = rootComments.map(root => {
-        const rootHtml = renderSingleComment(root, false);
-        const replies = repliesByRoot[root.id] || [];
-        replies.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-        const repliesHtml = replies.map(r => renderSingleComment(r, true)).join('');
-
-        return `
-            <div class="comment-group" id="comment-group-${root.id}">
-                ${rootHtml}
-                <div class="comment-replies-container${replies.length === 0 ? ' hidden' : ''}" id="replies-container-${root.id}">
-                    ${repliesHtml}
-                </div>
-            </div>
-        `;
-    }).join('');
+    const commentsTreeHtml = rootComments.map(root => renderCommentNode(root, 0)).join('');
 
     container.innerHTML = `
         <div class="comments-thread-header">
@@ -337,7 +336,7 @@ export function renderCommentsContent(container, entryId, comments) {
             <button class="comments-close-btn" type="button" data-action="close-comments" data-idea-id="${entryId}" aria-label="Fechar">✕</button>
         </div>
         <div class="comments-list">
-            ${comments.length ? commentsListHtml : `<p class="comments-empty">${translate('noCommentsYet')}</p>`}
+            ${comments.length ? commentsTreeHtml : `<p class="comments-empty">${translate('noCommentsYet')}</p>`}
         </div>
         <div class="comment-reply-form main-comment-form" data-parent-id="${entryId}">
             <textarea class="comment-reply-input" placeholder="${translate('addCommentPlaceholder')}" maxlength="280"></textarea>
@@ -795,47 +794,6 @@ export async function handleFeedClick(event, onNavigateProfile) {
         const container = card?.querySelector(`#comments-thread-${ideaId}`);
         container?.classList.add('hidden');
         card?.querySelector('[data-action="toggle-comments"]')?.classList.remove('open');
-        return;
-    }
-
-    if (action === 'open-reply-box') {
-        if (!state.authenticatedUser) {
-            showAuthGate();
-            return;
-        }
-        const commentId = Number(button.dataset.commentId);
-        const authorName = button.dataset.authorName || 'Pensador';
-        const parentId = Number(button.dataset.parentId);
-        const card = button.closest('.idea-card');
-        const group = button.closest('.comment-group') || button.closest('.comment-card');
-        const rootId = group.id.replace('comment-group-', '') || commentId;
-
-        // Fecha qualquer outro box de resposta aberto neste card
-        card.querySelectorAll('.comment-inline-reply-box').forEach(b => b.remove());
-
-        const slot = document.getElementById(`reply-slot-${rootId}`) || group;
-        slot.innerHTML = `
-            <div class="comment-inline-reply-box" id="inline-reply-box-${rootId}">
-                <div class="comment-inline-reply-header">
-                    <span>${translate('replyingTo')} <strong>@${escapeHTML(authorName)}</strong></span>
-                    <button class="comment-cancel-reply-btn" type="button" data-action="cancel-reply" data-root-id="${rootId}">${translate('cancelReply')}</button>
-                </div>
-                <div class="comment-reply-form" data-parent-id="${parentId}">
-                    <textarea class="comment-reply-input" placeholder="${translate('writeReplyPlaceholder')}" maxlength="280"></textarea>
-                    <button class="comment-submit-btn" type="button" data-action="submit-comment" data-parent-id="${parentId}" data-reply-to="${commentId}" data-reply-author="${escapeHTML(authorName)}">${translate('reply')}</button>
-                </div>
-            </div>
-        `;
-
-        const textarea = slot.querySelector('.comment-reply-input');
-        textarea?.focus();
-        return;
-    }
-
-    if (action === 'cancel-reply') {
-        const rootId = button.dataset.rootId;
-        const box = document.getElementById(`inline-reply-box-${rootId}`);
-        box?.remove();
         return;
     }
 
