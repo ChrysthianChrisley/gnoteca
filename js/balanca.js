@@ -21,7 +21,7 @@ export async function fetchDilemmas() {
                 id, content, created_at, author_id, metadata,
                 profiles:author_id (id, display_name, username, title, avatar_url)
             `)
-            .filter('metadata->is_dilemma', 'eq', 'true')
+            .contains('metadata', { is_dilemma: true })
             .order('created_at', { ascending: false })
             .limit(10);
 
