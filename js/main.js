@@ -1,7 +1,7 @@
 import { supabaseClient, MAX_LENGTH, PROJECT_BASE_PATH, STORAGE_KEYS } from './config.js';
 import { state, invalidateCache } from './state.js';
 import { translate, setLanguage, currentLanguage, getTranslatedTitle } from './i18n.js';
-import { slugify, updateAvatarDisplay, showActionFeedback, setDarkMode, getProfilePath, getHomePath } from './utils.js';
+import { slugify, updateAvatarDisplay, showActionFeedback, setDarkMode, getProfilePath, getHomePath, escapeHTML } from './utils.js';
 import { showAuthGate, hideAuthGate, setAuthGateMode, handleGateAuthSubmit, handleGoogleSignIn, handleEmailSignIn, handleEmailSignUp, handleSignOut, refreshAuthState, updatePasswordChecklist, showResetPasswordDialog, hideResetPasswordDialog, handleResetPasswordSubmit, handleSettingsChangePassword } from './auth.js';
 import { updateProfileStats } from './favorites.js';
 import { openEditNameDialog, openEditAvatarDialog, openSelectTitleDialog, saveProfileEdits, closeProfileEditDialog } from './profile.js';
@@ -87,7 +87,7 @@ export function toggleSidebar(isOpen) {
 }
 
 export async function showFeed(feedType) {
-    if (feedType !== 'global' && !state.authenticatedUser) {
+    if (feedType !== 'global' && feedType !== 'explorar' && !state.authenticatedUser) {
         showAuthGate();
         return;
     }
@@ -96,13 +96,29 @@ export async function showFeed(feedType) {
     window.history.pushState({ feedType }, '', getHomePath());
     const isGlobal = feedType === 'global';
 
+    const tabAcervo = document.getElementById('tab-mode-acervo');
+    const tabExplorar = document.getElementById('tab-mode-explorar');
+    tabAcervo?.classList.toggle('active', isGlobal);
+    tabExplorar?.classList.toggle('active', feedType === 'explorar');
+
+    const exploreSection = document.getElementById('explore-section');
+    if (feedType === 'explorar') {
+        writeSection?.classList.add('hidden');
+        readSection?.classList.add('hidden');
+        exploreSection?.classList.remove('hidden');
+        
+        const communityPulseBar = document.getElementById('community-pulse-bar');
+        if (communityPulseBar) communityPulseBar.classList.add('hidden');
+        
+        renderExploreCategories();
+        return;
+    } else {
+        exploreSection?.classList.add('hidden');
+    }
+
     // Se for global com usuário autenticado, exibe o composer
     writeSection?.classList.toggle('hidden', !state.authenticatedUser || !isGlobal);
     readSection?.classList.remove('hidden');
-
-    // Sincroniza abas de modo
-    const tabAcervo = document.getElementById('tab-mode-acervo');
-    tabAcervo?.classList.toggle('active', isGlobal);
 
     const filterLabel = document.querySelector('.filter-label');
     if (filterLabel) {
@@ -116,6 +132,54 @@ export async function showFeed(feedType) {
     }
 
     await loadIdeas();
+}
+
+async function renderExploreCategories() {
+    const grid = document.getElementById('explore-categories-grid');
+    if (!grid) return;
+    grid.innerHTML = '<p class="empty-state">Carregando categorias...</p>';
+    
+    try {
+        const { data, error } = await supabaseClient
+            .from('knowledge')
+            .select('category')
+            .is('parent_id', null);
+            
+        if (error) throw error;
+        
+        const counts = {};
+        (data || []).forEach(item => {
+            const cat = item.category || 'Geral';
+            counts[cat] = (counts[cat] || 0) + 1;
+        });
+        
+        const categories = Object.keys(counts).map(c => ({ name: c, count: counts[c] }));
+        categories.sort((a, b) => b.count - a.count);
+        
+        if (categories.length === 0) {
+            grid.innerHTML = '<p class="empty-state">Nenhum conhecimento ainda.</p>';
+        } else {
+            grid.innerHTML = categories.map(c => `
+                <div class="explore-category-card" data-category="${escapeHTML(c.name)}">
+                    <div class="explore-category-title">${escapeHTML(getTranslatedTopic(c.name) || c.name)}</div>
+                    <div class="explore-category-count">${c.count} ${c.count === 1 ? 'pensamento' : 'pensamentos'}</div>
+                </div>
+            `).join('');
+            
+            grid.querySelectorAll('.explore-category-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    state.selectedTag = card.dataset.category;
+                    document.querySelectorAll('.topic-pill').forEach(pill => {
+                        pill.classList.toggle('active', pill.dataset.tag === state.selectedTag);
+                    });
+                    showFeed('global');
+                });
+            });
+        }
+    } catch (err) {
+        console.error('Erro explorar:', err);
+        grid.innerHTML = '<p class="empty-state">Erro ao carregar.</p>';
+    }
 }
 
 export async function showProfile(profileId) {
@@ -239,6 +303,9 @@ function setupEventListeners() {
     btnCloseSidebar?.addEventListener('click', () => toggleSidebar(false));
     sidebarOverlay?.addEventListener('click', () => toggleSidebar(false));
     btnHome?.addEventListener('click', () => showFeed('global'));
+    document.getElementById('tab-mode-acervo')?.addEventListener('click', () => showFeed('global'));
+    document.getElementById('tab-mode-explorar')?.addEventListener('click', () => showFeed('explorar'));
+    
     overviewMenu?.addEventListener('click', () => {
         toggleSidebar(false);
         showFeed('global');
@@ -249,6 +316,16 @@ function setupEventListeners() {
     });
     backToFeed?.addEventListener('click', () => showFeed('global'));
     feedFilter?.addEventListener('change', () => loadIdeas());
+
+    // Phase 2 Modals Handlers
+    document.getElementById('close-history-dialog')?.addEventListener('click', () => {
+        document.getElementById('history-dialog')?.classList.add('hidden');
+    });
+    document.getElementById('history-dialog')?.addEventListener('click', e => {
+        if (e.target.id === 'history-dialog') e.target.classList.add('hidden');
+    });
+
+
 
     // Tema Noturno (Sidebar e Header Rápido)
     const btnThemeQuickToggle = document.getElementById('btn-theme-quick-toggle');
@@ -355,13 +432,9 @@ function setupEventListeners() {
     closeEditDialog?.addEventListener('click', closeProfileEditDialog);
     btnSaveProfile?.addEventListener('click', saveProfileEdits);
 
-    // Criação de Fragmentos
+    // Criação de Conhecimentos
     ideaInput?.addEventListener('input', () => {
-        const currentLength = ideaInput.value.length;
-        if (charCounter) {
-            charCounter.textContent = `${currentLength} / ${MAX_LENGTH}`;
-            charCounter.classList.toggle('limit-reached', currentLength >= MAX_LENGTH);
-        }
+        // Sem limite de caracteres no MVP
     });
 
     btnWrite?.addEventListener('click', () => {
@@ -387,55 +460,46 @@ function setupEventListeners() {
     btnSave?.addEventListener('click', async () => {
         const text = ideaInput?.value.trim();
         if (!text) return;
+        
+        const categorySelect = document.getElementById('category-select');
+        const category = categorySelect?.value || 'Geral';
+        
+        const tagsInput = document.getElementById('tags-input');
+        const tagsRaw = tagsInput?.value.trim() || '';
+        const tagsArray = tagsRaw.split(',').map(t => t.trim()).filter(Boolean);
+        
+        const sourceInput = document.getElementById('source-input');
+        const sourceText = sourceInput?.value.trim() || null;
 
-        const writeTagInput = document.getElementById('write-tag-input');
-        const rawTag = writeTagInput?.dataset?.canonicalTag || writeTagInput?.value || 'Geral';
-        const selectedTag = normalizeTagName(rawTag);
-        const citationInput = document.getElementById('write-citation-input');
-        const citation = citationInput?.value.trim() || '';
-
-        // Se for para o Acervo Público
         if (!state.authenticatedUser) {
             showAuthGate();
-            return;
-        }
-
-        let finalContent = text;
-        if (citation) {
-            finalContent = `${text}\n\n— Fonte: ${citation}`;
-        }
-        if (finalContent.length > 280) {
-            showActionFeedback('Com a citação, o fragmento ultrapassa 280 caracteres. Reduza um pouco o texto.');
             return;
         }
 
         btnSave.disabled = true;
         try {
             const { error } = await supabaseClient
-                .from('entries')
+                .from('knowledge')
                 .insert([{
-                    content: finalContent,
-                    tag: selectedTag,
+                    content: text,
+                    category: category,
+                    tags: tagsArray,
+                    source: sourceText,
                     author_id: state.authenticatedUser.id
                 }]);
 
             if (error) {
-                console.error('Error saving entry:', error);
+                console.error('Error saving knowledge:', error);
                 showActionFeedback(error.message || translate('errorSaving'));
                 return;
             }
 
             if (ideaInput) ideaInput.value = '';
-            const citationInput = document.getElementById('write-citation-input');
-            if (citationInput) citationInput.value = '';
-            if (writeTagInput) {
-                writeTagInput.value = 'Geral';
-                delete writeTagInput.dataset.canonicalTag;
-            }
-            if (charCounter) {
-                charCounter.textContent = `0 / ${MAX_LENGTH}`;
-                charCounter.classList.remove('limit-reached');
-            }
+
+            if (categorySelect) categorySelect.value = 'Geral';
+            if (tagsInput) tagsInput.value = '';
+            if (sourceInput) sourceInput.value = '';
+            
             if (feedbackMsg) {
                 feedbackMsg.classList.remove('hidden');
                 setTimeout(() => feedbackMsg.classList.add('hidden'), 2000);
@@ -671,18 +735,8 @@ async function navigateToEntry(entryId, isComment = false) {
 // Inicialização do Banner de Cookies (LGPD / GDPR)
 function initCookieBanner() {
     const banner = document.getElementById('cookie-banner');
-    const btnAccept = document.getElementById('btn-accept-cookies');
-    if (!banner || !btnAccept) return;
-
-    const hasConsented = localStorage.getItem(STORAGE_KEYS.COOKIE_CONSENT) === 'true';
-    if (!hasConsented) {
-        banner.classList.remove('hidden');
-    }
-
-    btnAccept.addEventListener('click', () => {
-        localStorage.setItem(STORAGE_KEYS.COOKIE_CONSENT, 'true');
-        banner.classList.add('hidden');
-    });
+    if (banner) banner.classList.add('hidden');
+    localStorage.setItem(STORAGE_KEYS.COOKIE_CONSENT, 'true');
 }
 
 // Inicialização Principal da Aplicação

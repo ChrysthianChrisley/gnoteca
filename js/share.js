@@ -52,7 +52,7 @@ export async function openShareModal(idea) {
         try {
             const { directUrl, quote } = getSharePayload(idea);
             await navigator.share({
-                title: 'Gnoteca | Fragmento de Conhecimento',
+                title: 'Gnoteca | Pensamento',
                 text: quote,
                 url: directUrl
             });

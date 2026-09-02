@@ -119,9 +119,13 @@ export function renderNotificationsList() {
 
         let actionText = '';
         if (n.type === 'vote_up') actionText = translate('notifVoteUp');
-        else if (n.type === 'favorite') actionText = translate('notifFavorite');
+        else if (n.type === 'favorite' || n.type === 'saved') actionText = translate('notifFavorite');
         else if (n.type === 'comment') actionText = translate('notifComment');
         else if (n.type === 'reply') actionText = translate('notifReply');
+        else if (n.type === 'relation_contradicts') actionText = translate('notifRelationContradicts');
+        else if (n.type === 'relation_complements' || n.type === 'relation_example_of') actionText = translate('notifRelationComplements');
+        else if (n.type?.startsWith('relation')) actionText = translate('notifRelationRelated');
+        else if (n.type?.startsWith('interaction_')) actionText = `${translate('notifVoteUp')}`;
 
         const unreadClass = n.read ? '' : ' unread';
         const timeAgo = formatRelativeTime(n.created_at);

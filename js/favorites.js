@@ -3,35 +3,6 @@ import { state, invalidateCache } from './state.js';
 import { translate } from './i18n.js';
 import { escapeHTML, showActionFeedback } from './utils.js';
 
-// Capacidade de Favoritos por Gamificação e Progressão
-export function getMaxFavorites(entryCount = 0) {
-    if (entryCount >= 50) return 15;
-    if (entryCount >= 25) return 10;
-    if (entryCount >= 10) return 7;
-    if (entryCount >= 3) return 5;
-    return 3;
-}
-
-export function getNextFavoriteMilestoneInfo(entryCount = 0) {
-    if (entryCount < 3) {
-        const remaining = 3 - entryCount;
-        return `Limite de 3 favoritos atingido. Publique mais ${remaining} ${remaining === 1 ? 'fragmento' : 'fragmentos'} para desbloquear 5 slots!`;
-    }
-    if (entryCount < 10) {
-        const remaining = 10 - entryCount;
-        return `Limite de 5 favoritos atingido. Publique mais ${remaining} ${remaining === 1 ? 'fragmento' : 'fragmentos'} para desbloquear 7 slots!`;
-    }
-    if (entryCount < 25) {
-        const remaining = 25 - entryCount;
-        return `Limite de 7 favoritos atingido. Publique mais ${remaining} ${remaining === 1 ? 'fragmento' : 'fragmentos'} para desbloquear 10 slots!`;
-    }
-    if (entryCount < 50) {
-        const remaining = 50 - entryCount;
-        return `Limite de 10 favoritos atingido. Publique mais ${remaining} ${remaining === 1 ? 'fragmento' : 'fragmentos'} para desbloquear 15 slots!`;
-    }
-    return 'Limite máximo de 15 favoritos atingido. Você é um mestre da Gnoteca!';
-}
-
 // Atualizar Estatísticas na Barra Lateral do Perfil
 export async function updateProfileStats() {
     const ideasCount = document.getElementById('ideas-count');
@@ -39,33 +10,33 @@ export async function updateProfileStats() {
 
     if (!state.authenticatedUser) {
         if (ideasCount) ideasCount.textContent = '0';
-        if (favoritesCount) favoritesCount.textContent = '0/3';
+        if (favoritesCount) favoritesCount.textContent = '0';
         return;
     }
     try {
-        const [entriesRes, favsRes] = await Promise.all([
+        const [knowledgeRes, savedRes] = await Promise.all([
             supabaseClient
-                .from('entries')
+                .from('knowledge')
                 .select('id', { count: 'exact', head: true })
-                .eq('author_id', state.authenticatedUser.id),
+                .eq('author_id', state.authenticatedUser.id)
+                .is('parent_id', null),
             supabaseClient
-                .from('favorites')
-                .select('entry_id', { count: 'exact', head: true })
+                .from('saved_knowledge')
+                .select('knowledge_id', { count: 'exact', head: true })
                 .eq('user_id', state.authenticatedUser.id)
         ]);
 
-        const entriesTotal = entriesRes.count !== null ? entriesRes.count : 0;
-        const favsTotal = favsRes.count !== null ? favsRes.count : 0;
-        const maxFavs = getMaxFavorites(entriesTotal);
+        const knowledgeTotal = knowledgeRes.count !== null ? knowledgeRes.count : 0;
+        const savedTotal = savedRes.count !== null ? savedRes.count : 0;
 
-        if (ideasCount) ideasCount.textContent = String(entriesTotal);
-        if (favoritesCount) favoritesCount.textContent = `${favsTotal}/${maxFavs}`;
+        if (ideasCount) ideasCount.textContent = String(knowledgeTotal);
+        if (favoritesCount) favoritesCount.textContent = String(savedTotal);
     } catch (err) {
         console.error('updateProfileStats error:', err);
     }
 }
 
-// Renderizar a Constelação de 3 Favoritos no Perfil
+// Renderizar a Minha Gnoteca (antiga Constelação) no Perfil
 export async function renderProfileConstellation(profileId, profileAccountName) {
     const profileConstellation = document.getElementById('profile-constellation');
     if (!profileConstellation) return;
@@ -77,11 +48,16 @@ export async function renderProfileConstellation(profileId, profileAccountName) 
     }
 
     try {
-        const { data: favEntries, error } = await supabaseClient
-            .from('entries')
+        const { data: savedKnowledge, error } = await supabaseClient
+            .from('knowledge')
             .select(`
                 id,
                 content,
+                category,
+                tags,
+                source,
+                knowledge_type,
+                epistemic_status,
                 created_at,
                 author_id,
                 profiles:author_id (
@@ -90,72 +66,65 @@ export async function renderProfileConstellation(profileId, profileAccountName) 
                     display_name,
                     avatar_url
                 ),
-                votes (
-                    user_id,
-                    vote_type
-                ),
-                favorites!inner (
+                saved_knowledge!inner (
                     user_id
                 )
             `)
-            .eq('favorites.user_id', profileId)
+            .eq('saved_knowledge.user_id', profileId)
             .order('created_at', { ascending: false })
-            .limit(3);
+            .limit(10); // Mostramos os últimos 10 salvos de forma destacada
 
         if (error) {
-            console.error('Error fetching constellation favorites:', error);
+            console.error('Error fetching saved knowledge:', error);
             profileConstellation.classList.add('hidden');
             return;
         }
 
-        const favs = favEntries || [];
-        const romanNumerals = ['I', 'II', 'III'];
+        const saveds = savedKnowledge || [];
         const isOwnProfile = state.authenticatedUser && state.authenticatedUser.id === profileId;
 
+        if (saveds.length === 0) {
+             profileConstellation.innerHTML = `
+                <div class="constellation-empty-slot" style="margin-bottom: 2rem;">
+                    <h4 class="constellation-empty-title">Nenhum conhecimento guardado ainda.</h4>
+                    <p class="constellation-empty-desc">${isOwnProfile ? 'Explore a Gnoteca e guarde os conhecimentos que deseja lembrar.' : 'Este explorador ainda não guardou conhecimentos públicos.'}</p>
+                </div>
+            `;
+            profileConstellation.classList.remove('hidden');
+            return;
+        }
+
         let cardsHtml = '';
-        for (let i = 0; i < 3; i++) {
-            const entry = favs[i];
-            if (entry) {
-                const authorName = entry.profiles?.display_name || entry.profiles?.username || 'Anônimo';
-                const authorAvatar = entry.profiles?.avatar_url;
-                const authorBadge = authorAvatar
-                    ? `<img class="card-author-avatar" src="${escapeHTML(authorAvatar)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`
-                    : '';
-                cardsHtml += `
-                    <div class="constellation-card">
-                        <div class="constellation-card-header">
-                            <span class="constellation-roman">${romanNumerals[i]}</span>
-                            <span class="constellation-pill">✦ ${translate('pillar')}</span>
-                        </div>
-                        <p class="constellation-card-content">“${escapeHTML(entry.content)}”</p>
-                        <div class="constellation-card-author">
-                            <span>${translate('by')} <button class="author-link" type="button" data-action="profile" data-profile-id="${entry.author_id}">${authorBadge}${escapeHTML(authorName)}</button></span>
-                        </div>
+        for (let i = 0; i < saveds.length; i++) {
+            const entry = saveds[i];
+            const authorName = entry.profiles?.display_name || entry.profiles?.username || 'Anônimo';
+            const authorAvatar = entry.profiles?.avatar_url;
+            const authorBadge = authorAvatar
+                ? `<img class="card-author-avatar" src="${escapeHTML(authorAvatar)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`
+                : '';
+            
+            cardsHtml += `
+                <div class="constellation-card" style="margin-bottom: 1rem;">
+                    <div class="constellation-card-header">
+                        <span class="constellation-pill">${escapeHTML(entry.category)}</span>
                     </div>
-                `;
-            } else {
-                cardsHtml += `
-                    <div class="constellation-empty-slot">
-                        <span class="constellation-empty-icon">✦</span>
-                        <h4 class="constellation-empty-title">${translate('emptyConstellationSlot')} ${romanNumerals[i]}</h4>
-                        <p class="constellation-empty-desc">${isOwnProfile ? translate('emptyConstellationHelp') : translate('emptyConstellationOther')}</p>
+                    <p class="constellation-card-content">“${escapeHTML(entry.content)}”</p>
+                    <div class="constellation-card-author">
+                        <span>Por <button class="author-link" type="button" data-action="profile" data-profile-id="${entry.author_id}">${authorBadge}${escapeHTML(authorName)}</button></span>
                     </div>
-                `;
-            }
+                </div>
+            `;
         }
 
         profileConstellation.innerHTML = `
             <div class="constellation-header">
                 <div class="constellation-title-group">
-                    <span class="constellation-icon">✦</span>
                     <div>
-                        <h3 class="constellation-title">${translate('constellationTitle')}</h3>
-                        <p class="constellation-subtitle">${translate('constellationSubtitle')}</p>
+                        <h3 class="constellation-title">Guardados Recentes</h3>
                     </div>
                 </div>
-                <span class="constellation-pill">${favs.length}/3 ${translate('pillars')}</span>
             </div>
-            <div class="constellation-grid">
+            <div class="constellation-grid" style="display: flex; flex-direction: column; gap: 1rem;">
                 ${cardsHtml}
             </div>
         `;

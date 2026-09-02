@@ -695,13 +695,15 @@ body.dark-mode #btn-save {
 
 .idea-actions {
     display: flex;
+    align-items: center;
     gap: 0.5rem;
-    margin-top: 1rem;
+    margin-top: 0.85rem;
     padding-top: 0.75rem;
     border-top: 1px solid var(--border-color);
 }
 
-.vote-button,
+.action-btn-sparkle,
+.comment-toggle-btn,
 .favorite-button,
 .share-button {
     display: inline-flex;
@@ -709,9 +711,6 @@ body.dark-mode #btn-save {
     min-height: 2.25rem;
     align-items: center;
     justify-content: center;
-    gap: 0.3rem;
-    padding: 0.4rem 0.65rem;
-    border: 1px solid var(--border-color);
     border-radius: 6px;
     background: var(--surface-color);
     color: var(--muted-color);
@@ -4000,4 +3999,532 @@ body:not(.dark-mode) .zen-reader-overlay {
         grid-template-columns: 1fr;
     }
 }
+
+/* Gnoteca Write Section Styles */
+.write-field-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.5rem;
+}
+
+.write-field-group label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--muted-color);
+    margin-bottom: 0.5rem;
+}
+
+.write-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 600px) {
+    .write-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+#idea-input, #context-input {
+    width: 100%;
+    background: var(--surface-glass);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    color: var(--text-color);
+    font-size: 1rem;
+    resize: vertical;
+}
+
+#idea-input {
+    min-height: 120px;
+    font-weight: 500;
+}
+
+#context-input {
+    min-height: 80px;
+    font-size: 0.95rem;
+}
+
+#idea-input:focus, #context-input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    background: var(--surface-color);
+}
+ 
+/* ==============================================================================
+   FASE 2: Exploração, Fios Dialéticos & Relações de Conhecimento
+   ============================================================================== */
+.explore-categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    padding: 1rem 0;
+}
+
+.explore-category-card {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+}
+
+.explore-category-card:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.explore-category-title {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
+
+.explore-category-count {
+    font-size: 0.85rem;
+    color: var(--muted-color);
+}
+
+
+
+.history-item {
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.history-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.history-date {
+    font-size: 0.8rem;
+    color: var(--muted-color);
+    margin-bottom: 0.25rem;
+}
+
+.history-content {
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
+
+/* ==============================================================================
+   Discussões e Respostas Inline (Fricção Zero)
+   ============================================================================== */
+.comments-thread-container {
+    margin-top: 0.85rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--border-color);
+    animation: fadeInThread 0.2s ease-out;
+}
+
+@keyframes fadeInThread {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.comments-thread-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.comments-thread-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted-color);
+}
+
+.comments-close-btn {
+    background: none;
+    border: none;
+    color: var(--muted-color);
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    transition: all 0.15s ease;
+}
+
+.comments-close-btn:hover {
+    color: var(--text-color);
+    background: var(--surface-color);
+}
+
+.comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    margin-bottom: 0.85rem;
+}
+
+.comments-empty {
+    font-size: 0.85rem;
+    color: var(--muted-color);
+    font-style: italic;
+    padding: 0.5rem 0;
+}
+
+.comment-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.comment-card {
+    background: var(--surface-glass);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 0.65rem 0.85rem;
+    transition: border-color 0.15s ease;
+}
+
+.comment-card:hover {
+    border-color: rgba(144, 202, 249, 0.4);
+}
+
+.comment-card.is-reply {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-left: 3px solid var(--accent-color);
+    padding: 0.55rem 0.75rem;
+}
+
+.comment-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.35rem;
+}
+
+.comment-author {
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.comment-author-avatar {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+.card-edited-badge,
+.comment-edited-badge {
+    font-size: 0.72rem;
+    color: var(--muted-color);
+    font-weight: 400;
+    margin-left: 4px;
+    font-style: italic;
+}
+
+.comment-author-actions {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.comment-action-btn {
+    background: none;
+    border: none;
+    font-size: 0.75rem;
+    color: var(--muted-color);
+    cursor: pointer;
+    padding: 0;
+}
+
+.comment-action-btn:hover {
+    color: var(--text-color);
+    text-decoration: underline;
+}
+
+.comment-action-btn.delete-action:hover {
+    color: #e74c3c;
+}
+
+.comment-content {
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: var(--text-color);
+    margin: 0 0 0.4rem 0;
+}
+
+.comment-reply-to-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    color: var(--accent-color);
+    background: var(--soft-accent-color);
+    font-weight: 600;
+    font-size: 0.8rem;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-right: 5px;
+}
+
+.comment-reply-to-badge .reply-symbol {
+    font-size: 0.88rem;
+    line-height: 1;
+}
+
+.comment-sparkle-btn {
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--muted-color);
+    cursor: pointer;
+    padding: 2px 7px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    transition: all 0.15s ease;
+}
+
+.comment-sparkle-btn:hover,
+.comment-sparkle-btn.selected {
+    color: #e67e22;
+    border-color: rgba(230, 126, 34, 0.4);
+    background: rgba(230, 126, 34, 0.1);
+}
+
+.sparkle-symbol-mini {
+    font-size: 0.85rem;
+    line-height: 1;
+}
+
+.comment-score {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: inherit;
+    min-width: 10px;
+    text-align: center;
+}
+
+.comment-score.positive {
+    color: #e67e22;
+}
+
+.comment-reply-action-btn {
+    background: none;
+    border: none;
+    color: var(--muted-color);
+    font-size: 0.78rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-left: 0.5rem;
+    padding: 2px 5px;
+    border-radius: 3px;
+    transition: all 0.15s ease;
+}
+
+.comment-reply-action-btn:hover {
+    color: var(--accent-color);
+}
+
+.icon-tiny {
+    width: 14px;
+    height: 14px;
+}
+
+.comment-replies-container {
+    margin-left: 1.15rem;
+    padding-left: 0.85rem;
+    border-left: 2px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    margin-top: 0.35rem;
+}
+
+.comment-inline-reply-box {
+    margin-top: 0.4rem;
+    padding: 0.65rem;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+}
+
+.comment-inline-reply-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.78rem;
+    color: var(--muted-color);
+    margin-bottom: 0.4rem;
+}
+
+.comment-cancel-reply-btn {
+    background: none;
+    border: none;
+    font-size: 0.75rem;
+    color: var(--muted-color);
+    cursor: pointer;
+}
+
+.comment-cancel-reply-btn:hover {
+    color: var(--text-color);
+}
+
+.comment-reply-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.comment-reply-input, .comment-edit-textarea {
+    width: 100%;
+    min-height: 52px;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.88rem;
+    line-height: 1.4;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: var(--surface-color);
+    color: var(--text-color);
+    resize: vertical;
+    font-family: inherit;
+    transition: border-color 0.15s ease;
+}
+
+.comment-reply-input:focus, .comment-edit-textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+.comment-submit-btn {
+    align-self: flex-end;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent-color);
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+}
+
+.comment-submit-btn:hover {
+    opacity: 0.9;
+}
+
+.comment-submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.comment-edit-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.comment-edit-btn-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.4rem;
+    align-items: center;
+}
+
+/* ==============================================================================
+   Barra de Ações do Card (Solução 1: Mobile-First Editorial)
+   ============================================================================== */
+.idea-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.85rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.action-btn-sparkle,
+.comment-toggle-btn,
+.favorite-button,
+.share-button {
+    display: inline-flex;
+    min-width: 2.35rem;
+    min-height: 2.25rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.38rem;
+    padding: 0.38rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: var(--surface-glass);
+    color: var(--muted-color);
+    cursor: pointer;
+    font-size: 0.86rem;
+    font-weight: 600;
+    transition: all 0.18s ease;
+    user-select: none;
+}
+
+.sparkle-symbol {
+    font-size: 1.08rem;
+    line-height: 1;
+    display: inline-block;
+    transition: transform 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.action-btn-sparkle:hover,
+.action-btn-sparkle.selected {
+    border-color: rgba(230, 126, 34, 0.45);
+    color: #e67e22;
+    background: rgba(230, 126, 34, 0.12);
+}
+
+.action-btn-sparkle.selected .sparkle-symbol {
+    transform: scale(1.25) rotate(8deg);
+    color: #e67e22;
+}
+
+.comment-toggle-btn:hover,
+.comment-toggle-btn.open {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    background: var(--soft-accent-color);
+}
+
+.favorite-button:hover,
+.favorite-button.selected {
+    border-color: rgba(241, 196, 15, 0.45);
+    color: #d4ac0d;
+    background: rgba(241, 196, 15, 0.12);
+}
+
+.favorite-button.selected .action-icon {
+    fill: #d4ac0d;
+    stroke: #d4ac0d;
+}
+
+.share-button {
+    margin-left: auto;
+}
+
+.share-button:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    background: var(--soft-accent-color);
+}
+
 

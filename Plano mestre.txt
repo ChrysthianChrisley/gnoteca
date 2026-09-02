@@ -1,0 +1,2090 @@
+PLANO MESTRE — GNOTECA
+
+0. CONTEXTO DO PROJETO
+
+Estou desenvolvendo uma micro-rede social chamada Gnoteca.
+
+O nome vem da combinação de:
+
+- Gnosis — conhecimento, compreensão, conhecimento adquirido;
+- Biblioteca — um lugar onde o conhecimento é armazenado, organizado, consultado e preservado.
+
+A Gnoteca não deve ser tratada como uma versão alternativa de Facebook, Instagram, TikTok, X/Twitter ou Reddit.
+
+O objetivo é criar uma biblioteca social viva de conhecimento.
+
+A unidade fundamental da plataforma não é o usuário, o seguidor ou o número de curtidas.
+
+A unidade fundamental é o conhecimento.
+
+A plataforma deve permitir que pessoas:
+
+1. descubram conhecimentos;
+2. registrem conhecimentos;
+3. expliquem conhecimentos;
+4. complementem conhecimentos;
+5. questionem conhecimentos;
+6. relacionem conhecimentos;
+7. encontrem fontes;
+8. guardem conhecimentos;
+9. revisitem conhecimentos;
+10. construam, ao longo do tempo, uma biblioteca pessoal de tudo aquilo que consideram importante saber.
+
+A visão de longo prazo é que a Gnoteca possa se tornar uma espécie de biblioteca viva e interconectada de conhecimento humano, onde cada publicação é um pequeno átomo de conhecimento que pode se conectar a milhares de outros.
+
+---
+
+1. PRINCÍPIO FUNDAMENTAL
+
+A pergunta que deve orientar todas as decisões de produto é:
+
+«Isso ajuda o usuário a descobrir, compreender, conectar ou preservar conhecimento?»
+
+Se uma funcionalidade não contribui para pelo menos um desses objetivos, ela deve ser questionada antes de ser adicionada.
+
+A Gnoteca deve priorizar:
+
+- curiosidade;
+- descoberta;
+- compreensão;
+- memória;
+- conexões entre ideias;
+- qualidade das fontes;
+- colaboração;
+- contexto;
+- organização;
+- exploração.
+
+A Gnoteca NÃO deve priorizar:
+
+- popularidade;
+- celebridades;
+- seguidores;
+- aparência pessoal;
+- viralização;
+- competição social;
+- quantidade de likes;
+- conteúdo superficial criado exclusivamente para gerar engajamento.
+
+---
+
+2. FILOSOFIA DA PLATAFORMA
+
+A Gnoteca deve transmitir a sensação:
+
+«"Entrei para descobrir alguma coisa interessante e saí sabendo algo que não sabia antes."»
+
+O usuário não deve pensar:
+
+«"Preciso ver o que meus amigos estão fazendo."»
+
+Ele deve pensar:
+
+«"Quero descobrir alguma coisa."»
+
+Essa diferença deve orientar o design do feed, das notificações, dos perfis e das interações.
+
+---
+
+3. NÃO É UMA REDE SOCIAL TRADICIONAL
+
+Evitar deliberadamente elementos tradicionais de redes sociais quando eles não forem necessários.
+
+Não utilizar como elemento central:
+
+- número de seguidores;
+- número de seguindo;
+- likes;
+- contador de curtidas;
+- ranking global de usuários;
+- karma;
+- upvotes/downvotes;
+- feed baseado exclusivamente em popularidade;
+- quantidade de comentários como métrica de qualidade;
+- competição explícita entre usuários;
+- notificações excessivas;
+- mecanismos que incentivem postagem compulsiva.
+
+A plataforma deve parecer mais próxima de:
+
+- uma biblioteca;
+- um caderno de conhecimento;
+- uma enciclopédia colaborativa;
+- um sistema de descoberta;
+- um mapa de ideias;
+- um sistema pessoal de memória;
+
+do que de uma rede social tradicional.
+
+---
+
+4. CONCEITO DE "ÁTOMO DE CONHECIMENTO"
+
+Cada publicação deve ser tratada como um átomo de conhecimento.
+
+Exemplo:
+
+«A gravidade não é tratada como uma força na Relatividade Geral; ela é descrita como uma manifestação da geometria do espaço-tempo.»
+
+Categoria:
+
+«Física»
+
+Tags:
+
+«Relatividade Geral
+Gravidade
+Espaço-tempo»
+
+Fonte:
+
+«Vídeo sobre Física»
+
+Tipo:
+
+«Conceito»
+
+Status epistemológico:
+
+«Referenciado / ainda não verificado pela comunidade»
+
+Esse conhecimento pode posteriormente receber:
+
+- contexto;
+- explicações;
+- complementações;
+- correções;
+- fontes;
+- conhecimentos relacionados;
+- questionamentos.
+
+Assim, uma publicação não é necessariamente um objeto estático.
+
+Ela pode evoluir.
+
+---
+
+5. TIPOS DE CONHECIMENTO
+
+A plataforma deve permitir classificar o tipo de conteúdo.
+
+Sugestões:
+
+- Fato
+- Conceito
+- Insight
+- Definição
+- Explicação
+- Hipótese
+- Teoria
+- Pergunta
+- Observação
+- Experiência pessoal
+- Opinião
+- Predição
+- Citação
+- Curiosidade
+- Método
+- Técnica
+- Descoberta histórica
+- Relação entre conceitos
+
+A lista deve ser extensível.
+
+Não assumir que todo conteúdo publicado é necessariamente verdadeiro.
+
+A Gnoteca armazena afirmações e conhecimentos, mas a plataforma deve permitir representar diferentes níveis de certeza.
+
+---
+
+6. STATUS EPISTEMOLÓGICO
+
+Cada conhecimento pode possuir um estado epistemológico.
+
+Exemplos:
+
+Ideia
+
+Conhecimento recém-publicado ou ainda sem fontes suficientes.
+
+Contextualizado
+
+O conteúdo recebeu explicações adicionais.
+
+Referenciado
+
+Possui uma ou mais fontes relevantes.
+
+Corroborado
+
+Existem múltiplas fontes independentes apoiando a afirmação.
+
+Verificado
+
+A comunidade considera que existem evidências suficientes para considerar o conteúdo confiável.
+
+Questionado
+
+Existe uma contestação relevante.
+
+Contestado
+
+Existem fontes ou argumentos significativos em oposição.
+
+Corrigido
+
+A publicação original possuía algum problema e foi corrigida.
+
+Esses estados não devem ser tratados como uma autoridade absoluta.
+
+A plataforma não deve declarar automaticamente que algo é "verdadeiro" apenas porque recebeu interações.
+
+---
+
+7. PUBLICAÇÃO
+
+Criar uma interface simples para registrar um conhecimento.
+
+Campos sugeridos:
+
+Conteúdo principal
+
+Campo obrigatório.
+
+Deve permitir uma frase ou pequeno texto.
+
+Exemplo:
+
+«A gravidade não é tratada como uma força na Relatividade Geral; ela é descrita como uma manifestação da geometria do espaço-tempo.»
+
+Contexto / explicação
+
+Campo opcional.
+
+Permitir que o usuário explique:
+
+- por que aquilo é interessante;
+- o que significa;
+- onde descobriu;
+- como interpreta;
+- qual foi o insight.
+
+Categoria
+
+Obrigatória.
+
+Exemplos:
+
+- Física
+- Matemática
+- Computação
+- História
+- Filosofia
+- Linguística
+- Biologia
+- Química
+- Psicologia
+- Economia
+- Literatura
+- Arte
+- Música
+- Tecnologia
+- Engenharia
+- Geografia
+- Astronomia
+- Medicina
+- Sociedade
+- Cultura
+- Educação
+
+Permitir categorias futuras.
+
+Tags
+
+Permitir múltiplas tags.
+
+Fonte
+
+Opcional.
+
+Pode ser:
+
+- livro;
+- artigo;
+- vídeo;
+- site;
+- podcast;
+- curso;
+- conversa;
+- aula;
+- experiência pessoal;
+- observação;
+- fonte original;
+- outra.
+
+Referência da fonte
+
+URL, título, autor, DOI, ISBN ou texto livre, conforme o tipo.
+
+Não tornar a publicação excessivamente burocrática.
+
+---
+
+8. FONTES
+
+A fonte é extremamente importante na Gnoteca.
+
+Entretanto, nem todo conhecimento precisa obrigatoriamente ter fonte.
+
+A plataforma deve distinguir:
+
+«"Eu descobri isso em um artigo científico."»
+
+de:
+
+«"Percebi isso através da minha própria experiência."»
+
+e:
+
+«"Não lembro mais onde aprendi isso."»
+
+Não esconder essa informação.
+
+A ausência de fonte pode ser explicitamente indicada como:
+
+«Fonte não informada.»
+
+Não tratar automaticamente conteúdo sem fonte como falso.
+
+---
+
+9. INTERAÇÕES
+
+Não utilizar likes tradicionais como principal mecanismo de interação.
+
+Criar ações semânticas.
+
+Sugestões:
+
+Guardar
+
+O usuário deseja preservar aquele conhecimento em sua biblioteca pessoal.
+
+Insight
+
+O conteúdo produziu uma percepção ou compreensão significativa.
+
+Surpreendente
+
+O conteúdo era inesperado ou contraintuitivo.
+
+Complementar
+
+O usuário deseja adicionar informação.
+
+Questionar
+
+O usuário acredita que existe alguma dúvida relevante.
+
+Corrigir
+
+O usuário acredita que existe um erro factual ou conceitual.
+
+Adicionar fonte
+
+O usuário possui uma fonte relevante.
+
+Relacionar
+
+O usuário deseja conectar aquele conhecimento a outro existente na Gnoteca.
+
+Essas ações não devem ser exibidas necessariamente como emojis.
+
+Utilizar ícones minimalistas, tipografia, pequenos indicadores ou elementos gráficos discretos.
+
+---
+
+10. "PARECE IA"
+
+Não utilizar "Parece IA" como reação social convencional.
+
+Evitar transformar isso em um equivalente de dislike.
+
+Caso seja implementado, deve funcionar como sinal interno de qualidade/moderação.
+
+Pode futuramente existir algo como:
+
+«Conteúdo possivelmente gerado ou fortemente assistido por IA.»
+
+Mas não permitir que isso vire uma ferramenta de ataque social.
+
+---
+
+11. COMENTÁRIOS
+
+Evitar que a plataforma dependa de comentários tradicionais.
+
+Em vez de:
+
+«Comentários»
+
+priorizar:
+
+- Complementações;
+- Correções;
+- Questionamentos;
+- Fontes;
+- Contextos;
+- Relações.
+
+Uma discussão pode existir, mas deve permanecer ancorada no conhecimento.
+
+Evitar que a seção de comentários se transforme em uma conversa social desconectada do conteúdo.
+
+---
+
+12. CONHECIMENTOS RELACIONADOS
+
+Esta é uma das funcionalidades mais importantes da Gnoteca.
+
+Cada conhecimento deve possuir uma seção:
+
+«Conhecimentos relacionados»
+
+Exemplo:
+
+Publicação:
+
+«A gravidade é uma manifestação da geometria do espaço-tempo.»
+
+Relacionados:
+
+- Relatividade Geral
+- Espaço-tempo
+- Geodésicas
+- Princípio da equivalência
+- Mecânica Newtoniana
+- Órbitas
+- Dilatação temporal
+
+As relações podem ser:
+
+- adicionadas manualmente;
+- sugeridas pela IA;
+- inferidas por tags;
+- inferidas por categoria;
+- sugeridas por comportamento coletivo.
+
+---
+
+13. GRAFO DE CONHECIMENTO
+
+A arquitetura deve permitir futuramente representar a Gnoteca como um grafo.
+
+Exemplo:
+
+Relatividade Geral
+       |
+       +--- Espaço-tempo
+       |
+       +--- Gravidade
+       |       |
+       |       +--- Newton
+       |       |
+       |       +--- Geodésicas
+       |
+       +--- Princípio da equivalência
+
+Não é necessário implementar uma visualização complexa imediatamente.
+
+Entretanto, o banco de dados deve permitir relações entre publicações.
+
+Criar uma estrutura que permita:
+
+knowledge A
+    |
+    | related_to
+    |
+knowledge B
+
+Posteriormente poderão existir relações mais específicas:
+
+- related_to
+- explains
+- contradicts
+- complements
+- derives_from
+- example_of
+- prerequisite_of
+- broader_than
+- narrower_than
+
+---
+
+14. DESCOBERTA
+
+A página inicial não deve ser simplesmente:
+
+«"Posts mais populares."»
+
+Criar uma experiência chamada:
+
+«Descobrir»
+
+Ela deve combinar:
+
+- conhecimentos novos;
+- conhecimentos pouco explorados;
+- conhecimentos relacionados ao histórico do usuário;
+- categorias de interesse;
+- conteúdos salvos;
+- conexões inesperadas;
+- conhecimentos antigos que merecem ser revisitados.
+
+O algoritmo deve priorizar relevância e descoberta, não apenas popularidade.
+
+---
+
+15. "A DESCOBERTA DO DIA"
+
+Criar uma experiência diária.
+
+Exemplo:
+
+«A descoberta de hoje»
+
+Apresentar um conhecimento interessante.
+
+Depois mostrar:
+
+«Por que isso é interessante?»
+
+«Conhecimentos relacionados»
+
+«Fonte»
+
+«Explorar mais»
+
+O objetivo é criar um hábito diário de descoberta.
+
+Não usar linguagem excessivamente gamificada.
+
+---
+
+16. EXPLORAÇÃO INFINITA
+
+A Gnoteca pode possuir uma experiência de exploração contínua, mas ela não deve copiar o TikTok.
+
+Evitar vídeos curtos, autoplay agressivo e estímulos excessivos.
+
+A experiência deve ser baseada em:
+
+«conhecimento → contexto → relação → novo conhecimento.»
+
+Exemplo:
+
+Gravidade
+   ↓
+Relatividade Geral
+   ↓
+Espaço-tempo
+   ↓
+Geodésica
+   ↓
+Órbita
+   ↓
+Dilatação temporal
+   ↓
+GPS
+   ↓
+Relógios atômicos
+
+O usuário deve poder seguir uma cadeia de curiosidade.
+
+---
+
+17. "COMO CHEGUEI AQUI?"
+
+Criar futuramente uma pequena trilha de navegação.
+
+Exemplo:
+
+Você começou em:
+
+Gravidade
+
+e passou por:
+
+Relatividade Geral
+↓
+Espaço-tempo
+↓
+Geodésicas
+↓
+Órbitas
+↓
+GPS
+
+Isso transforma a exploração em uma jornada de conhecimento.
+
+---
+
+18. MINHA GNOTECA
+
+Criar uma área pessoal chamada:
+
+«Minha Gnoteca»
+
+Não utilizar simplesmente o termo "Favoritos" como conceito principal.
+
+A biblioteca pessoal deve armazenar:
+
+- conhecimentos guardados;
+- conhecimentos revisitados;
+- conhecimentos adicionados;
+- coleções;
+- categorias;
+- tags;
+- histórico.
+
+Exemplo:
+
+Minha Gnoteca
+
+342 conhecimentos
+
+Física             42
+Computação         89
+História           31
+Linguística        27
+Filosofia          18
+
+---
+
+19. COLEÇÕES
+
+Permitir que usuários criem coleções.
+
+Exemplos:
+
+«Coisas que quero aprender»
+
+«Física para entender melhor o universo»
+
+«Conceitos de programação»
+
+«Coisas que descobri em 2026»
+
+«Ideias para meu livro»
+
+«Conhecimentos que mudaram minha visão»
+
+As coleções devem ser pessoais ou públicas.
+
+---
+
+20. MEMÓRIA E REVISITAÇÃO
+
+Essa é uma funcionalidade estratégica da Gnoteca.
+
+A plataforma não deve apenas armazenar conhecimento.
+
+Ela deve ajudar o usuário a não esquecer aquilo que armazenou.
+
+Criar futuramente um sistema de revisão.
+
+Exemplo:
+
+«Você salvou este conhecimento há 83 dias.»
+
+«Ainda lembra?»
+
+Opções:
+
+- Lembro;
+- Lembro parcialmente;
+- Não lembro;
+- Quero revisar.
+
+O sistema pode utilizar princípios de spaced repetition, sem necessariamente tentar virar um Anki.
+
+---
+
+21. SISTEMA DE REVISÃO
+
+Cada conhecimento salvo pode receber um estado de memória pessoal.
+
+Exemplo:
+
+knowledge_id
+user_id
+
+memory_status:
+    new
+    learning
+    remembered
+    partially_remembered
+    forgotten
+
+last_reviewed_at
+next_review_at
+review_count
+
+A frequência de revisão pode aumentar ou diminuir de acordo com o desempenho do usuário.
+
+Objetivo:
+
+«transformar a Gnoteca de um simples armazenamento em um sistema de preservação do conhecimento pessoal.»
+
+---
+
+22. GAMIFICAÇÃO
+
+A gamificação deve ser discreta e coerente.
+
+Não criar:
+
+- moedas;
+- vidas;
+- energia;
+- ranking global;
+- karma;
+- competição de seguidores;
+- placar de popularidade.
+
+A gamificação deve recompensar:
+
+- descoberta;
+- leitura;
+- contribuição;
+- conexão;
+- revisão;
+- organização;
+- qualidade.
+
+---
+
+23. MÉTRICAS PESSOAIS
+
+Mostrar métricas de progresso pessoal.
+
+Exemplos:
+
+«1.284 conhecimentos explorados»
+
+«342 conhecimentos guardados»
+
+«86 conhecimentos revisitados»
+
+«327 conexões descobertas»
+
+«41 complementações realizadas»
+
+«17 fontes adicionadas»
+
+Essas métricas devem representar atividade intelectual, não popularidade.
+
+---
+
+24. PROGRESSÃO
+
+Pode existir progressão pessoal.
+
+Exemplo:
+
+Curioso
+Leitor
+Explorador
+Pesquisador
+Conhecedor
+Polímata
+
+Os nomes são apenas exemplos.
+
+Não transformar isso em competição global.
+
+A progressão deve representar:
+
+«"Quanto você explorou e contribuiu para a biblioteca."»
+
+---
+
+25. REPUTAÇÃO
+
+Não usar karma.
+
+Criar futuramente uma forma de reputação epistemológica.
+
+Exemplo:
+
+Contribuições
+
+427 conhecimentos registrados
+83 fontes adicionadas
+21 complementações
+12 correções
+94 relações criadas
+
+Também permitir especializações:
+
+Áreas de contribuição
+
+Computação
+Física
+Linguística
+História
+
+A reputação deve representar contribuição, não popularidade.
+
+---
+
+26. PERFIL DO USUÁRIO
+
+O perfil deve ser secundário.
+
+Não deve parecer um perfil de Instagram.
+
+Priorizar:
+
+Nome
+
+Conhecimentos registrados
+Conhecimentos guardados
+Contribuições
+Fontes adicionadas
+Áreas de interesse
+Coleções públicas
+
+Evitar colocar seguidores como elemento central.
+
+---
+
+27. IDENTIDADE DO USUÁRIO
+
+A pessoa continua existindo na plataforma, mas o produto deve comunicar:
+
+«"Você está aqui para construir conhecimento."»
+
+e não:
+
+«"Você está aqui para construir uma audiência."»
+
+Isso deve influenciar o design inteiro.
+
+---
+
+28. IA COMO BIBLIOTECÁRIA
+
+Utilizar IA como ferramenta auxiliar.
+
+A IA não deve ser apresentada como autoridade absoluta.
+
+Ela pode ajudar a:
+
+- sugerir categorias;
+- sugerir tags;
+- encontrar possíveis conhecimentos relacionados;
+- resumir textos longos;
+- identificar conceitos;
+- sugerir fontes;
+- detectar possíveis duplicatas;
+- identificar possíveis contradições;
+- sugerir perguntas;
+- sugerir contexto;
+- identificar possíveis erros;
+- organizar coleções.
+
+A IA deve atuar como:
+
+«bibliotecária»
+
+e não como:
+
+«oráculo.»
+
+---
+
+29. IA E VERDADE
+
+Nunca assumir automaticamente:
+
+«"A IA disse que está correto."»
+
+Logo:
+
+«correto.»
+
+A IA pode sugerir:
+
+«"Esta afirmação parece simplificada."»
+
+ou:
+
+«"Existem fontes que parecem contradizer esta afirmação."»
+
+Mas a plataforma deve apresentar isso como auxílio.
+
+Não como verdade absoluta.
+
+---
+
+30. DUPLICAÇÃO DE CONHECIMENTO
+
+Antes de publicar, futuramente a plataforma poderá procurar conhecimentos semelhantes.
+
+Exemplo:
+
+Usuário escreve:
+
+«"A gravidade não é realmente uma força."»
+
+Sistema:
+
+«"Encontramos conhecimentos possivelmente relacionados."»
+
+E apresenta:
+
+«A gravidade é descrita como geometria do espaço-tempo.»
+
+Isso reduz duplicação.
+
+Mas não impedir automaticamente a publicação.
+
+Duas pessoas podem registrar o mesmo conhecimento de maneiras diferentes.
+
+---
+
+31. CONHECIMENTO COMO OBJETO EVOLUTIVO
+
+Uma publicação pode começar assim:
+
+«"A gravidade não é uma força."»
+
+Depois alguém complementa:
+
+«"Essa afirmação é válida dentro da descrição da Relatividade Geral, mas a formulação depende do contexto."»
+
+Depois outra pessoa adiciona uma fonte.
+
+Depois outra relaciona com Newton.
+
+A plataforma deve preservar o histórico.
+
+Evitar apagar silenciosamente informações relevantes.
+
+---
+
+32. HISTÓRICO
+
+Futuramente, cada conhecimento poderá possuir histórico de alterações.
+
+Exemplo:
+
+Versão 1
+A gravidade não é uma força.
+
+Versão 2
+Na Relatividade Geral, a gravidade não é descrita como uma força...
+
+Versão 3
+...
+
+Isso é importante para transparência.
+
+---
+
+33. FONTES E QUALIDADE
+
+Não criar um sistema simplista de:
+
+«fonte confiável = fonte verdadeira.»
+
+Mas permitir categorizar fontes.
+
+Exemplo:
+
+Livro
+Artigo científico
+Documento oficial
+Site institucional
+Jornal
+Vídeo
+Blog
+Podcast
+Experiência pessoal
+Sem fonte
+
+Futuramente pode existir uma avaliação da qualidade das fontes.
+
+---
+
+34. MODERAÇÃO
+
+Criar mecanismos para:
+
+- spam;
+- conteúdo duplicado;
+- conteúdo ofensivo;
+- desinformação;
+- ataques pessoais;
+- abuso;
+- conteúdo gerado automaticamente em massa.
+
+Mas não transformar discordância em moderação.
+
+Um conhecimento pode ser:
+
+«Questionado»
+
+sem ser:
+
+«removido.»
+
+---
+
+35. PRINCÍPIO DE DISCORDÂNCIA
+
+A Gnoteca deve permitir:
+
+«"Não concordo"»
+
+sem transformar isso em:
+
+«"Dislike."»
+
+A discordância deve idealmente produzir conhecimento adicional.
+
+Exemplo:
+
+Afirmação
+    ↓
+Questionamento
+    ↓
+Fonte contrária
+    ↓
+Complementação
+    ↓
+Contextualização
+
+A discordância deve enriquecer a biblioteca.
+
+---
+
+36. BUSCA
+
+A busca deve procurar:
+
+- conteúdo;
+- títulos;
+- tags;
+- categorias;
+- fontes;
+- autores;
+- conceitos relacionados.
+
+Futuramente, permitir busca semântica.
+
+Exemplo:
+
+Usuário procura:
+
+«"Por que o tempo passa diferente?"»
+
+Encontrar conhecimentos relacionados a:
+
+- relatividade;
+- dilatação temporal;
+- velocidade;
+- gravidade;
+- relógios atômicos.
+
+Mesmo que as palavras exatas não estejam presentes.
+
+---
+
+37. FILTROS
+
+Permitir filtrar por:
+
+- categoria;
+- tipo;
+- tags;
+- fonte;
+- data;
+- status epistemológico;
+- conhecimentos guardados;
+- conhecimentos revisitados.
+
+---
+
+38. NOTIFICAÇÕES
+
+As notificações devem ser poucas e relevantes.
+
+Exemplos:
+
+«Seu conhecimento recebeu uma complementação.»
+
+«Alguém adicionou uma fonte.»
+
+«Encontramos um conhecimento relacionado ao que você salvou.»
+
+«Está na hora de revisar um conhecimento.»
+
+Evitar:
+
+«"Você perdeu 17 oportunidades de interação!"»
+
+«"Volte agora!"»
+
+«"Seu post está bombando!"»
+
+As notificações devem parecer úteis, não manipulativas.
+
+---
+
+39. PRINCÍPIO DE RETENÇÃO
+
+A retenção deve vir de:
+
+«curiosidade + descoberta + memória + conexão.»
+
+Não de:
+
+«ansiedade + FOMO + validação social.»
+
+A Gnoteca deve ser uma plataforma que o usuário gosta de visitar porque sempre existe algo interessante para descobrir.
+
+---
+
+40. LOOP PRINCIPAL
+
+O loop principal da experiência deve ser:
+
+DESCOBRIR
+   ↓
+LER
+   ↓
+ENTENDER
+   ↓
+CONECTAR
+   ↓
+GUARDAR
+   ↓
+REVISITAR
+   ↓
+CONTRIBUIR
+   ↓
+DESCOBRIR NOVAMENTE
+
+Esse loop deve substituir o tradicional:
+
+POSTAR
+↓
+RECEBER LIKE
+↓
+VER NOTIFICAÇÃO
+↓
+POSTAR NOVAMENTE
+
+---
+
+41. EXEMPLO COMPLETO DE PUBLICAÇÃO
+
+Criar uma publicação semelhante a:
+
+A gravidade não é tratada como uma força na Relatividade Geral;
+ela é descrita como uma manifestação da geometria do espaço-tempo.
+
+Categoria:
+Física
+
+Tipo:
+Conceito
+
+Tags:
+Relatividade Geral
+Gravidade
+Espaço-tempo
+
+Fonte:
+Vídeo sobre Física
+
+Status:
+Referenciado
+
+---
+
+Contexto
+
+Muitas pessoas aprendem inicialmente que a gravidade é uma
+força que atrai objetos. Na Relatividade Geral, porém, a
+descrição é geométrica: matéria e energia influenciam a
+geometria do espaço-tempo, e os objetos seguem trajetórias
+determinadas por essa geometria.
+
+---
+
+Conhecimentos relacionados
+
+Relatividade Geral
+Espaço-tempo
+Geodésicas
+Princípio da equivalência
+Mecânica Newtoniana
+Órbitas
+
+---
+
+Ações
+
+Guardar
+Insight
+Surpreendente
+Complementar
+Questionar
+Adicionar fonte
+Relacionar
+
+Não utilizar emojis nas ações.
+
+---
+
+42. DESIGN VISUAL
+
+A interface deve ser:
+
+- limpa;
+- intelectual;
+- confortável para leitura;
+- minimalista;
+- elegante;
+- silenciosa;
+- organizada.
+
+Evitar aparência de:
+
+- aplicativo de entretenimento;
+- rede social adolescente;
+- plataforma de vídeos;
+- fórum tradicional.
+
+A interface deve lembrar:
+
+- biblioteca digital;
+- fichário;
+- caderno;
+- sistema de conhecimento;
+- mapa de ideias.
+
+Priorizar tipografia, espaçamento, hierarquia e legibilidade.
+
+---
+
+43. EMOJIS
+
+Não utilizar emojis como linguagem principal da interface.
+
+Preferir:
+
+- ícones minimalistas;
+- pequenos indicadores;
+- símbolos tipográficos;
+- linhas;
+- pontos;
+- estados visuais;
+- ícones SVG discretos.
+
+A interface deve continuar compreensível sem emojis.
+
+---
+
+44. NAVEGAÇÃO PRINCIPAL
+
+Sugestão:
+
+Gnoteca
+
+Descobrir
+Explorar
+Pesquisar
+Minha Gnoteca
+Contribuir
+Perfil
+
+Não é obrigatório manter exatamente esses nomes.
+
+O importante é separar:
+
+Descobrir
+
+O sistema apresenta conhecimentos.
+
+Explorar
+
+O usuário escolhe áreas.
+
+Minha Gnoteca
+
+Biblioteca pessoal.
+
+Contribuir
+
+Publicar e melhorar conhecimento.
+
+---
+
+45. PÁGINA "EXPLORAR"
+
+Permitir navegar por categorias.
+
+Exemplo:
+
+Física
+1.284 conhecimentos
+
+Matemática
+934 conhecimentos
+
+Computação
+2.104 conhecimentos
+
+História
+4.831 conhecimentos
+
+Linguística
+821 conhecimentos
+
+As categorias podem futuramente mostrar:
+
+- conhecimentos novos;
+- conhecimentos populares;
+- conhecimentos pouco explorados;
+- conexões interessantes.
+
+---
+
+46. NÃO CRIAR UM ALGORITMO DE POPULARIDADE PURO
+
+Não ordenar tudo por:
+
+mais interações = topo
+
+Isso favorece:
+
+- conteúdo superficial;
+- polarização;
+- clickbait;
+- opiniões controversas;
+- conteúdo emocional.
+
+Criar futuramente um score composto por:
+
+- relevância;
+- novidade;
+- qualidade das fontes;
+- diversidade;
+- relações;
+- interesse individual;
+- contribuição;
+- histórico de leitura.
+
+Popularidade pode ser um fator secundário.
+
+Nunca o único.
+
+---
+
+47. DIVERSIDADE DE CONTEÚDO
+
+O sistema de descoberta deve evitar uma bolha.
+
+Se o usuário lê somente:
+
+«Computação»
+
+eventualmente apresentar:
+
+«Física»
+
+«História»
+
+«Linguística»
+
+«Filosofia»
+
+«Biologia»
+
+mas de maneira relacionada aos interesses conhecidos.
+
+Exemplo:
+
+Usuário gosta de programação.
+
+Mostrar:
+
+«Como redes neurais se relacionam com o funcionamento do cérebro.»
+
+ou:
+
+«A história do primeiro compilador.»
+
+ou:
+
+«A origem linguística da palavra "algoritmo".»
+
+Criar pontes entre áreas.
+
+---
+
+48. SERENDIPIDADE
+
+Criar um componente de descoberta inesperada.
+
+Exemplo:
+
+«Uma conexão inesperada»
+
+"Você costuma explorar Computação. Talvez seja interessante descobrir a origem matemática deste conceito."
+
+Isso deve ser uma das características distintivas da plataforma.
+
+---
+
+49. "BURACOS DE COELHO" DE CONHECIMENTO
+
+Permitir que o usuário entre em uma sequência de descobertas.
+
+Exemplo:
+
+Algoritmos
+↓
+Al-Khwarizmi
+↓
+Árabe medieval
+↓
+Casa da Sabedoria
+↓
+História da matemática
+↓
+Astronomia islâmica
+↓
+Astrolábio
+
+A Gnoteca deve transformar curiosidade em exploração.
+
+---
+
+50. SESSÃO DE APRENDIZADO
+
+Futuramente criar:
+
+«Sessão de descoberta»
+
+O usuário escolhe:
+
+«5 minutos
+15 minutos
+30 minutos»
+
+E o sistema monta uma sequência de conhecimentos relacionados.
+
+Não deve ser um curso formal.
+
+É uma jornada de exploração.
+
+---
+
+51. "ME ENSINE"
+
+Futuramente permitir:
+
+«Me ensine sobre relatividade.»
+
+O sistema utiliza os conhecimentos existentes na Gnoteca para montar uma sequência.
+
+Importante:
+
+Sempre indicar quando uma explicação foi gerada por IA e quais conhecimentos/fontes foram utilizados.
+
+---
+
+52. EXPORTAÇÃO
+
+A arquitetura deve permitir futuramente exportar conhecimentos.
+
+Formatos possíveis:
+
+- Markdown;
+- PDF;
+- HTML;
+- JSON;
+- CSV.
+
+Especialmente:
+
+«Minha Gnoteca»
+
+poderá ser exportada como um livro pessoal.
+
+---
+
+53. O LIVRO
+
+Visão de longo prazo:
+
+O usuário pode selecionar conhecimentos e gerar uma coleção.
+
+Exemplo:
+
+COISAS QUE APRENDI
+
+Parte I — Física
+Parte II — Computação
+Parte III — Linguística
+Parte IV — História
+Parte V — Filosofia
+
+O sistema pode sugerir uma estrutura baseada nas conexões entre conhecimentos.
+
+O usuário continua sendo o autor.
+
+A IA apenas ajuda na organização.
+
+---
+
+54. ARQUITETURA SUPABASE
+
+O projeto atual já utiliza:
+
+- Supabase;
+- HTML;
+- CSS;
+- JavaScript.
+
+Não substituir a arquitetura existente sem necessidade.
+
+Trabalhar incrementalmente sobre o código existente.
+
+Antes de criar novas estruturas:
+
+1. analisar o código existente;
+2. analisar as tabelas atuais;
+3. preservar funcionalidades já existentes;
+4. reutilizar componentes;
+5. evitar duplicação;
+6. evitar mudanças destrutivas.
+
+---
+
+55. MODELO DE DADOS INICIAL
+
+A arquitetura deve ser preparada para crescimento.
+
+Possíveis tabelas:
+
+users
+profiles
+
+knowledge
+knowledge_categories
+knowledge_tags
+tags
+
+sources
+knowledge_sources
+
+knowledge_relations
+
+knowledge_interactions
+
+collections
+collection_items
+
+reading_history
+
+saved_knowledge
+
+knowledge_reviews
+
+notifications
+
+reports
+moderation_actions
+
+Não criar todas necessariamente no primeiro passo.
+
+Priorizar o MVP.
+
+---
+
+56. TABELA KNOWLEDGE
+
+Campos possíveis:
+
+id
+author_id
+content
+context
+category_id
+knowledge_type
+epistemic_status
+source_id
+created_at
+updated_at
+visibility
+
+Adicionar posteriormente:
+
+embedding
+quality_score
+semantic_summary
+ai_analysis
+
+somente quando necessário.
+
+---
+
+57. RELAÇÕES
+
+Criar uma tabela semelhante a:
+
+knowledge_relations
+
+id
+source_knowledge_id
+target_knowledge_id
+relation_type
+created_by
+created_at
+confidence
+
+Exemplos:
+
+related_to
+complements
+contradicts
+explains
+prerequisite_of
+example_of
+derived_from
+
+---
+
+58. INTERAÇÕES
+
+Não criar simplesmente:
+
+likes
+
+Criar algo mais genérico:
+
+knowledge_interactions
+
+id
+knowledge_id
+user_id
+interaction_type
+created_at
+
+Tipos:
+
+saved
+insight
+surprising
+questioned
+complemented
+corrected
+source_added
+related
+
+Isso permite evolução futura.
+
+---
+
+59. SEGURANÇA
+
+Utilizar adequadamente:
+
+- Row Level Security;
+- policies;
+- autenticação Supabase;
+- validação de entrada;
+- proteção contra abuso;
+- limites de frequência;
+- sanitização de conteúdo.
+
+Usuários não devem conseguir alterar conhecimentos de outras pessoas diretamente sem passar pelas regras definidas.
+
+---
+
+60. PRIVACIDADE
+
+A biblioteca pessoal deve possuir conteúdo:
+
+- público;
+- privado;
+- eventualmente não listado.
+
+Coleções pessoais podem ser privadas.
+
+O usuário deve ter controle sobre o que aparece publicamente.
+
+---
+
+61. PRINCÍPIO DE IMPLEMENTAÇÃO
+
+Não tentar implementar todas as ideias de uma vez.
+
+Construir em fases.
+
+---
+
+FASE 1 — MVP
+
+Implementar:
+
+- autenticação;
+- criação de conhecimento;
+- edição;
+- exclusão;
+- categorias;
+- tags;
+- fonte;
+- feed Descobrir;
+- busca;
+- página de conhecimento;
+- guardar;
+- Minha Gnoteca;
+- perfil básico.
+
+Objetivo:
+
+«Criar e consumir conhecimento.»
+
+---
+
+FASE 2 — CONEXÕES
+
+Implementar:
+
+- conhecimentos relacionados;
+- relações manuais;
+- complementações;
+- questionamentos;
+- fontes adicionais;
+- histórico básico;
+- exploração por categorias.
+
+Objetivo:
+
+«Transformar posts isolados em uma rede de conhecimento.»
+
+---
+
+FASE 3 — MEMÓRIA
+
+Implementar:
+
+- histórico de leitura;
+- revisão;
+- conhecimentos esquecidos;
+- revisão espaçada;
+- métricas pessoais.
+
+Objetivo:
+
+«Transformar a Gnoteca em uma ferramenta de memória.»
+
+---
+
+FASE 4 — DESCOBERTA INTELIGENTE
+
+Implementar:
+
+- recomendações;
+- serendipidade;
+- descoberta do dia;
+- conhecimentos relacionados automaticamente;
+- busca semântica;
+- detecção de duplicatas.
+
+Objetivo:
+
+«Criar o "buraco de coelho" de conhecimento.»
+
+---
+
+FASE 5 — IA
+
+Implementar:
+
+- classificação automática;
+- sugestão de tags;
+- sugestão de relações;
+- resumo;
+- identificação de possíveis contradições;
+- organização de coleções;
+- assistente de exploração.
+
+Objetivo:
+
+«Utilizar IA como bibliotecária.»
+
+---
+
+FASE 6 — GRAFO
+
+Implementar:
+
+- visualização de relações;
+- mapas de conhecimento;
+- caminhos entre conceitos;
+- conexões inesperadas.
+
+Objetivo:
+
+«Tornar visual a estrutura coletiva de conhecimento.»
+
+---
+
+FASE 7 — LIVRO
+
+Implementar:
+
+- seleção de conhecimentos;
+- organização automática;
+- agrupamento por temas;
+- geração de capítulos;
+- exportação Markdown/PDF/HTML.
+
+Objetivo:
+
+«Permitir transformar anos de conhecimento acumulado em uma obra pessoal.»
+
+---
+
+62. PRINCÍPIOS DE UX
+
+Sempre perguntar:
+
+«"O usuário está aqui para interagir ou para aprender?"»
+
+Quando houver conflito, favorecer aprendizado.
+
+Evitar:
+
+- excesso de botões;
+- excesso de notificações;
+- excesso de números;
+- gamificação infantilizada;
+- animações desnecessárias;
+- feed caótico;
+- publicidade invasiva;
+- elementos que desviem da leitura.
+
+---
+
+63. PRINCÍPIOS DE CONTEÚDO
+
+Uma boa publicação deve poder ser compreendida isoladamente.
+
+Mas deve também abrir portas para outros conhecimentos.
+
+Portanto:
+
+«Cada conhecimento deve ser simultaneamente uma resposta e uma porta.»
+
+Uma resposta para:
+
+«"O que é isso?"»
+
+E uma porta para:
+
+«"O que mais existe relacionado a isso?"»
+
+---
+
+64. PRINCÍPIO DE QUALIDADE
+
+Não tentar maximizar:
+
+«número de publicações.»
+
+Maximizar:
+
+«densidade de conhecimento útil.»
+
+100 publicações excelentes são melhores do que 10.000 publicações vazias.
+
+---
+
+65. PRINCÍPIO DE CURIOSIDADE
+
+O sistema deve favorecer títulos e conteúdos que despertem curiosidade sem recorrer a clickbait.
+
+Exemplo ruim:
+
+«VOCÊ NÃO VAI ACREDITAR NO QUE A FÍSICA DESCOBRIU!!!»
+
+Exemplo adequado:
+
+«A gravidade não é tratada como uma força na Relatividade Geral.»
+
+O conteúdo deve ser intelectualmente interessante por si próprio.
+
+---
+
+66. PRINCÍPIO DE LONGEVIDADE
+
+A plataforma deve ser projetada para que uma publicação continue útil daqui a:
+
+- 1 mês;
+- 1 ano;
+- 10 anos.
+
+Não construir tudo em torno do momento presente.
+
+Um conhecimento publicado hoje deve poder ser descoberto novamente daqui a anos.
+
+---
+
+67. PRINCÍPIO FINAL
+
+A Gnoteca deve responder a uma necessidade humana simples:
+
+«"Eu descobri algo interessante e não quero esquecer."»
+
+E depois evoluir essa necessidade para:
+
+«"Quero saber mais sobre isso."»
+
+E finalmente:
+
+«"Quero conectar isso com tudo o que já sei."»
+
+---
+
+68. OBJETIVO DO DESENVOLVIMENTO
+
+Ao implementar estas funcionalidades, não transformar a Gnoteca em uma rede social convencional.
+
+A plataforma deve continuar parecendo uma:
+
+«biblioteca social de conhecimento.»
+
+A pessoa pode conhecer outras pessoas através do conhecimento que elas registram.
+
+Mas a pessoa não deve ser o centro da experiência.
+
+O conhecimento é o centro.
+
+---
+
+69. FRASE-CONCEITO
+
+Utilizar como princípio de produto:
+
+«Gnoteca — uma biblioteca viva de coisas que vale a pena saber.»
+
+E como conceito interno:
+
+«Descobrir. Conectar. Lembrar.»
+
+---
+
+70. PRIMEIRA PUBLICAÇÃO
+
+A primeira publicação da plataforma deve utilizar o seguinte conteúdo conceitual:
+
+A gravidade não é tratada como uma força na Relatividade Geral; ela é descrita como uma manifestação da geometria do espaço-tempo.
+
+Categoria:
+
+«Física»
+
+Tipo:
+
+«Conceito»
+
+Tags:
+
+«Gravidade
+Relatividade Geral
+Espaço-tempo»
+
+Fonte:
+
+«Vídeo sobre Física»
+
+Contexto sugerido:
+
+«Na física newtoniana, a gravidade é descrita como uma força de atração entre massas. Na Relatividade Geral, a descrição é diferente: matéria e energia influenciam a geometria do espaço-tempo, e os objetos seguem trajetórias determinadas por essa geometria. A afirmação "a gravidade não é uma força" é, portanto, uma simplificação útil para destacar a diferença entre as duas descrições.»
+
+Status inicial:
+
+«Referenciado»
+
+---
+
+71. REGRA PARA A IMPLEMENTAÇÃO
+
+Não apagar ou reescrever arbitrariamente o código existente.
+
+Primeiro:
+
+1. analisar a estrutura atual;
+2. identificar funcionalidades existentes;
+3. identificar banco de dados;
+4. identificar autenticação;
+5. identificar componentes;
+6. identificar estilos;
+7. identificar problemas;
+8. propor alterações;
+9. implementar incrementalmente.
+
+Sempre preservar funcionalidades que já funcionam.
+
+Quando houver necessidade de alterar arquitetura, explicar:
+
+- por que;
+- qual o impacto;
+- quais arquivos serão alterados;
+- quais tabelas serão alteradas;
+- como preservar dados existentes.
+
+---
+
+72. PRIORIDADE
+
+Quando houver conflito entre funcionalidades, seguir esta ordem:
+
+1. Clareza;
+2. Usabilidade;
+3. Qualidade do conhecimento;
+4. Descoberta;
+5. Memória;
+6. Organização;
+7. Colaboração;
+8. Gamificação;
+9. Métricas sociais.
+
+A gamificação nunca deve prejudicar o propósito da plataforma.
+
+---
+
+73. RESULTADO ESPERADO
+
+O resultado final deve fazer com que a Gnoteca pareça menos uma rede social e mais:
+
+«um lugar onde o conhecimento ganha memória.»
+
+O usuário deve entrar para descobrir.
+
+Salvar para lembrar.
+
+Relacionar para compreender.
+
+Contribuir para enriquecer.
+
+E voltar porque sempre existe outra coisa interessante esperando para ser descoberta.

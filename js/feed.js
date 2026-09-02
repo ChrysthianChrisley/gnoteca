@@ -3,39 +3,45 @@ import { state, getCacheKey, getCachedData, setCachedData, invalidateCache } fro
 import { translate, currentLanguage, getTranslatedTopic } from './i18n.js';
 import { escapeHTML, showActionFeedback } from './utils.js';
 import { showAuthGate } from './auth.js';
-import { getMaxFavorites, getNextFavoriteMilestoneInfo, renderProfileConstellation, updateProfileStats } from './favorites.js';
+import { renderProfileConstellation, updateProfileStats } from './favorites.js';
 
 import { openShareModal } from './share.js';
 
 // Formatação de Entradas do Supabase
 export function formatIdeaEntry(entry, commentsCount = 0) {
-    const upvotes = (entry.votes || []).filter(v => v.vote_type === 'up').length;
-    const downvotes = (entry.votes || []).filter(v => v.vote_type === 'down').length;
-    const userVote = state.authenticatedUser
-        ? (entry.votes || []).find(v => v.user_id === state.authenticatedUser.id)?.vote_type || null
-        : null;
-    const favorite = state.authenticatedUser
-        ? (entry.favorites || []).some(f => f.user_id === state.authenticatedUser.id)
+    const interactions = entry.knowledge_interactions || [];
+    const isAppreciated = state.authenticatedUser
+        ? interactions.some(i => i.user_id === state.authenticatedUser.id)
         : false;
-    const totalFavorites = (entry.favorites || []).length;
+    const appreciationCount = interactions.length;
+        
+    const favorite = state.authenticatedUser
+        ? (entry.saved_knowledge || []).some(s => s.user_id === state.authenticatedUser.id)
+        : false;
+    const totalFavorites = (entry.saved_knowledge || []).length;
     const authorName = entry.profiles?.display_name || entry.profiles?.username || 'Anônimo';
     const authorAvatarUrl = entry.profiles?.avatar_url || null;
+
+    const isEdited = !!(entry.updated_at && (new Date(entry.updated_at).getTime() - new Date(entry.created_at).getTime() > 1000));
 
     return {
         id: entry.id,
         content: entry.content,
-        tag: entry.tag || 'Geral',
+        category: entry.category || 'Geral',
+        tags: entry.tags || [],
+        source: entry.source,
         authorId: entry.author_id,
         authorName: authorName,
         authorUsername: entry.profiles?.username,
         authorAvatarUrl: authorAvatarUrl,
-        upvotes,
-        downvotes,
-        userVote,
+        isAppreciated,
+        appreciationCount,
         favorite,
         favoritesCount: totalFavorites,
         commentsCount: commentsCount || 0,
+        isEdited,
         created_at: entry.created_at,
+        updated_at: entry.updated_at,
         date: new Date(entry.created_at).toLocaleDateString(currentLanguage, {
             day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
         })
@@ -48,6 +54,7 @@ export function renderIdeaCard(idea) {
     card.className = 'idea-card';
     const isAuth = !!state.authenticatedUser;
     card.dataset.authorId = isAuth ? (idea.authorId || '') : '';
+    card.dataset.ideaId = idea.id;
     const isAuthor = isAuth && idea.authorId === state.authenticatedUser.id;
 
     let authorHtml = '';
@@ -60,51 +67,49 @@ export function renderIdeaCard(idea) {
         authorHtml = `<button class="author-link unauth-author-link" type="button" data-action="auth-gate" title="${translate('signInToContinue')}"><span class="card-author-avatar-anon" aria-hidden="true"></span><span class="blurred-author-preview">••••••••</span></button>`;
     }
 
-    const rawTag = idea.tag || 'Geral';
-    const displayTag = getTranslatedTopic(rawTag);
+    const rawCategory = idea.category || 'Geral';
+    const displayCategory = getTranslatedTopic(rawCategory);
+    
+    const tagsHtml = idea.tags?.length > 0 
+        ? idea.tags.map(t => `<span class="card-tag-pill tag-secondary">#${escapeHTML(t)}</span>`).join(' ')
+        : '';
 
-    // Extração de citação / nota de rodapé
     let mainContent = idea.content || '';
-    let citationHtml = '';
-    const footnoteMatch = mainContent.match(/\n*—\s*Fonte:\s*(.+)$/i);
-    if (footnoteMatch) {
-        mainContent = mainContent.replace(/\n*—\s*Fonte:\s*(.+)$/i, '').trim();
-        citationHtml = `<div class="card-citation">— Fonte: ${escapeHTML(footnoteMatch[1].trim())}</div>`;
-    } else if (idea.citation) {
-        citationHtml = `<div class="card-citation">— Fonte: ${escapeHTML(idea.citation)}</div>`;
-    }
+    let citationHtml = idea.source ? `<div class="card-citation">— Fonte: ${escapeHTML(idea.source)}</div>` : '';
 
     card.innerHTML = `
         <div class="idea-header">
-            <span class="idea-date">${idea.date}<span class="idea-author">${translate('by')} ${authorHtml}</span></span>
+            <span class="idea-date">${idea.date}${idea.isEdited ? ` <span class="card-edited-badge">(${translate('edited')})</span>` : ''}<span class="idea-author">${translate('by')} ${authorHtml}</span></span>
             <div style="display: flex; align-items: center; gap: 0.25rem;">
-                <button class="card-tag-pill" type="button" data-action="tag" data-tag="${escapeHTML(rawTag)}">${escapeHTML(displayTag)}</button>
+                <button class="card-tag-pill" type="button" data-action="tag" data-tag="${escapeHTML(rawCategory)}">${escapeHTML(displayCategory)}</button>
                 <div class="entry-actions${isAuthor ? '' : ' hidden'}">
+                    <button class="entry-action" type="button" data-action="view-history" data-idea-id="${idea.id}">Histórico</button>
                     <button class="entry-action" type="button" data-action="edit" data-idea-id="${idea.id}" aria-label="${translate('edit')} entrada">${translate('edit')}</button>
                     <button class="entry-action delete-action" type="button" data-action="delete" data-idea-id="${idea.id}" aria-label="${translate('delete')} entrada">${translate('delete')}</button>
                 </div>
             </div>
         </div>
+        <div class="idea-tags-row" style="margin-bottom: 0.5rem;">${tagsHtml}</div>
         <p class="idea-content">${escapeHTML(mainContent).replace(/\n/g, '<br>')}</p>
         ${citationHtml}
         <div class="idea-actions">
-            <button class="reflex-button reflex-insight${idea.userVote === 'up' ? ' selected' : ''}" type="button" data-action="reflex-insight" data-idea-id="${idea.id}" aria-label="Insight: perspectiva nova" title="Insight: perspectiva nova">
-                <span class="reflex-symbol" aria-hidden="true">✦</span>
-                <span class="reflex-name">Insight</span>
-                <span class="action-count">${idea.upvotes || 0}</span>
+            <button class="action-btn-sparkle${idea.isAppreciated ? ' selected' : ''}" type="button" data-action="toggle-appreciate" data-idea-id="${idea.id}" aria-label="${translate('appreciate')}" title="${translate('appreciate')}">
+                <span class="sparkle-symbol" aria-hidden="true">✦</span>
+                <span class="action-count">${idea.appreciationCount || 0}</span>
             </button>
-            <button class="reflex-button reflex-solid" type="button" data-action="reflex-solid" data-idea-id="${idea.id}" aria-label="Sólido: bem fundamentado" title="Sólido: bem fundamentado">
-                <span class="reflex-symbol" aria-hidden="true">■</span>
-                <span class="reflex-name">Sólido</span>
+            <button class="comment-toggle-btn" type="button" data-action="toggle-comments" data-idea-id="${idea.id}" aria-label="${translate('comments')}" title="${translate('comments')}">
+                <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <span class="action-count comment-count">${idea.commentsCount || 0}</span>
             </button>
-            <button class="reflex-button reflex-provocative" type="button" data-action="reflex-provocative" data-idea-id="${idea.id}" aria-label="Provocativo: desafiador" title="Provocativo: desafiador">
-                <span class="reflex-symbol" aria-hidden="true">~</span>
-                <span class="reflex-name">Provocativo</span>
+            <button class="favorite-button${idea.favorite ? ' selected' : ''}" type="button" data-action="favorite" data-idea-id="${idea.id}" aria-label="${idea.favorite ? translate('unfavorite') : translate('favorite')}" title="${idea.favorite ? translate('unfavorite') : translate('favorite')}">
+                <svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.6l6.2-.9L12 3Z" /></svg>
+                <span class="action-count">${idea.favoritesCount || 0}</span>
             </button>
-            <button class="comment-toggle-btn" type="button" data-action="toggle-comments" data-idea-id="${idea.id}" aria-label="${translate('comments')}" title="${translate('comments')}"><svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="action-count comment-count">${idea.commentsCount || 0}</span></button>
-            <button class="favorite-button${idea.favorite ? ' selected' : ''}" type="button" data-action="favorite" data-idea-id="${idea.id}" aria-label="${idea.favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}" title="${idea.favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.6l6.2-.9L12 3Z" /></svg><span class="action-count">${idea.favoritesCount}</span></button>
-            <button class="share-button" type="button" data-action="share" data-idea-id="${idea.id}" aria-label="Compartilhar fragmento" title="Compartilhar fragmento"><svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
+            <button class="share-button" type="button" data-action="share" data-idea-id="${idea.id}" aria-label="${translate('share')}" title="${translate('share')}">
+                <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            </button>
         </div>
+
         <div class="comments-thread-container hidden" id="comments-thread-${idea.id}"></div>
     `;
     return card;
@@ -140,13 +145,16 @@ export function renderBlurredTeaserCard(idea) {
 export async function fetchComments(entryId) {
     try {
         const { data, error } = await supabaseClient
-            .from('entries')
+            .from('knowledge')
             .select(`
                 id,
                 content,
-                tag,
-                is_edited,
+                category,
+                knowledge_type,
+                epistemic_status,
+                source,
                 created_at,
+                updated_at,
                 author_id,
                 profiles:author_id (
                     id,
@@ -154,9 +162,9 @@ export async function fetchComments(entryId) {
                     display_name,
                     avatar_url
                 ),
-                votes (
+                knowledge_interactions (
                     user_id,
-                    vote_type
+                    interaction_type
                 )
             `)
             .eq('parent_id', entryId);
@@ -167,34 +175,33 @@ export async function fetchComments(entryId) {
         }
 
         const comments = (data || []).map(c => {
-            const upvotes = (c.votes || []).filter(v => v.vote_type === 'up').length;
-            const downvotes = (c.votes || []).filter(v => v.vote_type === 'down').length;
+            const upvotes = (c.knowledge_interactions || []).filter(i => i.interaction_type === 'up').length;
+            const downvotes = (c.knowledge_interactions || []).filter(i => i.interaction_type === 'down').length;
             const userVote = state.authenticatedUser
-                ? (c.votes || []).find(v => v.user_id === state.authenticatedUser.id)?.vote_type || null
+                ? (c.knowledge_interactions || []).find(i => i.user_id === state.authenticatedUser.id)?.interaction_type || null
                 : null;
             const score = upvotes - downvotes;
 
             let replyToCommentId = null;
             let replyToAuthorName = null;
-            if (c.tag && c.tag.startsWith('reply:')) {
-                const parts = c.tag.split(':');
-                replyToCommentId = Number(parts[1]) || null;
-                if (parts[2]) {
-                    try {
-                        replyToAuthorName = decodeURIComponent(parts[2]);
-                    } catch (e) {
-                        replyToAuthorName = parts[2];
-                    }
+            if (c.source && c.source.startsWith('reply_to:')) {
+                const raw = c.source.replace('reply_to:', '');
+                const sepIdx = raw.indexOf('|');
+                if (sepIdx !== -1) {
+                    replyToCommentId = Number(raw.slice(0, sepIdx));
+                    replyToAuthorName = raw.slice(sepIdx + 1);
+                } else {
+                    replyToCommentId = Number(raw);
                 }
             }
 
-            const isEdited = Boolean(c.is_edited);
+            const isEdited = !!(c.updated_at && (new Date(c.updated_at).getTime() - new Date(c.created_at).getTime() > 1000));
 
             return {
                 id: c.id,
                 content: c.content,
                 rawContent: c.content,
-                tag: c.tag,
+                tag: c.knowledge_type || 'Aprofundamento',
                 isEdited,
                 replyToCommentId,
                 replyToAuthorName,
@@ -216,7 +223,7 @@ export async function fetchComments(entryId) {
     }
 }
 
-// Renderiza Conteúdo da Thread de Comentários (Modelo Híbrido: 1 nível de recuo com @menção)
+// Renderiza Conteúdo da Thread de Comentários (Modelo Encadeado com Linhas Guia e @Destinatário)
 export function renderCommentsContent(container, entryId, comments) {
     if (!container) return;
 
@@ -224,7 +231,14 @@ export function renderCommentsContent(container, entryId, comments) {
     const commentMap = {};
     comments.forEach(c => { commentMap[c.id] = c; });
 
-    // Determina o comentário raiz de cada resposta (para manter o aninhamento em exatamente 1 nível)
+    // Garante nome do destinatário se não salvo previamente
+    comments.forEach(c => {
+        if (c.replyToCommentId && !c.replyToAuthorName && commentMap[c.replyToCommentId]) {
+            c.replyToAuthorName = commentMap[c.replyToCommentId].authorName;
+        }
+    });
+
+    // Determina o comentário raiz de cada resposta (para agrupar visualmente em 1 nível limpo)
     function getRootCommentId(comment) {
         let curr = comment;
         let visited = new Set();
@@ -249,17 +263,16 @@ export function renderCommentsContent(container, entryId, comments) {
         }
     });
 
-    // Ordenação Reddit: Comentários raiz mais votados no topo
-    rootComments.sort((a, b) => b.score - a.score || new Date(a.createdAt) - new Date(b.createdAt));
+    // Ordenação: Raízes mais antigas primeiro ou por votos
+    rootComments.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
     // Renderiza um card individual de comentário
     function renderSingleComment(c, isReply = false) {
         const authorImg = c.authorAvatarUrl
             ? `<img class="comment-author-avatar" src="${escapeHTML(c.authorAvatarUrl)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`
             : '';
-        const scoreClass = c.score > 0 ? ' positive' : c.score < 0 ? ' negative' : '';
         const replyBadge = c.replyToAuthorName
-            ? `<span class="comment-reply-to-badge">@${escapeHTML(c.replyToAuthorName)}</span> `
+            ? `<span class="comment-reply-to-badge"><span class="reply-symbol">↳</span> @${escapeHTML(c.replyToAuthorName)}</span> `
             : '';
         const isAuthor = state.authenticatedUser && state.authenticatedUser.id === c.authorId;
         const editedBadge = c.isEdited
@@ -287,18 +300,16 @@ export function renderCommentsContent(container, entryId, comments) {
                     <p class="comment-content">${replyBadge}${escapeHTML(c.content).replace(/\n/g, '<br>')}</p>
                 </div>
                 <div class="comment-actions">
-                    <button class="comment-vote-btn upvote${c.userVote === 'up' ? ' selected' : ''}" type="button" data-action="comment-upvote" data-comment-id="${c.id}" data-parent-id="${entryId}" aria-label="Upvote">
-                        <svg viewBox="0 0 24 24" class="icon-tiny" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6" /></svg>
+                    <button class="comment-sparkle-btn${c.userVote === 'up' ? ' selected' : ''}" type="button" data-action="comment-appreciate" data-comment-id="${c.id}" data-parent-id="${entryId}" aria-label="${translate('appreciate')}" title="${translate('appreciate')}">
+                        <span class="sparkle-symbol-mini" aria-hidden="true">✦</span>
+                        <span class="comment-score${c.score > 0 ? ' positive' : ''}">${c.score || 0}</span>
                     </button>
-                    <span class="comment-score${scoreClass}">${c.score}</span>
-                    <button class="comment-vote-btn downvote${c.userVote === 'down' ? ' selected' : ''}" type="button" data-action="comment-downvote" data-comment-id="${c.id}" data-parent-id="${entryId}" aria-label="Downvote">
-                        <svg viewBox="0 0 24 24" class="icon-tiny" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14m6-6-6 6-6-6" /></svg>
-                    </button>
-                    <button class="comment-reply-action-btn" type="button" data-action="open-reply-box" data-comment-id="${c.id}" data-author-name="${escapeHTML(c.authorName)}" data-parent-id="${entryId}">
+                    <button class="comment-reply-action-btn" type="button" data-action="open-reply-box" data-comment-id="${c.id}" data-author-id="${c.authorId}" data-author-name="${escapeHTML(c.authorName)}" data-parent-id="${entryId}">
                         <svg viewBox="0 0 24 24" class="icon-tiny" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 5 5v5"/></svg>
                         ${translate('reply')}
                     </button>
                 </div>
+                <div class="comment-inline-reply-slot" id="reply-slot-${c.id}"></div>
             </div>
         `;
     }
@@ -316,7 +327,6 @@ export function renderCommentsContent(container, entryId, comments) {
                 <div class="comment-replies-container${replies.length === 0 ? ' hidden' : ''}" id="replies-container-${root.id}">
                     ${repliesHtml}
                 </div>
-                <div class="comment-inline-reply-slot" id="reply-slot-${root.id}"></div>
             </div>
         `;
     }).join('');
@@ -324,14 +334,16 @@ export function renderCommentsContent(container, entryId, comments) {
     container.innerHTML = `
         <div class="comments-thread-header">
             <span class="comments-thread-title">${translate('comments')} (${comments.length})</span>
-            <button class="comments-close-btn" type="button" data-action="close-comments" data-idea-id="${entryId}" aria-label="Fechar comentários">x</button>
+            <button class="comments-close-btn" type="button" data-action="close-comments" data-idea-id="${entryId}" aria-label="Fechar">✕</button>
         </div>
         <div class="comments-list">
             ${comments.length ? commentsListHtml : `<p class="comments-empty">${translate('noCommentsYet')}</p>`}
         </div>
         <div class="comment-reply-form main-comment-form" data-parent-id="${entryId}">
             <textarea class="comment-reply-input" placeholder="${translate('addCommentPlaceholder')}" maxlength="280"></textarea>
-            <button class="comment-submit-btn" type="button" data-action="submit-comment" data-parent-id="${entryId}">${translate('sendComment')}</button>
+            <div class="comment-form-actions" style="display:flex; justify-content:flex-end; margin-top:0.35rem;">
+                <button class="comment-submit-btn" type="button" data-action="submit-comment" data-parent-id="${entryId}">${translate('sendComment')}</button>
+            </div>
         </div>
     `;
 }
@@ -352,12 +364,15 @@ export async function fetchEntriesPage(page = 0) {
         if (state.activeFeed === 'favorites') {
             if (!state.authenticatedUser) return [];
             query = supabaseClient
-                .from('entries')
+                .from('knowledge')
                 .select(`
                     id,
                     content,
-                    tag,
+                    category,
+                    tags,
+                    source,
                     created_at,
+                    updated_at,
                     author_id,
                     profiles:author_id (
                         id,
@@ -365,24 +380,27 @@ export async function fetchEntriesPage(page = 0) {
                         display_name,
                         avatar_url
                     ),
-                    votes (
+                    knowledge_interactions (
                         user_id,
-                        vote_type
+                        interaction_type
                     ),
-                    favorites!inner (
+                    saved_knowledge!inner (
                         user_id
                     )
                 `)
                 .is('parent_id', null)
-                .eq('favorites.user_id', state.authenticatedUser.id);
+                .eq('saved_knowledge.user_id', state.authenticatedUser.id);
         } else {
             query = supabaseClient
-                .from('entries')
+                .from('knowledge')
                 .select(`
                     id,
                     content,
-                    tag,
+                    category,
+                    tags,
+                    source,
                     created_at,
+                    updated_at,
                     author_id,
                     profiles:author_id (
                         id,
@@ -390,11 +408,11 @@ export async function fetchEntriesPage(page = 0) {
                         display_name,
                         avatar_url
                     ),
-                    votes (
+                    knowledge_interactions (
                         user_id,
-                        vote_type
+                        interaction_type
                     ),
-                    favorites (
+                    saved_knowledge (
                         user_id
                     )
                 `)
@@ -409,7 +427,7 @@ export async function fetchEntriesPage(page = 0) {
         }
 
         if (tag && tag !== 'Todos') {
-            query = query.eq('tag', tag);
+            query = query.eq('category', tag);
         }
 
         const isPublicVisitor = !state.authenticatedUser && state.activeFeed === 'global';
@@ -421,9 +439,9 @@ export async function fetchEntriesPage(page = 0) {
             query = query.range(from, to);
         }
         if (filter === 'voted') {
-            query = query.order('upvotes_count', { ascending: false }).order('created_at', { ascending: false });
+            query = query.order('insight_count', { ascending: false }).order('created_at', { ascending: false });
         } else if (filter === 'favorite') {
-            query = query.order('favorites_count', { ascending: false }).order('created_at', { ascending: false });
+            query = query.order('saves_count', { ascending: false }).order('created_at', { ascending: false });
         } else {
             query = query.order('created_at', { ascending: false });
         }
@@ -440,7 +458,7 @@ export async function fetchEntriesPage(page = 0) {
         if (entryIds.length > 0) {
             try {
                 const { data: comments } = await supabaseClient
-                    .from('entries')
+                    .from('knowledge')
                     .select('parent_id')
                     .in('parent_id', entryIds);
                 (comments || []).forEach(c => {
@@ -648,15 +666,15 @@ export async function confirmDeleteEntry() {
 
     try {
         const { error } = await supabaseClient
-            .from('entries')
+            .from('knowledge')
             .delete()
             .eq('id', state.pendingDeleteId)
             .eq('author_id', state.authenticatedUser.id);
 
         if (error) {
-            showActionFeedback(error.message || 'Erro ao apagar fragmento.');
+            showActionFeedback(error.message || 'Erro ao apagar pensamento.');
         } else {
-            showActionFeedback('Fragmento apagado com sucesso.');
+            showActionFeedback('Pensamento apagado com sucesso.');
         }
         closeDeleteDialog();
         invalidateCache();
@@ -821,6 +839,41 @@ export async function handleFeedClick(event, onNavigateProfile) {
         return;
     }
 
+    if (action === 'view-history') {
+        const historyDialog = document.getElementById('history-dialog');
+        if (historyDialog) {
+            historyDialog.classList.remove('hidden');
+            const container = document.getElementById('history-list-container');
+            if (container) {
+                container.innerHTML = '<p class="empty-state">Carregando histórico...</p>';
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('knowledge_history')
+                        .select('previous_content, created_at')
+                        .eq('knowledge_id', ideaId)
+                        .order('created_at', { ascending: false });
+                    
+                    if (error) throw error;
+                    
+                    if (!data || data.length === 0) {
+                        container.innerHTML = '<p class="empty-state">Nenhuma edição anterior encontrada.</p>';
+                    } else {
+                        container.innerHTML = data.map(h => `
+                            <div class="history-item">
+                                <div class="history-date">${new Date(h.created_at).toLocaleString()}</div>
+                                <div class="history-content">${escapeHTML(h.previous_content).replace(/\n/g, '<br>')}</div>
+                            </div>
+                        `).join('');
+                    }
+                } catch (err) {
+                    console.error('History fetch error:', err);
+                    container.innerHTML = '<p class="empty-state">Erro ao carregar histórico.</p>';
+                }
+            }
+        }
+        return;
+    }
+
     if (action === 'edit-comment') {
         const commentId = Number(button.dataset.commentId);
         const parentId = Number(button.dataset.parentId);
@@ -874,20 +927,13 @@ export async function handleFeedClick(event, onNavigateProfile) {
         button.disabled = true;
         try {
             let { error } = await supabaseClient
-                .from('entries')
-                .update({ content: newText, is_edited: true })
+                .from('knowledge')
+                .update({
+                    content: newText,
+                    updated_at: new Date().toISOString()
+                })
                 .eq('id', commentId)
                 .eq('author_id', state.authenticatedUser.id);
-
-            // Fallback se a coluna is_edited ainda não tiver sido criada no SQL
-            if (error && error.message && error.message.includes('is_edited')) {
-                const fallback = await supabaseClient
-                    .from('entries')
-                    .update({ content: newText })
-                    .eq('id', commentId)
-                    .eq('author_id', state.authenticatedUser.id);
-                error = fallback.error;
-            }
 
             if (error) {
                 showActionFeedback(error.message || translate('errorSaving'));
@@ -920,7 +966,7 @@ export async function handleFeedClick(event, onNavigateProfile) {
         button.disabled = true;
         try {
             const { error } = await supabaseClient
-                .from('entries')
+                .from('knowledge')
                 .delete()
                 .eq('id', commentId)
                 .eq('author_id', state.authenticatedUser.id);
@@ -952,6 +998,59 @@ export async function handleFeedClick(event, onNavigateProfile) {
         return;
     }
 
+    // Abrir Caixa de Resposta Inline
+    if (action === 'open-reply-box') {
+        if (!state.authenticatedUser) {
+            showAuthGate();
+            return;
+        }
+        const commentId = Number(button.dataset.commentId);
+        const parentId = Number(button.dataset.parentId);
+        const authorName = button.dataset.authorName || 'Pensador';
+        const targetAuthorId = button.dataset.authorId || '';
+
+        const slot = document.getElementById(`reply-slot-${commentId}`);
+        if (!slot) return;
+
+        // Se já está aberto, fecha
+        if (slot.innerHTML.trim() !== '') {
+            slot.innerHTML = '';
+            return;
+        }
+
+        // Fecha outros slots abertos nesta thread
+        const container = button.closest('.comments-thread-container');
+        container?.querySelectorAll('.comment-inline-reply-slot').forEach(s => { s.innerHTML = ''; });
+
+        slot.innerHTML = `
+            <div class="comment-inline-reply-box">
+                <div class="comment-inline-reply-header">
+                    <span>${translate('replyingTo')} <strong>@${escapeHTML(authorName)}</strong></span>
+                    <button class="comment-cancel-reply-btn" type="button" data-action="close-reply-box" data-comment-id="${commentId}">✕</button>
+                </div>
+                <div class="comment-reply-form">
+                    <textarea class="comment-reply-input" placeholder="${translate('writeReplyPlaceholder')}" maxlength="280"></textarea>
+                    <div class="comment-form-actions" style="display:flex; justify-content:flex-end; gap:0.4rem; margin-top:0.35rem;">
+                        <button class="comment-cancel-reply-btn" type="button" data-action="close-reply-box" data-comment-id="${commentId}">${translate('cancel')}</button>
+                        <button class="comment-submit-btn" type="button" data-action="submit-comment" data-parent-id="${parentId}" data-reply-to="${commentId}" data-reply-target-author-id="${targetAuthorId}" data-reply-author="${escapeHTML(authorName)}">${translate('reply')}</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const textarea = slot.querySelector('.comment-reply-input');
+        textarea?.focus();
+        return;
+    }
+
+    // Fechar Caixa de Resposta Inline
+    if (action === 'close-reply-box') {
+        const commentId = Number(button.dataset.commentId);
+        const slot = document.getElementById(`reply-slot-${commentId}`);
+        if (slot) slot.innerHTML = '';
+        return;
+    }
+
     if (action === 'submit-comment') {
         if (!state.authenticatedUser) {
             showAuthGate();
@@ -960,6 +1059,7 @@ export async function handleFeedClick(event, onNavigateProfile) {
         const parentId = Number(button.dataset.parentId);
         const replyToId = button.dataset.replyTo ? Number(button.dataset.replyTo) : null;
         const replyAuthor = button.dataset.replyAuthor || '';
+        const replyTargetAuthorId = button.dataset.replyTargetAuthorId || '';
         const form = button.closest('.comment-reply-form');
         const input = form.querySelector('.comment-reply-input');
         const content = input?.value.trim();
@@ -976,11 +1076,13 @@ export async function handleFeedClick(event, onNavigateProfile) {
                 author_id: state.authenticatedUser.id,
                 parent_id: parentId,
                 content: content,
-                tag: replyToId ? `reply:${replyToId}:${encodeURIComponent(replyAuthor)}` : 'Geral'
+                category: 'Geral',
+                knowledge_type: 'Aprofundamento',
+                source: replyToId ? `reply_to:${replyToId}|${replyAuthor}` : null
             };
 
             const { data: insertedComment, error } = await supabaseClient
-                .from('entries')
+                .from('knowledge')
                 .insert([insertPayload])
                 .select('id')
                 .single();
@@ -993,19 +1095,40 @@ export async function handleFeedClick(event, onNavigateProfile) {
 
             showActionFeedback(translate('commentPublished'));
 
-            // As notificações de comentário/resposta são geridas automaticamente
-            // pelo trigger `trigger_notify_entry` no banco de dados (supabase-schema.sql).
+            // Notificações em Tempo Real
+            const card = button.closest('.idea-card') || document.querySelector(`[data-idea-id="${parentId}"]`);
+            const postAuthorId = card?.dataset.authorId;
 
-            const card = form.closest('.idea-card');
+            if (replyToId && replyTargetAuthorId && replyTargetAuthorId !== state.authenticatedUser.id) {
+                // Notifica o autor do comentário respondido
+                await supabaseClient.from('notifications').insert([{
+                    user_id: replyTargetAuthorId,
+                    actor_id: state.authenticatedUser.id,
+                    type: 'reply',
+                    knowledge_id: parentId
+                }]);
+            } else if (!replyToId && postAuthorId && postAuthorId !== state.authenticatedUser.id) {
+                // Notifica o autor da postagem principal
+                await supabaseClient.from('notifications').insert([{
+                    user_id: postAuthorId,
+                    actor_id: state.authenticatedUser.id,
+                    type: 'comment',
+                    knowledge_id: parentId
+                }]);
+            }
+
+            // Atualiza badge de contagem no card
             const countBadge = card?.querySelector('.comment-toggle-btn .action-count');
             if (countBadge) {
                 const cur = parseInt(countBadge.textContent || '0', 10);
                 countBadge.textContent = cur + 1;
             }
 
-            const container = form.closest('.comments-thread-container');
-            const comments = await fetchComments(parentId);
-            renderCommentsContent(container, parentId, comments);
+            const container = document.getElementById(`comments-thread-${parentId}`);
+            if (container) {
+                const comments = await fetchComments(parentId);
+                renderCommentsContent(container, parentId, comments);
+            }
         } catch (err) {
             console.error('submit comment error:', err);
             showActionFeedback(translate('errorSaving'));
@@ -1015,32 +1138,31 @@ export async function handleFeedClick(event, onNavigateProfile) {
         return;
     }
 
-    if (action === 'comment-upvote' || action === 'comment-downvote') {
+    if (action === 'comment-appreciate') {
         if (!state.authenticatedUser) {
             showAuthGate();
             return;
         }
         const commentId = Number(button.dataset.commentId);
         const parentId = Number(button.dataset.parentId);
-        const targetType = action === 'comment-upvote' ? 'up' : 'down';
         const isCurrentlySelected = button.classList.contains('selected');
 
         button.disabled = true;
         try {
             if (isCurrentlySelected) {
                 await supabaseClient
-                    .from('votes')
+                    .from('knowledge_interactions')
                     .delete()
-                    .eq('entry_id', commentId)
+                    .eq('knowledge_id', commentId)
                     .eq('user_id', state.authenticatedUser.id);
             } else {
                 await supabaseClient
-                    .from('votes')
+                    .from('knowledge_interactions')
                     .upsert([{
-                        entry_id: commentId,
+                        knowledge_id: commentId,
                         user_id: state.authenticatedUser.id,
-                        vote_type: targetType
-                    }], { onConflict: 'entry_id,user_id' });
+                        interaction_type: 'up'
+                    }], { onConflict: 'knowledge_id,user_id,interaction_type' });
             }
             const container = document.getElementById(`comments-thread-${parentId}`);
             if (container) {
@@ -1048,7 +1170,7 @@ export async function handleFeedClick(event, onNavigateProfile) {
                 renderCommentsContent(container, parentId, comments);
             }
         } catch (err) {
-            console.error('Comment vote error:', err);
+            console.error('Comment appreciate error:', err);
         } finally {
             button.disabled = false;
         }
@@ -1161,22 +1283,23 @@ export async function handleFeedClick(event, onNavigateProfile) {
         button.disabled = true;
         try {
             const { error } = await supabaseClient
-                .from('entries')
+                .from('knowledge')
                 .update({
                     content: trimmedContent,
-                    tag: newTag
+                    category: newTag,
+                    updated_at: new Date().toISOString()
                 })
                 .eq('id', ideaId)
                 .eq('author_id', state.authenticatedUser.id);
 
             if (error) {
-                console.error('Error updating entry:', error);
+                console.error('Error updating knowledge:', error);
                 showActionFeedback(error.message || translate('errorSaving'));
                 button.disabled = false;
                 return;
             }
 
-            showActionFeedback('Fragmento e tópico atualizados!');
+            showActionFeedback('Pensamento e tópico atualizados!');
             invalidateCache();
             await loadIdeas();
         } catch (err) {
@@ -1193,118 +1316,60 @@ export async function handleFeedClick(event, onNavigateProfile) {
         return;
     }
 
-    // Votação Otimista em Tempo Real (Mapeada para o Impacto Reflexivo Insight)
-    if (action === 'upvote' || action === 'downvote' || action === 'reflex-insight') {
-        const targetType = (action === 'upvote' || action === 'reflex-insight') ? 'up' : 'down';
-        const card = button.closest('.idea-card');
-        const upBtn = card?.querySelector('[data-action="upvote"], [data-action="reflex-insight"]');
-        const downBtn = card?.querySelector('[data-action="downvote"]');
-        const upCountEl = upBtn?.querySelector('.action-count');
-        const downCountEl = downBtn?.querySelector('.action-count');
+    // Apreciação Editorial Rápida (✦ Centelha)
+    if (action === 'toggle-appreciate') {
+        if (!state.authenticatedUser) {
+            showAuthGate();
+            return;
+        }
+        const isCurrentlySelected = button.classList.contains('selected');
+        const countBadge = button.querySelector('.action-count');
+        let cur = parseInt(countBadge?.textContent || '0', 10);
 
-        const prevUpSelected = upBtn?.classList.contains('selected') || false;
-        const prevDownSelected = downBtn?.classList.contains('selected') || false;
-        const prevUpCount = parseInt(upCountEl?.textContent || '0', 10);
-        const prevDownCount = parseInt(downCountEl?.textContent || '0', 10);
-
-        let newUpSelected = prevUpSelected;
-        let newDownSelected = prevDownSelected;
-        let newUpCount = prevUpCount;
-        let newDownCount = prevDownCount;
-
-        if (targetType === 'up') {
-            if (prevUpSelected) {
-                newUpSelected = false;
-                newUpCount = Math.max(0, prevUpCount - 1);
-            } else {
-                newUpSelected = true;
-                newUpCount = prevUpCount + 1;
-                if (prevDownSelected) {
-                    newDownSelected = false;
-                    newDownCount = Math.max(0, prevDownCount - 1);
-                }
-            }
-        } else {
-            if (prevDownSelected) {
-                newDownSelected = false;
-                newDownCount = Math.max(0, prevDownCount - 1);
-            } else {
-                newDownSelected = true;
-                newDownCount = prevDownCount + 1;
-                if (prevUpSelected) {
-                    newUpSelected = false;
-                    newUpCount = Math.max(0, prevUpCount - 1);
-                }
-            }
+        // Atualização Otimista da Interface
+        button.classList.toggle('selected');
+        if (countBadge) {
+            countBadge.textContent = isCurrentlySelected ? Math.max(0, cur - 1) : cur + 1;
         }
 
-        // Aplicação Otimista Imediata na Interface
-        upBtn?.classList.toggle('selected', newUpSelected);
-        downBtn?.classList.toggle('selected', newDownSelected);
-        if (upCountEl) upCountEl.textContent = newUpCount;
-        if (downCountEl) downCountEl.textContent = newDownCount;
-
         try {
-            if ((targetType === 'up' && prevUpSelected) || (targetType === 'down' && prevDownSelected)) {
+            if (isCurrentlySelected) {
                 const { error } = await supabaseClient
-                    .from('votes')
+                    .from('knowledge_interactions')
                     .delete()
-                    .eq('entry_id', ideaId)
+                    .eq('knowledge_id', ideaId)
                     .eq('user_id', state.authenticatedUser.id);
                 if (error) throw error;
+                showActionFeedback(translate('unappreciatedFeedback') || 'Apreciação removida.');
             } else {
-                if (!prevUpSelected && !prevDownSelected) {
-                    const startOfDay = new Date();
-                    startOfDay.setHours(0, 0, 0, 0);
-                    const { count: dailyVotesCount, error: countErr } = await supabaseClient
-                        .from('votes')
-                        .select('entry_id', { count: 'exact', head: true })
-                        .eq('user_id', state.authenticatedUser.id)
-                        .gte('created_at', startOfDay.toISOString());
-
-                    if (!countErr && dailyVotesCount !== null && dailyVotesCount >= 5) {
-                        // Reverte a interface caso exceda o limite diário
-                        upBtn?.classList.toggle('selected', prevUpSelected);
-                        downBtn?.classList.toggle('selected', prevDownSelected);
-                        if (upCountEl) upCountEl.textContent = prevUpCount;
-                        if (downCountEl) downCountEl.textContent = prevDownCount;
-                        showActionFeedback(translate('voteLimitReached'));
-                        return;
-                    }
-                }
-
                 const { error } = await supabaseClient
-                    .from('votes')
+                    .from('knowledge_interactions')
                     .upsert({
-                        entry_id: ideaId,
+                        knowledge_id: ideaId,
                         user_id: state.authenticatedUser.id,
-                        vote_type: targetType
-                    });
+                        interaction_type: 'insight'
+                    }, { onConflict: 'knowledge_id,user_id,interaction_type' });
                 if (error) throw error;
-
-                // As notificações de voto são geridas automaticamente
-                // pelo trigger `trigger_notify_vote` no banco de dados (supabase-schema.sql).
+                showActionFeedback(translate('appreciatedFeedback') || 'Pensamento apreciado!');
             }
             invalidateCache();
         } catch (err) {
-            console.error('Vote error:', err);
-            upBtn?.classList.toggle('selected', prevUpSelected);
-            downBtn?.classList.toggle('selected', prevDownSelected);
-            if (upCountEl) upCountEl.textContent = prevUpCount;
-            if (downCountEl) downCountEl.textContent = prevDownCount;
-            showActionFeedback(err.message || 'Erro ao registrar voto.');
+            console.error('toggle-appreciate error:', err);
+            // Reverte em caso de erro
+            button.classList.toggle('selected');
+            if (countBadge) countBadge.textContent = cur;
+            showActionFeedback(translate('errorSaving'));
         }
         return;
     }
 
-    // Favoritos Otimista em Tempo Real
+    // Guardar (Antigo Favoritos)
     if (action === 'favorite') {
         const isCurrentlyFavorite = button.classList.contains('selected');
         const card = button.closest('.idea-card');
         const favCountEl = button.querySelector('.action-count');
         const prevFavCount = parseInt(favCountEl?.textContent || '0', 10);
 
-        // Aplicação Otimista Imediata
         const nextFavorite = !isCurrentlyFavorite;
         button.classList.toggle('selected', nextFavorite);
         if (favCountEl) favCountEl.textContent = nextFavorite ? prevFavCount + 1 : Math.max(0, prevFavCount - 1);
@@ -1312,41 +1377,19 @@ export async function handleFeedClick(event, onNavigateProfile) {
         try {
             if (isCurrentlyFavorite) {
                 const { error } = await supabaseClient
-                    .from('favorites')
+                    .from('saved_knowledge')
                     .delete()
-                    .eq('entry_id', ideaId)
+                    .eq('knowledge_id', ideaId)
                     .eq('user_id', state.authenticatedUser.id);
                 if (error) throw error;
             } else {
-                const [{ count: entryCount }, { count: favCount }] = await Promise.all([
-                    supabaseClient
-                        .from('entries')
-                        .select('id', { count: 'exact', head: true })
-                        .eq('author_id', state.authenticatedUser.id),
-                    supabaseClient
-                        .from('favorites')
-                        .select('entry_id', { count: 'exact', head: true })
-                        .eq('user_id', state.authenticatedUser.id)
-                ]);
-
-                const maxAllowed = getMaxFavorites(entryCount || 0);
-                if (favCount !== null && favCount >= maxAllowed) {
-                    button.classList.toggle('selected', isCurrentlyFavorite);
-                    if (favCountEl) favCountEl.textContent = prevFavCount;
-                    showActionFeedback(getNextFavoriteMilestoneInfo(entryCount || 0));
-                    return;
-                }
-
                 const { error } = await supabaseClient
-                    .from('favorites')
+                    .from('saved_knowledge')
                     .insert({
-                        entry_id: ideaId,
+                        knowledge_id: ideaId,
                         user_id: state.authenticatedUser.id
                     });
                 if (error) throw error;
-
-                // As notificações de favorito são geridas automaticamente
-                // pelo trigger `trigger_notify_favorite` no banco de dados (supabase-schema.sql).
             }
             invalidateCache();
             await updateProfileStats();
@@ -1354,10 +1397,10 @@ export async function handleFeedClick(event, onNavigateProfile) {
                 await loadIdeas();
             }
         } catch (err) {
-            console.error('Favorite error:', err);
+            console.error('Save error:', err);
             button.classList.toggle('selected', isCurrentlyFavorite);
             if (favCountEl) favCountEl.textContent = prevFavCount;
-            showActionFeedback(err.message || 'Erro ao atualizar favoritos.');
+            showActionFeedback(err.message || 'Erro ao atualizar Gnoteca pessoal.');
         }
     }
 }
