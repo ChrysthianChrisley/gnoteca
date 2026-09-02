@@ -89,7 +89,7 @@ export const translations = {
         myCollection: 'Meu Mural',
         save: 'Salvar',
         saveToGnoteca: 'Salvar na Gnoteca',
-        ideaPlaceholder: 'Qual conceito, hipótese ou insight deseja registrar?',
+        ideaPlaceholder: 'Compartilhe uma ideia ou reflexão...',
         ideaSaved: 'Ideia salva com sucesso!',
         by: 'por',
         edit: 'Editar',
