@@ -254,30 +254,7 @@ function setupEventListeners() {
     backToFeed?.addEventListener('click', () => showFeed('global'));
     feedFilter?.addEventListener('change', () => loadIdeas());
 
-    // Navegação entre Modos (Acervo Público, A Balança)
-    const tabAcervo = document.getElementById('tab-mode-acervo');
-    const tabBalanca = document.getElementById('tab-mode-balanca');
-    const balancaSec = document.getElementById('balanca-section');
-
-    function setActiveModeTab(activeTab) {
-        [tabAcervo, tabBalanca].forEach(t => t?.classList.remove('active'));
-        activeTab?.classList.add('active');
-    }
-
-    tabAcervo?.addEventListener('click', () => {
-        setActiveModeTab(tabAcervo);
-        balancaSec?.classList.add('hidden');
-        readSection?.classList.remove('hidden');
-        showFeed('global');
-    });
-
-    tabBalanca?.addEventListener('click', () => {
-        setActiveModeTab(tabBalanca);
-        readSection?.classList.add('hidden');
-        writeSection?.classList.add('hidden');
-        balancaSec?.classList.remove('hidden');
-    });
-
+    // O modo "A Balança" foi removido.
     // Publicar Ideia
     // A global btnSave is already declared
 

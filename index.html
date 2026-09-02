@@ -1,22 +1,32 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co;">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co;">
     <title>Gnoteca | Seus Fragmentos de Conhecimento</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css">
 </head>
+
 <body>
     <header>
         <button id="btn-home" class="brand-button" type="button">Gnoteca</button>
         <div class="header-right-actions">
-            <button id="btn-notifications" class="theme-quick-toggle notif-bell-btn hidden" type="button" aria-label="Notificações" title="Notificações">
-                <svg class="theme-quick-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <button id="btn-notifications" class="theme-quick-toggle notif-bell-btn hidden" type="button"
+                aria-label="Notificações" title="Notificações">
+                <svg class="theme-quick-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                </svg>
                 <span id="notifications-badge" class="notifications-badge hidden"></span>
             </button>
             <button id="login-trigger" class="login-trigger" type="button" data-i18n="signIn">Entrar</button>
@@ -24,9 +34,22 @@
                 <span class="profile-avatar" data-profile-avatar>?</span>
                 <span id="header-user-name" class="header-user-name"></span>
             </button>
-            <button id="btn-theme-quick-toggle" class="theme-quick-toggle theme-isolated-toggle" type="button" aria-label="Alternar modo noturno" title="Alternar modo noturno">
-                <svg id="theme-icon-sun" class="theme-quick-icon hidden" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-                <svg id="theme-icon-moon" class="theme-quick-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            <button id="btn-theme-quick-toggle" class="theme-quick-toggle theme-isolated-toggle" type="button"
+                aria-label="Alternar modo noturno" title="Alternar modo noturno">
+                <svg id="theme-icon-sun" class="theme-quick-icon hidden" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="5" />
+                    <line x1="12" y1="1" x2="12" y2="3" />
+                    <line x1="12" y1="21" x2="12" y2="23" />
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                    <line x1="1" y1="12" x2="3" y2="12" />
+                    <line x1="21" y1="12" x2="23" y2="12" />
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                </svg>
+                <svg id="theme-icon-moon" class="theme-quick-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
             </button>
         </div>
     </header>
@@ -35,20 +58,25 @@
     <aside id="profile-sidebar" class="profile-sidebar" aria-label="Perfil e opções" aria-hidden="true">
         <div class="sidebar-header">
             <h2 data-i18n="profileTitle">Meu perfil</h2>
-                <button id="btn-close-sidebar" class="icon-button" aria-label="Fechar menu">x</button>
+            <button id="btn-close-sidebar" class="icon-button" aria-label="Fechar menu">x</button>
         </div>
         <div class="profile-summary">
             <div class="avatar-wrapper">
                 <span class="profile-avatar profile-avatar-large" data-profile-avatar>?</span>
                 <button id="btn-edit-avatar" class="edit-avatar-btn" type="button" aria-label="Alterar foto de perfil">
-                    <svg viewBox="0 0 24 24" class="icon-small" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                    <svg viewBox="0 0 24 24" class="icon-small" aria-hidden="true">
+                        <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                    </svg>
                 </button>
             </div>
             <div class="name-wrapper">
                 <div style="display: flex; align-items: center; gap: 0.25rem;">
                     <h3 id="profile-name">—</h3>
-                    <button id="btn-edit-name" class="icon-button-small" type="button" aria-label="Alterar nome de exibição">
-                        <svg viewBox="0 0 24 24" class="icon-tiny" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                    <button id="btn-edit-name" class="icon-button-small" type="button"
+                        aria-label="Alterar nome de exibição">
+                        <svg viewBox="0 0 24 24" class="icon-tiny" aria-hidden="true">
+                            <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                        </svg>
                     </button>
                 </div>
                 <div class="username-wrapper">
@@ -58,19 +86,24 @@
             <div class="title-wrapper">
                 <button id="btn-select-title" class="title-selector-btn" type="button" aria-label="Escolher Título">
                     <span id="profile-subtitle" data-i18n="profileSubtitle">explorador de conhecimento</span>
-                    <svg viewBox="0 0 24 24" class="icon-tiny" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                    <svg viewBox="0 0 24 24" class="icon-tiny" aria-hidden="true">
+                        <path d="m6 9 6 6 6-6" />
+                    </svg>
                 </button>
             </div>
         </div>
         <div id="auth-panel" class="auth-panel">
             <p id="auth-status" class="auth-status" data-i18n="notAuthenticated">Não autenticado</p>
-            <input id="auth-email" class="auth-input" type="email" placeholder="Seu e-mail" data-i18n-placeholder="emailPlaceholder">
-            <input id="auth-password" class="auth-input" type="password" placeholder="Sua senha" data-i18n-placeholder="passwordPlaceholder">
+            <input id="auth-email" class="auth-input" type="email" placeholder="Seu e-mail"
+                data-i18n-placeholder="emailPlaceholder">
+            <input id="auth-password" class="auth-input" type="password" placeholder="Sua senha"
+                data-i18n-placeholder="passwordPlaceholder">
             <div class="auth-actions">
                 <button id="email-sign-in" type="button" data-i18n="signIn">Entrar</button>
                 <button id="email-sign-up" type="button" data-i18n="createAccount">Criar conta</button>
             </div>
-            <button id="google-sign-in" class="google-button" type="button" data-i18n="continueGoogle">Continuar com Google</button>
+            <button id="google-sign-in" class="google-button" type="button" data-i18n="continueGoogle">Continuar com
+                Google</button>
         </div>
         <div class="profile-stats" aria-label="Resumo do acervo">
             <button id="stat-fragments" class="stat-button" type="button">
@@ -81,19 +114,25 @@
             </button>
         </div>
         <nav class="sidebar-menu" aria-label="Opções do perfil">
-                <button id="overview-menu" class="menu-item active" type="button" data-i18n="overview">Visão geral</button>
-                <button id="favorites-menu" class="menu-item" type="button" data-i18n="favorites">Favoritos</button>
-                <button id="notifications-menu" class="menu-item" type="button" data-i18n="notifications">Notificações</button>
-                <button id="settings-menu" class="menu-item" type="button" data-i18n="settings">Configurações</button>
-                <button id="theme-toggle" class="menu-item" type="button" aria-pressed="false"><span id="theme-label">Modo noturno</span></button>
+            <button id="overview-menu" class="menu-item active" type="button" data-i18n="overview">Visão geral</button>
+            <button id="favorites-menu" class="menu-item" type="button" data-i18n="favorites">Favoritos</button>
+            <button id="notifications-menu" class="menu-item" type="button"
+                data-i18n="notifications">Notificações</button>
+            <button id="settings-menu" class="menu-item" type="button" data-i18n="settings">Configurações</button>
+            <button id="theme-toggle" class="menu-item" type="button" aria-pressed="false"><span id="theme-label">Modo
+                    noturno</span></button>
         </nav>
         <div class="language-panel">
             <span class="language-label" data-i18n="language">Idioma</span>
             <div class="language-options lang-menu" role="group" aria-label="Idioma">
-                <button class="language-option" data-language="pt-BR" type="button"><span class="fi fi-br" aria-hidden="true"></span> PT-BR</button>
-                <button class="language-option" data-language="en-US" type="button"><span class="fi fi-us" aria-hidden="true"></span> EN-US</button>
-                <button class="language-option" data-language="es-ES" type="button"><span class="fi fi-es" aria-hidden="true"></span> ES</button>
-                <button class="language-option" data-language="fr-FR" type="button"><span class="fi fi-fr" aria-hidden="true"></span> FR</button>
+                <button class="language-option" data-language="pt-BR" type="button"><span class="fi fi-br"
+                        aria-hidden="true"></span> PT-BR</button>
+                <button class="language-option" data-language="en-US" type="button"><span class="fi fi-us"
+                        aria-hidden="true"></span> EN-US</button>
+                <button class="language-option" data-language="es-ES" type="button"><span class="fi fi-es"
+                        aria-hidden="true"></span> ES</button>
+                <button class="language-option" data-language="fr-FR" type="button"><span class="fi fi-fr"
+                        aria-hidden="true"></span> FR</button>
             </div>
         </div>
         <button id="btn-signout" class="signout-button" type="button" data-i18n="signOut">Sair da conta</button>
@@ -104,29 +143,39 @@
             <button id="close-auth-gate" class="auth-gate-close" type="button" aria-label="Fechar">x</button>
             <p class="section-kicker">Gnoteca</p>
             <h2 id="auth-gate-title" data-i18n="signInToContinue">Entre para continuar</h2>
-            <p id="auth-gate-desc" data-i18n="authDescription">Crie sua conta ou entre para publicar, validar hipóteses e explorar todo o mural.</p>
-            
+            <p id="auth-gate-desc" data-i18n="authDescription">Crie sua conta ou entre para publicar, validar hipóteses
+                e explorar todo o mural.</p>
+
             <div class="auth-gate-tabs" role="tablist">
-                <button id="gate-tab-signin" class="auth-tab-btn active" type="button" role="tab" aria-selected="true" data-i18n="signInTab">Entrar</button>
-                <button id="gate-tab-signup" class="auth-tab-btn" type="button" role="tab" aria-selected="false" data-i18n="signUpTab">Criar conta</button>
-                <button id="gate-tab-forgot" class="auth-tab-btn hidden" type="button" role="tab" aria-selected="false" data-i18n="resetPassword">Recuperar</button>
+                <button id="gate-tab-signin" class="auth-tab-btn active" type="button" role="tab" aria-selected="true"
+                    data-i18n="signInTab">Entrar</button>
+                <button id="gate-tab-signup" class="auth-tab-btn" type="button" role="tab" aria-selected="false"
+                    data-i18n="signUpTab">Criar conta</button>
+                <button id="gate-tab-forgot" class="auth-tab-btn hidden" type="button" role="tab" aria-selected="false"
+                    data-i18n="resetPassword">Recuperar</button>
             </div>
 
             <!-- Honeypot invisível para enganar e bloquear bots automatizados -->
-            <input type="text" id="gate-bot-trap" name="website_hp_bot_trap" style="display:none !important; position:absolute; left:-9999px;" tabindex="-1" autocomplete="off">
+            <input type="text" id="gate-bot-trap" name="website_hp_bot_trap"
+                style="display:none !important; position:absolute; left:-9999px;" tabindex="-1" autocomplete="off">
 
             <div class="auth-form-fields">
-                <input id="gate-email" class="auth-input" type="email" placeholder="Seu e-mail" data-i18n-placeholder="emailPlaceholder" autocomplete="email" required>
-                
+                <input id="gate-email" class="auth-input" type="email" placeholder="Seu e-mail"
+                    data-i18n-placeholder="emailPlaceholder" autocomplete="email" required>
+
                 <div id="gate-password-group" class="gate-password-group">
-                    <input id="gate-password" class="auth-input" type="password" placeholder="Sua senha" data-i18n-placeholder="passwordPlaceholder" autocomplete="current-password" required>
+                    <input id="gate-password" class="auth-input" type="password" placeholder="Sua senha"
+                        data-i18n-placeholder="passwordPlaceholder" autocomplete="current-password" required>
                     <div id="gate-forgot-link-wrapper" class="gate-forgot-wrapper">
-                        <button id="gate-forgot-btn" class="btn-text-action gate-forgot-btn" type="button" data-i18n="forgotPassword">Esqueceu a senha?</button>
+                        <button id="gate-forgot-btn" class="btn-text-action gate-forgot-btn" type="button"
+                            data-i18n="forgotPassword">Esqueceu a senha?</button>
                     </div>
                 </div>
-                
+
                 <div id="gate-confirm-password-group" class="gate-extra-group hidden">
-                    <input id="gate-password-confirm" class="auth-input" type="password" placeholder="Confirme sua senha" data-i18n-placeholder="confirmPasswordPlaceholder" autocomplete="new-password">
+                    <input id="gate-password-confirm" class="auth-input" type="password"
+                        placeholder="Confirme sua senha" data-i18n-placeholder="confirmPasswordPlaceholder"
+                        autocomplete="new-password">
                 </div>
 
                 <!-- Checklist Interativo de Requisitos da Senha do Supabase -->
@@ -146,39 +195,48 @@
                 </div>
 
                 <div id="gate-challenge-group" class="gate-extra-group gate-challenge-box hidden">
-                    <span id="gate-challenge-label" class="challenge-label" data-i18n="humanVerification">Verificação de segurança</span>
+                    <span id="gate-challenge-label" class="challenge-label" data-i18n="humanVerification">Verificação de
+                        segurança</span>
                     <div class="challenge-row">
                         <span id="gate-math-question" class="challenge-question">3 + 4 = ?</span>
-                        <input id="gate-challenge-answer" class="auth-input challenge-input" type="number" placeholder="=" min="0" max="99">
+                        <input id="gate-challenge-answer" class="auth-input challenge-input" type="number"
+                            placeholder="=" min="0" max="99">
                     </div>
                 </div>
             </div>
 
             <div class="gate-email-actions">
-                <button id="gate-submit-btn" class="gate-primary-button" type="button" data-i18n="signIn">Entrar</button>
+                <button id="gate-submit-btn" class="gate-primary-button" type="button"
+                    data-i18n="signIn">Entrar</button>
             </div>
 
             <div id="gate-google-section">
                 <div class="auth-divider"><span data-i18n="or">ou</span></div>
-                <button id="gate-google-sign-in" class="google-button" type="button"><span class="google-mark" aria-hidden="true">G</span> <span data-i18n="continueGoogle">Continuar com Google</span></button>
+                <button id="gate-google-sign-in" class="google-button" type="button"><span class="google-mark"
+                        aria-hidden="true">G</span> <span data-i18n="continueGoogle">Continuar com
+                        Google</span></button>
             </div>
-            
+
             <p id="gate-auth-feedback" class="gate-auth-feedback" role="status"></p>
         </div>
     </div>
 
     <!-- Modal de Redefinição de Senha (Após clicar no link do e-mail) -->
-    <div id="reset-password-dialog" class="auth-gate hidden" role="dialog" aria-modal="true" aria-labelledby="reset-password-dialog-title">
+    <div id="reset-password-dialog" class="auth-gate hidden" role="dialog" aria-modal="true"
+        aria-labelledby="reset-password-dialog-title">
         <div class="auth-gate-card">
-            <button id="close-reset-password-dialog" class="auth-gate-close" type="button" aria-label="Fechar">x</button>
+            <button id="close-reset-password-dialog" class="auth-gate-close" type="button"
+                aria-label="Fechar">x</button>
             <p class="section-kicker">Gnoteca</p>
             <h2 id="reset-password-dialog-title" data-i18n="resetPassword">Redefinir Senha</h2>
             <p data-i18n="resetPasswordDesc">Digite sua nova senha abaixo para atualizar seu acesso.</p>
-            
+
             <div class="auth-form-fields">
-                <input id="reset-new-password" class="auth-input" type="password" placeholder="Nova senha" data-i18n-placeholder="newPasswordPlaceholder" autocomplete="new-password" required>
-                <input id="reset-confirm-password" class="auth-input" type="password" placeholder="Confirme sua senha" data-i18n-placeholder="confirmPasswordPlaceholder" autocomplete="new-password" required>
-                
+                <input id="reset-new-password" class="auth-input" type="password" placeholder="Nova senha"
+                    data-i18n-placeholder="newPasswordPlaceholder" autocomplete="new-password" required>
+                <input id="reset-confirm-password" class="auth-input" type="password" placeholder="Confirme sua senha"
+                    data-i18n-placeholder="confirmPasswordPlaceholder" autocomplete="new-password" required>
+
                 <div id="reset-policy-checklist" class="password-policy-checklist" aria-live="polite">
                     <div class="policy-item" id="reset-policy-len">
                         <span class="policy-icon">•</span>
@@ -196,20 +254,24 @@
             </div>
 
             <div class="gate-email-actions">
-                <button id="reset-submit-btn" class="gate-primary-button" type="button" data-i18n="updatePassword">Atualizar Senha</button>
+                <button id="reset-submit-btn" class="gate-primary-button" type="button"
+                    data-i18n="updatePassword">Atualizar Senha</button>
             </div>
             <p id="reset-auth-feedback" class="gate-auth-feedback" role="status"></p>
         </div>
     </div>
 
-    <div id="delete-dialog" class="delete-dialog hidden" role="dialog" aria-modal="true" aria-labelledby="delete-dialog-title">
+    <div id="delete-dialog" class="delete-dialog hidden" role="dialog" aria-modal="true"
+        aria-labelledby="delete-dialog-title">
         <div class="delete-dialog-card">
             <p class="dialog-eyebrow" data-i18n="removeEntry">Remover entrada</p>
             <h2 id="delete-dialog-title" data-i18n="deleteQuestion">Apagar este fragmento?</h2>
             <p data-i18n="deleteWarning">Essa ação não poderá ser desfeita.</p>
             <div class="dialog-actions">
-                <button id="cancel-delete" class="dialog-button secondary" type="button" data-i18n="cancel">Cancelar</button>
-                <button id="confirm-delete" class="dialog-button danger" type="button" data-i18n="delete">Apagar</button>
+                <button id="cancel-delete" class="dialog-button secondary" type="button"
+                    data-i18n="cancel">Cancelar</button>
+                <button id="confirm-delete" class="dialog-button danger" type="button"
+                    data-i18n="delete">Apagar</button>
             </div>
         </div>
     </div>
@@ -221,30 +283,37 @@
         <div id="visitor-hero" class="visitor-hero hidden">
             <span class="visitor-hero-pill" data-i18n="heroBadge">Pensamento crítico em tempo real</span>
             <h1 class="visitor-hero-title" data-i18n="heroTitle">Pense. Escreva. Questione.</h1>
-            <p class="visitor-hero-subtitle" data-i18n="heroSubtitle">A micro-rede feita para quem valoriza a profundidade em um mundo distraído.</p>
+            <p class="visitor-hero-subtitle" data-i18n="heroSubtitle">A micro-rede feita para quem valoriza a
+                profundidade em um mundo distraído.</p>
         </div>
 
         <!-- Barra de Modos Principais da Gnoteca -->
         <nav class="gnoteca-mode-tabs" role="tablist" aria-label="Navegação Principal">
-            <button id="tab-mode-acervo" class="mode-tab-btn active" type="button" data-mode="acervo" data-i18n="acervoPublico">Mural</button>
-            <button id="tab-mode-balanca" class="mode-tab-btn" type="button" data-mode="balanca" data-i18n="balanca">A Balança</button>
-            <button id="btn-open-zen-reader" class="mode-tab-btn zen-btn" type="button" title="Leitura com Respiração" data-i18n="contemplativeMode">Modo Contemplativo</button>
+            <button id="tab-mode-acervo" class="mode-tab-btn active" type="button" data-mode="acervo"
+                data-i18n="acervoPublico">Mural</button>
+
+            <button id="btn-open-zen-reader" class="mode-tab-btn zen-btn" type="button" title="Leitura com Respiração"
+                data-i18n="contemplativeMode">Modo Contemplativo</button>
         </nav>
 
         <!-- Tela de Registro -->
         <section id="write-section" class="hidden">
-            <textarea id="idea-input" maxlength="280" placeholder="Compartilhe uma ideia ou reflexão..." data-i18n-placeholder="ideaPlaceholder"></textarea>
-            
+            <textarea id="idea-input" maxlength="280" placeholder="Compartilhe uma ideia ou reflexão..."
+                data-i18n-placeholder="ideaPlaceholder"></textarea>
+
             <div class="write-citation-row">
-                <input id="write-citation-input" class="citation-input" type="text" maxlength="120" placeholder="Origem / Citação / Livro (opcional. Ex: Sêneca, Da Brevidade da Vida)">
+                <input id="write-citation-input" class="citation-input" type="text" maxlength="120"
+                    placeholder="Origem / Citação / Livro (opcional. Ex: Sêneca, Da Brevidade da Vida)">
             </div>
 
             <div class="write-meta-bar">
                 <div class="tag-selector-wrapper" id="write-tag-autocomplete">
                     <label for="write-tag-input" class="tag-select-label" data-i18n="topicLabel">Tópico:</label>
                     <div class="tag-input-relative">
-                        <input id="write-tag-input" class="tag-smart-input" type="text" maxlength="20" placeholder="Filosofia" value="Geral" autocomplete="off" spellcheck="false">
-                        <div id="tag-autocomplete-dropdown" class="tag-autocomplete-dropdown hidden" role="listbox"></div>
+                        <input id="write-tag-input" class="tag-smart-input" type="text" maxlength="20"
+                            placeholder="Filosofia" value="Geral" autocomplete="off" spellcheck="false">
+                        <div id="tag-autocomplete-dropdown" class="tag-autocomplete-dropdown hidden" role="listbox">
+                        </div>
                     </div>
                 </div>
                 <div id="char-counter">0 / 280</div>
@@ -253,61 +322,18 @@
             <p id="feedback-msg" class="hidden" data-i18n="ideaSaved">Ideia salva com sucesso!</p>
         </section>
 
-        <!-- Painel Dialético: A Balança (Confronto de Perspectivas) -->
-        <section id="balanca-section" class="balanca-section hidden" aria-label="A Balança">
-            <div class="balanca-header">
-                <span class="balanca-kicker">Reflexão Coletiva</span>
-                <h2 class="balanca-title">A Balança de Ideias</h2>
 
-
-                <!-- Seletor de Dilemas -->
-                <div class="balanca-dilemma-bar">
-                    <button id="btn-balanca-prev" class="dilemma-nav-btn" type="button" aria-label="Dilema anterior">← Anterior</button>
-                    <button id="btn-balanca-next" class="dilemma-nav-btn" type="button" aria-label="Próximo dilema">Próximo →</button>
-                </div>
-            </div>
-
-            <div class="balanca-grid">
-                <div class="balanca-card balanca-thesis" id="balanca-thesis-card">
-                    <div class="balanca-card-top">
-                        <span class="balanca-badge thesis">Visão A</span>
-                        <span id="balanca-thesis-author" class="balanca-author-tag">Defensor do Remoto</span>
-                    </div>
-                    <p class="balanca-content" id="balanca-thesis-content">"O trabalho remoto liberta as pessoas do trânsito, dando mais tempo para a família e qualidade de vida."</p>
-                </div>
-                <div class="balanca-scale-icon" aria-hidden="true">⇄</div>
-                <div class="balanca-card balanca-antithesis" id="balanca-antithesis-card">
-                    <div class="balanca-card-top">
-                        <span class="balanca-badge antithesis">Visão B</span>
-                        <span id="balanca-antithesis-author" class="balanca-author-tag">Defensor do Presencial</span>
-                    </div>
-                    <p class="balanca-content" id="balanca-antithesis-content">"Trabalhar em casa nos isola. É no convívio presencial que a cultura, a amizade e as ideias criativas nascem."</p>
-                </div>
-            </div>
-
-            <div class="balanca-synthesis-box">
-                <h3 class="synthesis-title">Deixe seu comentário</h3>
-                <textarea id="balanca-synthesis-input" class="synthesis-textarea" maxlength="280" placeholder="Deixe seu comentário..."></textarea>
-                <div class="synthesis-actions">
-                    <span id="balanca-char-counter">0 / 280</span>
-                    <button id="btn-submit-synthesis" class="gate-primary-button" type="button">Comentar</button>
-                </div>
-            </div>
-
-            <div class="balanca-community-syntheses" id="balanca-syntheses-list">
-                <h4 class="syntheses-feed-title">Comentários</h4>
-                <div id="syntheses-items" class="syntheses-items"></div>
-            </div>
-        </section>
 
         <!-- Barra de Pulso da Comunidade (Visível Apenas para Usuários Autenticados) -->
-        <div id="community-pulse-bar" class="community-pulse-bar hidden" title="Clique para ir até esta publicação ou pensador" role="button" tabindex="0">
+        <div id="community-pulse-bar" class="community-pulse-bar hidden"
+            title="Clique para ir até esta publicação ou pensador" role="button" tabindex="0">
             <div class="pulse-indicator">
                 <span class="pulse-live-dot" aria-hidden="true"></span>
                 <span class="pulse-label" data-i18n="communityPulse">Pulso da Comunidade</span>
             </div>
             <div id="pulse-ticker-container" class="pulse-ticker-container">
-                <span id="pulse-ticker-text" class="pulse-ticker-text" data-i18n="communityActive">Gnoteca: Comunidade de pensamento crítico ativa</span>
+                <span id="pulse-ticker-text" class="pulse-ticker-text" data-i18n="communityActive">Gnoteca: Comunidade
+                    de pensamento crítico ativa</span>
             </div>
         </div>
 
@@ -315,7 +341,8 @@
         <section id="read-section">
             <div class="feed-header">
                 <div>
-                    <button id="back-to-feed" class="back-link hidden" type="button" data-i18n="backToFeed">Voltar ao mural</button>
+                    <button id="back-to-feed" class="back-link hidden" type="button" data-i18n="backToFeed">Voltar ao
+                        mural</button>
                     <h2 id="feed-title" data-i18n="latestFragments">Últimos fragmentos</h2>
                 </div>
                 <label class="filter-label" for="feed-filter"><span data-i18n="sortBy">Ordenar por</span>
@@ -354,263 +381,314 @@
             </div>
 
             <div id="feed-sentinel" class="feed-sentinel"></div>
-            <button id="btn-back-to-top" class="back-to-top hidden" type="button" aria-label="Voltar ao topo" title="Voltar ao topo">^</button>
+            <button id="btn-back-to-top" class="back-to-top hidden" type="button" aria-label="Voltar ao topo"
+                title="Voltar ao topo">^</button>
         </section>
 
-    <!-- Rodapé Discreto com Métricas da Comunidade -->
-    <footer id="app-footer" class="app-footer">
-        <div class="footer-bottom-info">
-            <span>© 2026 Gnoteca</span>
-            <span class="footer-separator">•</span>
-            <span data-i18n="heroBadge">Pensamento crítico em tempo real</span>
-        </div>
-        <div class="footer-stats-row">
-            <span class="footer-stat-group">
-                <span class="footer-online-dot" aria-hidden="true"></span>
-                <strong id="footer-online-count">1</strong> <span data-i18n="onlineNow">online</span>
-            </span>
-            <span class="footer-separator">•</span>
-            <span class="footer-stat-group">
-                <strong id="footer-members-count">...</strong> <span data-i18n="thinkers">pensadores</span>
-            </span>
-            <span class="footer-separator">•</span>
-            <span class="footer-stat-group">
-                <strong id="footer-entries-count">...</strong> <span data-i18n="fragments">fragmentos</span>
-            </span>
-        </div>
-    </footer>
+        <!-- Rodapé Discreto com Métricas da Comunidade -->
+        <footer id="app-footer" class="app-footer">
+            <div class="footer-bottom-info">
+                <span>© 2026 Gnoteca</span>
+                <span class="footer-separator">•</span>
+                <span data-i18n="heroBadge">Pensamento crítico em tempo real</span>
+            </div>
+            <div class="footer-stats-row">
+                <span class="footer-stat-group">
+                    <span class="footer-online-dot" aria-hidden="true"></span>
+                    <strong id="footer-online-count">1</strong> <span data-i18n="onlineNow">online</span>
+                </span>
+                <span class="footer-separator">•</span>
+                <span class="footer-stat-group">
+                    <strong id="footer-members-count">...</strong> <span data-i18n="thinkers">pensadores</span>
+                </span>
+                <span class="footer-separator">•</span>
+                <span class="footer-stat-group">
+                    <strong id="footer-entries-count">...</strong> <span data-i18n="fragments">fragmentos</span>
+                </span>
+            </div>
+        </footer>
 
-    <div id="edit-profile-dialog" class="auth-gate hidden" role="dialog" aria-modal="true" aria-labelledby="edit-profile-title">
-        <div class="auth-gate-card">
-            <button id="close-edit-dialog" class="auth-gate-close" type="button" aria-label="Fechar">x</button>
-            <h2 id="edit-profile-title" class="dialog-eyebrow" data-i18n="editProfile">Editar Perfil</h2>
-            
-            <div id="edit-name-section" class="hidden">
-                <p data-i18n="changeDisplayName">Alterar Nome de Exibição</p>
-                <input id="input-edit-name" class="auth-input" type="text" placeholder="Seu Nome" data-i18n-placeholder="namePlaceholder">
-                <p class="form-hint" data-i18n="nameHint">Este é o nome que aparece no topo do seu perfil (permite espaços e letras maiúsculas).</p>
-            </div>
-            
-            <div id="edit-avatar-section" class="hidden">
-                <p data-i18n="changeAvatar">Alterar Foto de Perfil</p>
-                <input id="input-edit-avatar" class="auth-input" type="url" placeholder="https://link-da-imagem.com/foto.jpg" data-i18n-placeholder="avatarPlaceholder">
-                <p class="form-hint" data-i18n="avatarHint">Cole o link (URL) direto de uma imagem (jpg, png, webp).</p>
-            </div>
+        <div id="edit-profile-dialog" class="auth-gate hidden" role="dialog" aria-modal="true"
+            aria-labelledby="edit-profile-title">
+            <div class="auth-gate-card">
+                <button id="close-edit-dialog" class="auth-gate-close" type="button" aria-label="Fechar">x</button>
+                <h2 id="edit-profile-title" class="dialog-eyebrow" data-i18n="editProfile">Editar Perfil</h2>
 
-            <div id="edit-title-section" class="hidden">
-                <p data-i18n="chooseTitle">Escolha seu Título</p>
-                <select id="select-edit-title" class="auth-input">
-                    <!-- Options preenchidas dinamicamente pelo JS -->
-                </select>
-                <p class="form-hint" data-i18n="unlockTitlesHint">Desbloqueie novos títulos participando da Gnoteca.</p>
-            </div>
-
-            <p id="edit-profile-feedback" class="gate-auth-feedback" role="status"></p>
-            <div class="dialog-actions">
-                <button id="btn-save-profile" class="gate-primary-button" type="button" data-i18n="save">Salvar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Compartilhamento Direto -->
-    <div id="share-card-dialog" class="auth-gate hidden" role="dialog" aria-modal="true" aria-labelledby="share-card-title">
-        <div class="auth-gate-card share-dialog-card">
-            <button id="close-share-dialog" class="auth-gate-close" type="button" aria-label="Fechar">x</button>
-            <h2 id="share-card-title" class="dialog-eyebrow" data-i18n="shareTitle">Compartilhar Fragmento</h2>
-            
-            <div class="share-quote-card">
-                <p id="share-quote-preview" class="share-quote-text">“...”</p>
-                <span id="share-author-preview" class="share-quote-author">— Pensador</span>
-            </div>
-
-            <div class="share-social-grid">
-                <button id="btn-share-whatsapp" class="share-network-btn whatsapp" type="button">
-                    <svg viewBox="0 0 24 24" class="icon-small" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.196 8.196 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24m4.52 11.63c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.03-1.25-.75-.67-1.26-1.5-1.41-1.75-.15-.25-.02-.39.11-.51.11-.11.25-.29.37-.44.13-.14.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.13.17 1.77 2.7 4.29 3.79.6.26 1.07.41 1.44.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.07-.11-.23-.17-.48-.3"/></svg>
-                    WhatsApp
-                </button>
-                <button id="btn-share-twitter" class="share-network-btn twitter" type="button">
-                    <svg viewBox="0 0 24 24" class="icon-small" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                    X (Twitter)
-                </button>
-                <button id="btn-share-telegram" class="share-network-btn telegram" type="button">
-                    <svg viewBox="0 0 24 24" class="icon-small" fill="currentColor" aria-hidden="true"><path d="m20.665 3.717-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l-.313 4.672c.458 0 .66-.21.916-.457l2.199-2.138 4.574 3.379c.843.465 1.448.225 1.658-.783l2.998-14.133c.307-1.23-.468-1.787-1.272-1.426z"/></svg>
-                    Telegram
-                </button>
-            </div>
-
-            <div class="dialog-actions">
-                <button id="btn-share-copy" class="gate-primary-button" type="button" data-i18n="copyQuote">Copiar Citação com Link</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal / Painel de Notificações -->
-    <div id="notifications-dialog" class="auth-gate hidden" role="dialog" aria-modal="true" aria-labelledby="notifications-dialog-title">
-        <div class="auth-gate-card notifications-card">
-            <div class="notifications-card-header">
-                <h2 id="notifications-dialog-title" class="dialog-eyebrow" data-i18n="notifications">Notificações</h2>
-                <div class="notif-header-actions">
-                    <button id="btn-mark-all-read" class="btn-text-action" type="button" data-i18n="markAllRead">Marcar todas como lidas</button>
-                    <button id="btn-clear-notifications" class="btn-text-action danger-hover" type="button" data-i18n="clearNotifications">Limpar</button>
-                    <button id="close-notifications-dialog" class="auth-gate-close" type="button" aria-label="Fechar">x</button>
-                </div>
-            </div>
-            <div id="notifications-list-container" class="notifications-list-container">
-                <!-- Preenchido dinamicamente pelo JS -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Configurações da Experiência do Usuário -->
-    <div id="settings-dialog" class="auth-gate hidden" role="dialog" aria-modal="true" aria-labelledby="settings-dialog-title">
-        <div class="auth-gate-card settings-dialog-card">
-            <div class="settings-card-header">
-                <h2 id="settings-dialog-title" class="dialog-eyebrow" data-i18n="settings">Configurações</h2>
-                <button id="close-settings-dialog" class="auth-gate-close" type="button" aria-label="Fechar">x</button>
-            </div>
-            
-            <div class="settings-content-body">
-                <!-- Seção 1: Comunidade & Descoberta -->
-                <div class="settings-section">
-                    <h3 class="settings-section-title" data-i18n="settingsCommunityTitle">Comunidade & Descoberta</h3>
-                    <div class="settings-item">
-                        <div class="settings-item-meta">
-                            <span class="settings-item-name" data-i18n="settingPulseName">Pulso da Comunidade</span>
-                            <span class="settings-item-desc" data-i18n="settingPulseDesc">Exibir logs de atividade recente da comunidade acima do mural.</span>
-                        </div>
-                        <label class="setting-toggle-label">
-                            <input type="checkbox" id="setting-toggle-pulse" class="setting-toggle-checkbox" checked>
-                            <span class="setting-toggle-slider"></span>
-                        </label>
-                    </div>
+                <div id="edit-name-section" class="hidden">
+                    <p data-i18n="changeDisplayName">Alterar Nome de Exibição</p>
+                    <input id="input-edit-name" class="auth-input" type="text" placeholder="Seu Nome"
+                        data-i18n-placeholder="namePlaceholder">
+                    <p class="form-hint" data-i18n="nameHint">Este é o nome que aparece no topo do seu perfil (permite
+                        espaços e letras maiúsculas).</p>
                 </div>
 
-                <!-- Seção 2: Leitura & Tipografia -->
-                <div class="settings-section">
-                    <h3 class="settings-section-title" data-i18n="settingsReadingTitle">Leitura & Visualização</h3>
-                    <div class="settings-item">
-                        <div class="settings-item-meta">
-                            <span class="settings-item-name" data-i18n="settingDensityName">Densidade do Feed</span>
-                            <span class="settings-item-desc" data-i18n="settingDensityDesc">Ajuste o espaçamento entre fragmentos.</span>
-                        </div>
-                        <select id="setting-select-density" class="settings-select-input">
-                            <option value="comfortable" data-i18n="settingDensityComfortable">Confortável (Padrão)</option>
-                            <option value="compact" data-i18n="settingDensityCompact">Compacto</option>
-                        </select>
-                    </div>
-                    <div class="settings-item">
-                        <div class="settings-item-meta">
-                            <span class="settings-item-name" data-i18n="settingFontName">Tamanho do Texto</span>
-                            <span class="settings-item-desc" data-i18n="settingFontDesc">Tamanho da tipografia dos fragmentos.</span>
-                        </div>
-                        <select id="setting-select-font" class="settings-select-input">
-                            <option value="small" data-i18n="settingFontSmall">Pequeno</option>
-                            <option value="normal" data-i18n="settingFontNormal" selected>Padrão</option>
-                            <option value="large" data-i18n="settingFontLarge">Grande</option>
-                        </select>
-                    </div>
+                <div id="edit-avatar-section" class="hidden">
+                    <p data-i18n="changeAvatar">Alterar Foto de Perfil</p>
+                    <input id="input-edit-avatar" class="auth-input" type="url"
+                        placeholder="https://link-da-imagem.com/foto.jpg" data-i18n-placeholder="avatarPlaceholder">
+                    <p class="form-hint" data-i18n="avatarHint">Cole o link (URL) direto de uma imagem (jpg, png, webp).
+                    </p>
                 </div>
 
-                <!-- Seção 3: Escrita & Segurança -->
-                <div class="settings-section">
-                    <h3 class="settings-section-title" data-i18n="settingsWritingTitle">Escrita & Segurança</h3>
-                    <div class="settings-item">
-                        <div class="settings-item-meta">
-                            <span class="settings-item-name" data-i18n="settingAutosaveName">Salvar Rascunho</span>
-                            <span class="settings-item-desc" data-i18n="settingAutosaveDesc">Memorizar texto digitado para não perder reflexões não enviadas.</span>
-                        </div>
-                        <label class="setting-toggle-label">
-                            <input type="checkbox" id="setting-toggle-autosave" class="setting-toggle-checkbox" checked>
-                            <span class="setting-toggle-slider"></span>
-                        </label>
-                    </div>
-                    <div class="settings-item">
-                        <div class="settings-item-meta">
-                            <span class="settings-item-name" data-i18n="settingConfirmDeleteName">Confirmar Exclusão</span>
-                            <span class="settings-item-desc" data-i18n="settingConfirmDeleteDesc">Exibir aviso de confirmação antes de apagar suas publicações.</span>
-                        </div>
-                        <label class="setting-toggle-label">
-                            <input type="checkbox" id="setting-toggle-confirm-delete" class="setting-toggle-checkbox" checked>
-                            <span class="setting-toggle-slider"></span>
-                        </label>
-                    </div>
+                <div id="edit-title-section" class="hidden">
+                    <p data-i18n="chooseTitle">Escolha seu Título</p>
+                    <select id="select-edit-title" class="auth-input">
+                        <!-- Options preenchidas dinamicamente pelo JS -->
+                    </select>
+                    <p class="form-hint" data-i18n="unlockTitlesHint">Desbloqueie novos títulos participando da Gnoteca.
+                    </p>
                 </div>
 
-                <!-- Seção 4: Segurança & Senha -->
-                <div id="settings-security-section" class="settings-section">
-                    <h3 class="settings-section-title" data-i18n="securityTitle">Segurança & Senha</h3>
-                    <p class="settings-section-desc" data-i18n="changePasswordDesc">Atualize sua senha fornecendo a senha atual e a nova.</p>
-                    
-                    <div class="settings-password-form">
-                        <input id="settings-current-password" class="auth-input" type="password" placeholder="Senha atual" data-i18n-placeholder="currentPasswordPlaceholder" autocomplete="current-password">
-                        <input id="settings-new-password" class="auth-input" type="password" placeholder="Nova senha" data-i18n-placeholder="newPasswordPlaceholder" autocomplete="new-password">
-                        <input id="settings-confirm-password" class="auth-input" type="password" placeholder="Confirme sua senha" data-i18n-placeholder="confirmPasswordPlaceholder" autocomplete="new-password">
-                        
-                        <div id="settings-policy-checklist" class="password-policy-checklist">
-                            <div class="policy-item" id="settings-policy-len">
-                                <span class="policy-icon">•</span>
-                                <span data-i18n="policyMinLength">Mínimo de 8 caracteres</span>
+                <p id="edit-profile-feedback" class="gate-auth-feedback" role="status"></p>
+                <div class="dialog-actions">
+                    <button id="btn-save-profile" class="gate-primary-button" type="button"
+                        data-i18n="save">Salvar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Compartilhamento Direto -->
+        <div id="share-card-dialog" class="auth-gate hidden" role="dialog" aria-modal="true"
+            aria-labelledby="share-card-title">
+            <div class="auth-gate-card share-dialog-card">
+                <button id="close-share-dialog" class="auth-gate-close" type="button" aria-label="Fechar">x</button>
+                <h2 id="share-card-title" class="dialog-eyebrow" data-i18n="shareTitle">Compartilhar Fragmento</h2>
+
+                <div class="share-quote-card">
+                    <p id="share-quote-preview" class="share-quote-text">“...”</p>
+                    <span id="share-author-preview" class="share-quote-author">— Pensador</span>
+                </div>
+
+                <div class="share-social-grid">
+                    <button id="btn-share-whatsapp" class="share-network-btn whatsapp" type="button">
+                        <svg viewBox="0 0 24 24" class="icon-small" fill="currentColor" aria-hidden="true">
+                            <path
+                                d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.196 8.196 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24m4.52 11.63c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.03-1.25-.75-.67-1.26-1.5-1.41-1.75-.15-.25-.02-.39.11-.51.11-.11.25-.29.37-.44.13-.14.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.13.17 1.77 2.7 4.29 3.79.6.26 1.07.41 1.44.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.07-.11-.23-.17-.48-.3" />
+                        </svg>
+                        WhatsApp
+                    </button>
+                    <button id="btn-share-twitter" class="share-network-btn twitter" type="button">
+                        <svg viewBox="0 0 24 24" class="icon-small" fill="currentColor" aria-hidden="true">
+                            <path
+                                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
+                        X (Twitter)
+                    </button>
+                    <button id="btn-share-telegram" class="share-network-btn telegram" type="button">
+                        <svg viewBox="0 0 24 24" class="icon-small" fill="currentColor" aria-hidden="true">
+                            <path
+                                d="m20.665 3.717-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l-.313 4.672c.458 0 .66-.21.916-.457l2.199-2.138 4.574 3.379c.843.465 1.448.225 1.658-.783l2.998-14.133c.307-1.23-.468-1.787-1.272-1.426z" />
+                        </svg>
+                        Telegram
+                    </button>
+                </div>
+
+                <div class="dialog-actions">
+                    <button id="btn-share-copy" class="gate-primary-button" type="button" data-i18n="copyQuote">Copiar
+                        Citação com Link</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal / Painel de Notificações -->
+        <div id="notifications-dialog" class="auth-gate hidden" role="dialog" aria-modal="true"
+            aria-labelledby="notifications-dialog-title">
+            <div class="auth-gate-card notifications-card">
+                <div class="notifications-card-header">
+                    <h2 id="notifications-dialog-title" class="dialog-eyebrow" data-i18n="notifications">Notificações
+                    </h2>
+                    <div class="notif-header-actions">
+                        <button id="btn-mark-all-read" class="btn-text-action" type="button"
+                            data-i18n="markAllRead">Marcar todas como lidas</button>
+                        <button id="btn-clear-notifications" class="btn-text-action danger-hover" type="button"
+                            data-i18n="clearNotifications">Limpar</button>
+                        <button id="close-notifications-dialog" class="auth-gate-close" type="button"
+                            aria-label="Fechar">x</button>
+                    </div>
+                </div>
+                <div id="notifications-list-container" class="notifications-list-container">
+                    <!-- Preenchido dinamicamente pelo JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Configurações da Experiência do Usuário -->
+        <div id="settings-dialog" class="auth-gate hidden" role="dialog" aria-modal="true"
+            aria-labelledby="settings-dialog-title">
+            <div class="auth-gate-card settings-dialog-card">
+                <div class="settings-card-header">
+                    <h2 id="settings-dialog-title" class="dialog-eyebrow" data-i18n="settings">Configurações</h2>
+                    <button id="close-settings-dialog" class="auth-gate-close" type="button"
+                        aria-label="Fechar">x</button>
+                </div>
+
+                <div class="settings-content-body">
+                    <!-- Seção 1: Comunidade & Descoberta -->
+                    <div class="settings-section">
+                        <h3 class="settings-section-title" data-i18n="settingsCommunityTitle">Comunidade & Descoberta
+                        </h3>
+                        <div class="settings-item">
+                            <div class="settings-item-meta">
+                                <span class="settings-item-name" data-i18n="settingPulseName">Pulso da Comunidade</span>
+                                <span class="settings-item-desc" data-i18n="settingPulseDesc">Exibir logs de atividade
+                                    recente da comunidade acima do mural.</span>
                             </div>
-                            <div class="policy-item" id="settings-policy-cases">
-                                <span class="policy-icon">•</span>
-                                <span data-i18n="policyUpperLower">Letras maiúsculas e minúsculas</span>
-                            </div>
-                            <div class="policy-item" id="settings-policy-num-sym">
-                                <span class="policy-icon">•</span>
-                                <span data-i18n="policyNumberSymbol">Ao menos um número e um símbolo</span>
-                            </div>
+                            <label class="setting-toggle-label">
+                                <input type="checkbox" id="setting-toggle-pulse" class="setting-toggle-checkbox"
+                                    checked>
+                                <span class="setting-toggle-slider"></span>
+                            </label>
                         </div>
+                    </div>
 
-                        <button id="btn-settings-change-password" class="gate-primary-button" type="button" data-i18n="changePassword">Alterar Senha</button>
-                        <p id="settings-password-feedback" class="gate-auth-feedback" role="status"></p>
+                    <!-- Seção 2: Leitura & Tipografia -->
+                    <div class="settings-section">
+                        <h3 class="settings-section-title" data-i18n="settingsReadingTitle">Leitura & Visualização</h3>
+                        <div class="settings-item">
+                            <div class="settings-item-meta">
+                                <span class="settings-item-name" data-i18n="settingDensityName">Densidade do Feed</span>
+                                <span class="settings-item-desc" data-i18n="settingDensityDesc">Ajuste o espaçamento
+                                    entre fragmentos.</span>
+                            </div>
+                            <select id="setting-select-density" class="settings-select-input">
+                                <option value="comfortable" data-i18n="settingDensityComfortable">Confortável (Padrão)
+                                </option>
+                                <option value="compact" data-i18n="settingDensityCompact">Compacto</option>
+                            </select>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-meta">
+                                <span class="settings-item-name" data-i18n="settingFontName">Tamanho do Texto</span>
+                                <span class="settings-item-desc" data-i18n="settingFontDesc">Tamanho da tipografia dos
+                                    fragmentos.</span>
+                            </div>
+                            <select id="setting-select-font" class="settings-select-input">
+                                <option value="small" data-i18n="settingFontSmall">Pequeno</option>
+                                <option value="normal" data-i18n="settingFontNormal" selected>Padrão</option>
+                                <option value="large" data-i18n="settingFontLarge">Grande</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Seção 3: Escrita & Segurança -->
+                    <div class="settings-section">
+                        <h3 class="settings-section-title" data-i18n="settingsWritingTitle">Escrita & Segurança</h3>
+                        <div class="settings-item">
+                            <div class="settings-item-meta">
+                                <span class="settings-item-name" data-i18n="settingAutosaveName">Salvar Rascunho</span>
+                                <span class="settings-item-desc" data-i18n="settingAutosaveDesc">Memorizar texto
+                                    digitado para não perder reflexões não enviadas.</span>
+                            </div>
+                            <label class="setting-toggle-label">
+                                <input type="checkbox" id="setting-toggle-autosave" class="setting-toggle-checkbox"
+                                    checked>
+                                <span class="setting-toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-meta">
+                                <span class="settings-item-name" data-i18n="settingConfirmDeleteName">Confirmar
+                                    Exclusão</span>
+                                <span class="settings-item-desc" data-i18n="settingConfirmDeleteDesc">Exibir aviso de
+                                    confirmação antes de apagar suas publicações.</span>
+                            </div>
+                            <label class="setting-toggle-label">
+                                <input type="checkbox" id="setting-toggle-confirm-delete"
+                                    class="setting-toggle-checkbox" checked>
+                                <span class="setting-toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Seção 4: Segurança & Senha -->
+                    <div id="settings-security-section" class="settings-section">
+                        <h3 class="settings-section-title" data-i18n="securityTitle">Segurança & Senha</h3>
+                        <p class="settings-section-desc" data-i18n="changePasswordDesc">Atualize sua senha fornecendo a
+                            senha atual e a nova.</p>
+
+                        <div class="settings-password-form">
+                            <input id="settings-current-password" class="auth-input" type="password"
+                                placeholder="Senha atual" data-i18n-placeholder="currentPasswordPlaceholder"
+                                autocomplete="current-password">
+                            <input id="settings-new-password" class="auth-input" type="password"
+                                placeholder="Nova senha" data-i18n-placeholder="newPasswordPlaceholder"
+                                autocomplete="new-password">
+                            <input id="settings-confirm-password" class="auth-input" type="password"
+                                placeholder="Confirme sua senha" data-i18n-placeholder="confirmPasswordPlaceholder"
+                                autocomplete="new-password">
+
+                            <div id="settings-policy-checklist" class="password-policy-checklist">
+                                <div class="policy-item" id="settings-policy-len">
+                                    <span class="policy-icon">•</span>
+                                    <span data-i18n="policyMinLength">Mínimo de 8 caracteres</span>
+                                </div>
+                                <div class="policy-item" id="settings-policy-cases">
+                                    <span class="policy-icon">•</span>
+                                    <span data-i18n="policyUpperLower">Letras maiúsculas e minúsculas</span>
+                                </div>
+                                <div class="policy-item" id="settings-policy-num-sym">
+                                    <span class="policy-icon">•</span>
+                                    <span data-i18n="policyNumberSymbol">Ao menos um número e um símbolo</span>
+                                </div>
+                            </div>
+
+                            <button id="btn-settings-change-password" class="gate-primary-button" type="button"
+                                data-i18n="changePassword">Alterar Senha</button>
+                            <p id="settings-password-feedback" class="gate-auth-feedback" role="status"></p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="dialog-actions">
-                <button id="btn-save-settings" class="gate-primary-button" type="button" data-i18n="ready">Pronto</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Banner de Consentimento de Cookies (LGPD / GDPR) -->
-    <aside id="cookie-banner" class="cookie-banner hidden" role="region" aria-label="Consentimento de Cookies">
-        <div class="cookie-banner-content">
-            <p class="cookie-banner-text" data-i18n="cookieBannerText">Utilizamos cookies essenciais e armazenamento local para autenticação, segurança e personalização da sua experiência.</p>
-            <div class="cookie-banner-actions">
-                <button id="btn-accept-cookies" class="cookie-accept-btn" type="button" data-i18n="cookieAccept">Aceitar e Continuar</button>
-            </div>
-        </div>
-    </aside>
-
-    <!-- Modo de Leitura com Respiração (Anti-Scroll / Zen Reader) -->
-    <div id="zen-reader-overlay" class="zen-reader-overlay hidden" role="dialog" aria-modal="true" aria-label="Leitura Contemplativa">
-        <div class="zen-reader-container">
-            <div class="zen-top-bar">
-                <span class="zen-badge">Leitura Contemplativa</span>
-                <span id="zen-progress" class="zen-progress">1 / 1</span>
-                <button id="btn-close-zen" class="zen-close-btn" type="button" aria-label="Fechar leitor">Fechar [ESC]</button>
-            </div>
-            <article class="zen-card" id="zen-current-card">
-                <div class="zen-meta">
-                    <span id="zen-tag" class="zen-tag">Filosofia</span>
-                    <span id="zen-author" class="zen-author">por Pensador</span>
+                <div class="dialog-actions">
+                    <button id="btn-save-settings" class="gate-primary-button" type="button"
+                        data-i18n="ready">Pronto</button>
                 </div>
-                <p id="zen-content" class="zen-content">...</p>
-                <p id="zen-citation" class="zen-citation hidden"></p>
-                <div class="zen-breath-guide">
-                    <div class="zen-pulse-ring" aria-hidden="true"></div>
-                    <span class="zen-breath-text">Respire e contemple o pensamento</span>
-                </div>
-            </article>
-            <div class="zen-nav-bar">
-                <button id="btn-zen-prev" class="zen-nav-btn" type="button">← Anterior</button>
-                <button id="btn-zen-next" class="zen-nav-btn primary" type="button">Próximo Pensamento →</button>
             </div>
         </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module" src="js/main.js"></script>
+        <!-- Banner de Consentimento de Cookies (LGPD / GDPR) -->
+        <aside id="cookie-banner" class="cookie-banner hidden" role="region" aria-label="Consentimento de Cookies">
+            <div class="cookie-banner-content">
+                <p class="cookie-banner-text" data-i18n="cookieBannerText">Utilizamos cookies essenciais e armazenamento
+                    local para autenticação, segurança e personalização da sua experiência.</p>
+                <div class="cookie-banner-actions">
+                    <button id="btn-accept-cookies" class="cookie-accept-btn" type="button"
+                        data-i18n="cookieAccept">Aceitar e Continuar</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Modo de Leitura com Respiração (Anti-Scroll / Zen Reader) -->
+        <div id="zen-reader-overlay" class="zen-reader-overlay hidden" role="dialog" aria-modal="true"
+            aria-label="Leitura Contemplativa">
+            <div class="zen-reader-container">
+                <div class="zen-top-bar">
+                    <span class="zen-badge">Leitura Contemplativa</span>
+                    <span id="zen-progress" class="zen-progress">1 / 1</span>
+                    <button id="btn-close-zen" class="zen-close-btn" type="button"
+                        aria-label="Fechar leitor">Fechar</button>
+                </div>
+                <article class="zen-card" id="zen-current-card">
+                    <div class="zen-meta">
+                        <span id="zen-tag" class="zen-tag">Filosofia</span>
+                        <span id="zen-author" class="zen-author">por Pensador</span>
+                    </div>
+                    <p id="zen-content" class="zen-content">...</p>
+                    <p id="zen-citation" class="zen-citation hidden"></p>
+                    <div class="zen-breath-guide">
+                        <div class="zen-pulse-ring" aria-hidden="true"></div>
+                        <span class="zen-breath-text">Respire e contemple o pensamento</span>
+                    </div>
+                </article>
+                <div class="zen-nav-bar">
+                    <button id="btn-zen-prev" class="zen-nav-btn" type="button">← Anterior</button>
+                    <button id="btn-zen-next" class="zen-nav-btn primary" type="button">Próximo Pensamento →</button>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script type="module" src="js/main.js"></script>
 </body>
+
 </html>
