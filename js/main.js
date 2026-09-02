@@ -13,7 +13,6 @@ import { initSettings, openSettingsDialog, closeSettingsDialog } from './setting
 import { initTopics, normalizeTagName, fetchCommunityTopics } from './topics.js';
 
 import { initZenReader } from './reader.js';
-import { initBalanca } from './balanca.js';
 
 // Elementos Principais do DOM
 const btnHome = document.getElementById('btn-home');
@@ -100,13 +99,10 @@ export async function showFeed(feedType) {
     // Se for global com usuário autenticado, exibe o composer
     writeSection?.classList.toggle('hidden', !state.authenticatedUser || !isGlobal);
     readSection?.classList.remove('hidden');
-    document.getElementById('balanca-section')?.classList.add('hidden');
 
     // Sincroniza abas de modo
     const tabAcervo = document.getElementById('tab-mode-acervo');
-    const tabBalanca = document.getElementById('tab-mode-balanca');
     tabAcervo?.classList.toggle('active', isGlobal);
-    tabBalanca?.classList.remove('active');
 
     const filterLabel = document.querySelector('.filter-label');
     if (filterLabel) {
@@ -253,10 +249,6 @@ function setupEventListeners() {
     });
     backToFeed?.addEventListener('click', () => showFeed('global'));
     feedFilter?.addEventListener('change', () => loadIdeas());
-
-    // O modo "A Balança" foi removido.
-    // Publicar Ideia
-    // A global btnSave is already declared
 
     // Tema Noturno (Sidebar e Header Rápido)
     const btnThemeQuickToggle = document.getElementById('btn-theme-quick-toggle');
@@ -702,7 +694,6 @@ export async function initApp() {
     initCookieBanner();
     initTopics();
     initZenReader();
-    initBalanca();
     initCommunityPulse({
         onNavigateProfile: showProfile,
         onNavigateEntry: navigateToEntry
