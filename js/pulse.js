@@ -170,7 +170,7 @@ function formatPulseText(event) {
         return `${actor} ${translate('commentedOnIdea')}`;
     }
     if (event.type === 'entry') {
-        const tag = event.tag ? ` <em>#${escapeHTML(event.tag)}</em>` : '';
+        const tag = event.tag ? ` em <em>${escapeHTML(event.tag)}</em>` : '';
         return `${actor} ${translate('publishedIdea')}${tag}`;
     }
     if (event.type === 'vote') {

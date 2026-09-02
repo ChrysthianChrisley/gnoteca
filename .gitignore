@@ -19,9 +19,6 @@ Thumbs.db
 .env.*.local
 *.env
 
-# Configuração local com chaves do Supabase (use js/config.example.js como base)
-js/config.js
-
 # VS Code e IDEs
 .vscode/*
 !.vscode/settings.json

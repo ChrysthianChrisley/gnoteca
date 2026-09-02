@@ -271,13 +271,7 @@ export function applyLanguage(language, reload = true) {
     setLanguage(language);
     document.querySelectorAll('[data-i18n]').forEach(element => {
         const translated = translate(element.dataset.i18n);
-        if (element.classList.contains('topic-pill')) {
-            element.textContent = element.dataset.tag === 'Todos' ? translated : `#${translated}`;
-        } else if (element.tagName === 'OPTION' && element.closest('#write-tag-select')) {
-            element.textContent = element.value === '__custom__' || element.value === 'Todos' ? translated : `#${translated}`;
-        } else {
-            element.textContent = translated;
-        }
+        element.textContent = translated;
     });
     document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
         element.placeholder = translate(element.dataset.i18nPlaceholder);

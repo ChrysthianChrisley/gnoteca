@@ -71,7 +71,7 @@ export function renderIdeaCard(idea) {
     const displayCategory = getTranslatedTopic(rawCategory);
     
     const tagsHtml = idea.tags?.length > 0 
-        ? idea.tags.map(t => `<span class="card-tag-pill tag-secondary">#${escapeHTML(t)}</span>`).join(' ')
+        ? idea.tags.map(t => `<button class="card-tag-pill tag-secondary" type="button" data-action="tag" data-tag="${escapeHTML(t)}">${escapeHTML(t)}</button>`).join(' ')
         : '';
 
     let mainContent = idea.content || '';
@@ -89,7 +89,7 @@ export function renderIdeaCard(idea) {
                 </div>
             </div>
         </div>
-        <div class="idea-tags-row" style="margin-bottom: 0.5rem;">${tagsHtml}</div>
+        <div class="idea-tags-row">${tagsHtml}</div>
         <p class="idea-content">${escapeHTML(mainContent).replace(/\n/g, '<br>')}</p>
         ${citationHtml}
         <div class="idea-actions">
@@ -128,7 +128,7 @@ export function renderBlurredTeaserCard(idea) {
         <div class="blurred-content-wrapper">
             <div class="idea-header">
                 <span class="idea-date">Recentemente<span class="idea-author">${translate('by')} ${authorHtml}</span></span>
-                <span class="card-tag-pill">#${escapeHTML(displayTag)}</span>
+                <span class="card-tag-pill">${escapeHTML(displayTag)}</span>
             </div>
             <p class="idea-content">${escapeHTML(idea?.content || 'A expansão da mente humana depende da capacidade de questionar e preservar o conhecimento...')}</p>
         </div>
