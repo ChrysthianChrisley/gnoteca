@@ -248,7 +248,7 @@ function setupEventListeners() {
     const tabWriteDilemma = document.getElementById('tab-write-dilemma');
     const composerNormal = document.getElementById('composer-normal');
     const composerDilemma = document.getElementById('composer-dilemma');
-    const btnSave = document.getElementById('btn-save');
+    // A global btnSave is already declared
 
     tabWriteNormal?.addEventListener('click', () => {
         tabWriteNormal.classList.add('active');
@@ -301,7 +301,7 @@ function setupEventListeners() {
     });
 
     // Publicar Ideia
-    const btnSave = document.getElementById('btn-save');
+    // A global btnSave is already declared
 
     // Tema Noturno (Sidebar e Header Rápido)
     const btnThemeQuickToggle = document.getElementById('btn-theme-quick-toggle');
