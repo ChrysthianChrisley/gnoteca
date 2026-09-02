@@ -1212,7 +1212,7 @@ export async function handleFeedClick(event, onNavigateProfile) {
         let newUpCount = prevUpCount;
         let newDownCount = prevDownCount;
 
-        if (action === 'upvote') {
+        if (targetType === 'up') {
             if (prevUpSelected) {
                 newUpSelected = false;
                 newUpCount = Math.max(0, prevUpCount - 1);
@@ -1245,7 +1245,7 @@ export async function handleFeedClick(event, onNavigateProfile) {
         if (downCountEl) downCountEl.textContent = newDownCount;
 
         try {
-            if ((action === 'upvote' && prevUpSelected) || (action === 'downvote' && prevDownSelected)) {
+            if ((targetType === 'up' && prevUpSelected) || (targetType === 'down' && prevDownSelected)) {
                 const { error } = await supabaseClient
                     .from('votes')
                     .delete()
