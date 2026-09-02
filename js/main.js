@@ -242,6 +242,28 @@ function setupEventListeners() {
     btnProfile?.addEventListener('click', () => toggleSidebar(true));
     btnCloseSidebar?.addEventListener('click', () => toggleSidebar(false));
     sidebarOverlay?.addEventListener('click', () => toggleSidebar(false));
+
+    // Tabs do Composer
+    const tabWriteNormal = document.getElementById('tab-write-normal');
+    const tabWriteDilemma = document.getElementById('tab-write-dilemma');
+    const composerNormal = document.getElementById('composer-normal');
+    const composerDilemma = document.getElementById('composer-dilemma');
+    const btnSave = document.getElementById('btn-save');
+
+    tabWriteNormal?.addEventListener('click', () => {
+        tabWriteNormal.classList.add('active');
+        tabWriteDilemma.classList.remove('active');
+        composerNormal.classList.remove('hidden');
+        composerDilemma.classList.add('hidden');
+        btnSave.textContent = translate('saveToGnoteca') || 'Publicar no Mural';
+    });
+    tabWriteDilemma?.addEventListener('click', () => {
+        tabWriteDilemma.classList.add('active');
+        tabWriteNormal.classList.remove('active');
+        composerDilemma.classList.remove('hidden');
+        composerNormal.classList.add('hidden');
+        btnSave.textContent = 'Lançar Dilema';
+    });
     btnHome?.addEventListener('click', () => showFeed('global'));
     overviewMenu?.addEventListener('click', () => {
         toggleSidebar(false);
@@ -416,14 +438,44 @@ function setupEventListeners() {
     });
 
     btnSave?.addEventListener('click', async () => {
-        const text = ideaInput?.value.trim();
-        if (!text) return;
+        const isDilemma = document.getElementById('tab-write-dilemma')?.classList.contains('active');
+        
+        let finalContent = '';
+        let dilemmaMeta = null;
+
+        if (isDilemma) {
+            const title = document.getElementById('dilemma-title-input')?.value.trim();
+            const viewA = document.getElementById('dilemma-a-input')?.value.trim();
+            const viewB = document.getElementById('dilemma-b-input')?.value.trim();
+
+            if (!title || !viewA || !viewB) {
+                showActionFeedback('Preencha o título e as duas visões para criar o dilema.');
+                return;
+            }
+            finalContent = title;
+            dilemmaMeta = {
+                is_dilemma: true,
+                view_a: viewA,
+                view_b: viewB
+            };
+        } else {
+            const text = ideaInput?.value.trim();
+            if (!text) return;
+            const citationInput = document.getElementById('write-citation-input');
+            const citation = citationInput?.value.trim() || '';
+            finalContent = text;
+            if (citation) {
+                finalContent = `${text}\n\n— Fonte: ${citation}`;
+            }
+            if (finalContent.length > 280) {
+                showActionFeedback('Com a citação, o fragmento ultrapassa 280 caracteres.');
+                return;
+            }
+        }
 
         const writeTagInput = document.getElementById('write-tag-input');
         const rawTag = writeTagInput?.dataset?.canonicalTag || writeTagInput?.value || 'Geral';
         const selectedTag = normalizeTagName(rawTag);
-        const citationInput = document.getElementById('write-citation-input');
-        const citation = citationInput?.value.trim() || '';
 
         // Se for para o Acervo Público
         if (!state.authenticatedUser) {
@@ -431,24 +483,20 @@ function setupEventListeners() {
             return;
         }
 
-        let finalContent = text;
-        if (citation) {
-            finalContent = `${text}\n\n— Fonte: ${citation}`;
-        }
-        if (finalContent.length > 280) {
-            showActionFeedback('Com a citação, o fragmento ultrapassa 280 caracteres. Reduza um pouco o texto.');
-            return;
-        }
-
         btnSave.disabled = true;
         try {
+            const payload = {
+                content: finalContent,
+                tag: selectedTag,
+                author_id: state.authenticatedUser.id
+            };
+            if (dilemmaMeta) {
+                payload.metadata = dilemmaMeta;
+            }
+
             const { error } = await supabaseClient
                 .from('entries')
-                .insert([{
-                    content: finalContent,
-                    tag: selectedTag,
-                    author_id: state.authenticatedUser.id
-                }]);
+                .insert([payload]);
 
             if (error) {
                 console.error('Error saving entry:', error);
@@ -457,7 +505,16 @@ function setupEventListeners() {
             }
 
             if (ideaInput) ideaInput.value = '';
+            const citationInput = document.getElementById('write-citation-input');
             if (citationInput) citationInput.value = '';
+            
+            const titleInput = document.getElementById('dilemma-title-input');
+            const viewAInput = document.getElementById('dilemma-a-input');
+            const viewBInput = document.getElementById('dilemma-b-input');
+            if (titleInput) titleInput.value = '';
+            if (viewAInput) viewAInput.value = '';
+            if (viewBInput) viewBInput.value = '';
+
             if (writeTagInput) {
                 writeTagInput.value = 'Geral';
                 delete writeTagInput.dataset.canonicalTag;

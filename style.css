@@ -3931,4 +3931,73 @@ body:not(.dark-mode) .zen-reader-overlay {
         font-size: 1.2rem;
     }
 }
-
+
+/* Composer Dilemma Mode */
+.write-type-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+.write-tab {
+    background: transparent;
+    border: none;
+    color: var(--muted-color);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+.write-tab.active {
+    background: var(--surface-glass);
+    color: var(--text-color);
+}
+.dilemma-title-input {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.8rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--text-color);
+    margin-bottom: 1rem;
+}
+.dilemma-views-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+.dilemma-view-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.dilemma-view-label {
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.dilemma-view-label.thesis { color: #3b82f6; }
+.dilemma-view-label.antithesis { color: #ef4444; }
+.dilemma-view-col textarea {
+    width: 100%;
+    min-height: 120px;
+    background: var(--surface-glass);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.8rem;
+    color: var(--text-color);
+    resize: none;
+}
+@media (max-width: 768px) {
+    .dilemma-views-inputs {
+        grid-template-columns: 1fr;
+    }
+}
+

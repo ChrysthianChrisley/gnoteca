@@ -233,10 +233,33 @@
 
         <!-- Tela de Registro -->
         <section id="write-section" class="hidden">
-            <textarea id="idea-input" maxlength="280" placeholder="Qual conceito, hipótese ou insight deseja registrar?" data-i18n-placeholder="ideaPlaceholder"></textarea>
-            
-            <div class="write-citation-row">
-                <input id="write-citation-input" class="citation-input" type="text" maxlength="120" placeholder="Origem / Citação / Livro (opcional. Ex: Sêneca, Da Brevidade da Vida)">
+            <div class="write-type-tabs">
+                <button type="button" id="tab-write-normal" class="write-tab active">Fragmento Livre</button>
+                <button type="button" id="tab-write-dilemma" class="write-tab">Propor Dilema</button>
+            </div>
+
+            <!-- Composer Normal -->
+            <div id="composer-normal" class="composer-mode">
+                <textarea id="idea-input" maxlength="280" placeholder="Qual conceito, hipótese ou insight deseja registrar?" data-i18n-placeholder="ideaPlaceholder"></textarea>
+                
+                <div class="write-citation-row">
+                    <input id="write-citation-input" class="citation-input" type="text" maxlength="120" placeholder="Origem / Citação / Livro (opcional. Ex: Sêneca, Da Brevidade da Vida)">
+                </div>
+            </div>
+
+            <!-- Composer Dilema -->
+            <div id="composer-dilemma" class="composer-mode hidden">
+                <input id="dilemma-title-input" class="dilemma-title-input" type="text" maxlength="60" placeholder="Qual o confronto? (Ex: Remoto vs Presencial)">
+                <div class="dilemma-views-inputs">
+                    <div class="dilemma-view-col">
+                        <span class="dilemma-view-label thesis">Visão A</span>
+                        <textarea id="dilemma-a-input" maxlength="280" placeholder="Descreva a primeira perspectiva..."></textarea>
+                    </div>
+                    <div class="dilemma-view-col">
+                        <span class="dilemma-view-label antithesis">Visão B</span>
+                        <textarea id="dilemma-b-input" maxlength="280" placeholder="Descreva o contraponto..."></textarea>
+                    </div>
+                </div>
             </div>
 
             <div class="write-meta-bar">

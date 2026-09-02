@@ -2,153 +2,157 @@
 // Gnoteca — Módulo A Balança (Confronto Dialético & Síntese Coletiva)
 // =============================================================================
 
+import { supabaseClient } from './config.js';
 import { state } from './state.js';
 import { showActionFeedback, escapeHTML } from './utils.js';
+import { showAuthGate } from './auth.js';
 
-const BALANCA_PAIRS = [
-    {
-        id: 'par-1',
-        title: 'Trabalho Remoto vs. Presencial',
-        thesis: {
-            text: 'O trabalho remoto liberta as pessoas do trânsito, dando mais tempo para a família e qualidade de vida.',
-            author: 'Defensor do Remoto',
-            citation: ''
-        },
-        antithesis: {
-            text: 'Trabalhar em casa nos isola. É no convívio presencial que a cultura, a amizade e as ideias criativas nascem.',
-            author: 'Defensor do Presencial',
-            citation: ''
-        }
-    },
-    {
-        id: 'par-2',
-        title: 'Livro Físico vs. Leitura Digital',
-        thesis: {
-            text: 'O livro físico proporciona uma experiência tátil única. O cheiro do papel e o peso do livro ajudam na imersão e na memória.',
-            author: 'Leitor Tradicional',
-            citation: ''
-        },
-        antithesis: {
-            text: 'Os leitores digitais permitem carregar mil livros no bolso, ler no escuro e pesquisar palavras instantaneamente. É o futuro inevitável.',
-            author: 'Entusiasta Digital',
-            citation: ''
-        }
-    },
-    {
-        id: 'par-3',
-        title: 'Buscar Paixão vs. Buscar Estabilidade',
-        thesis: {
-            text: 'A vida é curta demais para trabalhar com algo que você não ama. Siga sua paixão, e o sucesso financeiro virá como consequência.',
-            author: 'Visão Romântica',
-            citation: ''
-        },
-        antithesis: {
-            text: 'Paixões mudam com o tempo. É melhor garantir estabilidade financeira primeiro para então financiar seus hobbies e paixões nas horas livres.',
-            author: 'Visão Pragmática',
-            citation: ''
-        }
-    }
-];
-
+let dynamicDilemmas = [];
 let currentPairIndex = 0;
 
 /**
- * Retorna as sínteses salvas no armazenamento local.
- * @returns {Array<object>}
+ * Busca dilemas criados pela comunidade no banco de dados.
  */
-export function getStoredSyntheses() {
+export async function fetchDilemmas() {
     try {
-        const raw = localStorage.getItem('gnoteca_balanca_syntheses');
-        return raw ? JSON.parse(raw) : [];
-    } catch {
-        return [];
+        const { data, error } = await supabaseClient
+            .from('entries')
+            .select(`
+                id, content, created_at, author_id, metadata,
+                profiles:author_id (id, display_name, username, title, avatar_url)
+            `)
+            .filter('metadata->is_dilemma', 'eq', 'true')
+            .order('created_at', { ascending: false })
+            .limit(10);
+
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+            dynamicDilemmas = data;
+            currentPairIndex = 0;
+            renderBalanca();
+        } else {
+            renderEmptyBalanca();
+        }
+    } catch (err) {
+        console.error('Error fetching dilemmas:', err);
     }
 }
 
 /**
- * Salva uma nova proposta de síntese.
- * @param {string} pairId
- * @param {string} content
+ * Renderiza estado vazio da Balança
  */
-export function saveSynthesis(pairId, content) {
-    const list = getStoredSyntheses();
-    const newSyn = {
-        id: 'syn_' + Date.now(),
-        pairId,
-        authorName: state.authenticatedUser ? (state.authenticatedUser.name || 'Pensador') : 'Você',
-        content: content.trim(),
-        date: 'Agora'
-    };
-    list.unshift(newSyn);
-    localStorage.setItem('gnoteca_balanca_syntheses', JSON.stringify(list));
-    return newSyn;
-}
-
-export function deleteSynthesis(id) {
-    const list = getStoredSyntheses().filter(s => s.id !== id);
-    localStorage.setItem('gnoteca_balanca_syntheses', JSON.stringify(list));
+function renderEmptyBalanca() {
+    const titleEl = document.querySelector('.balanca-title');
+    const thesisContent = document.getElementById('balanca-thesis-content');
+    const antithesisContent = document.getElementById('balanca-antithesis-content');
+    const indicator = document.getElementById('balanca-dilemma-indicator');
+    
+    if (indicator) indicator.textContent = 'Nenhum dilema proposto ainda';
+    if (titleEl) titleEl.textContent = 'A Balança de Ideias';
+    if (thesisContent) thesisContent.textContent = "Proponha o primeiro dilema no Mural!";
+    if (antithesisContent) antithesisContent.textContent = "Proponha o primeiro dilema no Mural!";
+    
+    const container = document.getElementById('syntheses-items');
+    if (container) container.innerHTML = '';
 }
 
 /**
  * Renderiza o confronto atual da Balança.
  */
 export function renderBalanca() {
-    const pair = BALANCA_PAIRS[currentPairIndex];
-    if (!pair) return;
-
-    const indicator = document.getElementById('balanca-dilemma-indicator');
-    const thesisAuthor = document.getElementById('balanca-thesis-author');
-    const thesisContent = document.getElementById('balanca-thesis-content');
-    const thesisCitation = document.querySelector('#balanca-thesis-card .balanca-citation');
-
-    const antithesisAuthor = document.getElementById('balanca-antithesis-author');
-    const antithesisContent = document.getElementById('balanca-antithesis-content');
-    const antithesisCitation = document.querySelector('#balanca-antithesis-card .balanca-citation');
-
-    if (indicator) {
-        indicator.textContent = `Dilema ${currentPairIndex + 1} de ${BALANCA_PAIRS.length}: ${pair.title}`;
-    }
-
-    if (thesisAuthor) thesisAuthor.textContent = pair.thesis.author;
-    if (thesisContent) thesisContent.textContent = `"${pair.thesis.text}"`;
-    if (thesisCitation) thesisCitation.textContent = `— Citação: ${pair.thesis.citation}`;
-
-    if (antithesisAuthor) antithesisAuthor.textContent = pair.antithesis.author;
-    if (antithesisContent) antithesisContent.textContent = `"${pair.antithesis.text}"`;
-    if (antithesisCitation) antithesisCitation.textContent = `— Citação: ${pair.antithesis.citation}`;
-
-    renderSynthesesList(pair.id);
-}
-
-/**
- * Renderiza a lista de sínteses submetidas para o par de perspectivas.
- * @param {string} pairId
- */
-function renderSynthesesList(pairId) {
-    const container = document.getElementById('syntheses-items');
-    if (!container) return;
-
-    const list = getStoredSyntheses().filter(s => s.pairId === pairId);
-    if (list.length === 0) {
-        container.innerHTML = '<p class="empty-syntheses" style="font-style:italic; color:var(--muted-color); padding: 1rem 0;">Nenhum comentário ainda.</p>';
+    const dilemma = dynamicDilemmas[currentPairIndex];
+    if (!dilemma) {
+        renderEmptyBalanca();
         return;
     }
 
-    container.innerHTML = list.map(s => `
-        <div class="synthesis-card">
-            <div class="synthesis-card-header">
-                <span class="synthesis-badge">Síntese Proposta</span>
-                <span class="synthesis-author">${escapeHTML(s.authorName)} • ${escapeHTML(s.date)}</span>
+    const titleEl = document.querySelector('.balanca-title');
+    const thesisAuthor = document.getElementById('balanca-thesis-author');
+    const thesisContent = document.getElementById('balanca-thesis-content');
+    
+    const antithesisAuthor = document.getElementById('balanca-antithesis-author');
+    const antithesisContent = document.getElementById('balanca-antithesis-content');
+
+    if (titleEl) {
+        titleEl.textContent = dilemma.content; // O título do dilema
+    }
+
+    if (thesisAuthor) thesisAuthor.textContent = ''; // Limpamos, pois não faz sentido um autor pra visão A e outro pra B
+    if (thesisContent) thesisContent.textContent = `"${dilemma.metadata.view_a}"`;
+
+    if (antithesisAuthor) antithesisAuthor.textContent = '';
+    if (antithesisContent) antithesisContent.textContent = `"${dilemma.metadata.view_b}"`;
+
+    renderSynthesesList(dilemma.id);
+}
+
+/**
+ * Busca e renderiza os comentários (antigas sínteses) para o dilema
+ */
+async function renderSynthesesList(dilemmaId) {
+    const container = document.getElementById('syntheses-items');
+    if (!container) return;
+
+    container.innerHTML = '<p style="color:var(--muted-color); padding: 1rem 0;">Carregando comentários...</p>';
+
+    try {
+        const { data: comments, error } = await supabaseClient
+            .from('entries')
+            .select(`
+                id, content, created_at,
+                profiles:author_id (id, display_name, username)
+            `)
+            .eq('parent_id', dilemmaId)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (!comments || comments.length === 0) {
+            container.innerHTML = '<p class="empty-syntheses" style="font-style:italic; color:var(--muted-color); padding: 1rem 0;">Nenhum comentário ainda. Seja o primeiro a refletir sobre este dilema!</p>';
+            return;
+        }
+
+        container.innerHTML = comments.map(c => {
+            const author = c.profiles?.display_name || c.profiles?.username || 'Pensador';
+            const dateObj = new Date(c.created_at);
+            const dateStr = dateObj.toLocaleDateString();
+            
+            return `
+            <div class="synthesis-card">
+                <div class="synthesis-card-header">
+                    <span class="synthesis-badge">Comentário</span>
+                    <span class="synthesis-author">${escapeHTML(author)} • ${dateStr}</span>
+                </div>
+                <p class="synthesis-card-text">${escapeHTML(c.content)}</p>
+                ${state.authenticatedUser && c.profiles?.id === state.authenticatedUser.id ? `
+                <div class="synthesis-actions-bar" style="margin-top: 0.5rem; display: flex; gap: 0.5rem; justify-content: flex-end;">
+                    <button class="entry-action delete-synthesis" data-id="${c.id}" style="font-size: 0.75rem; color: #ef4444;">Apagar</button>
+                </div>
+                ` : ''}
             </div>
-            <p class="synthesis-card-text">${escapeHTML(s.content)}</p>
-            ${s.authorName === 'Você' || (state.authenticatedUser && s.authorName === state.authenticatedUser.name) ? `
-            <div class="synthesis-actions-bar" style="margin-top: 0.5rem; display: flex; gap: 0.5rem; justify-content: flex-end;">
-                <button class="entry-action edit-synthesis" data-id="${s.id}" style="font-size: 0.75rem;">Editar</button>
-                <button class="entry-action delete-synthesis" data-id="${s.id}" style="font-size: 0.75rem; color: #ef4444;">Apagar</button>
-            </div>
-            ` : ''}
-        </div>
-    `).join('');
+            `;
+        }).join('');
+    } catch (err) {
+        console.error('Error fetching comments:', err);
+        container.innerHTML = '<p style="color:var(--danger-color);">Erro ao carregar comentários.</p>';
+    }
+}
+
+async function deleteSynthesis(id) {
+    try {
+        const { error } = await supabaseClient
+            .from('entries')
+            .delete()
+            .eq('id', id);
+        
+        if (error) throw error;
+        showActionFeedback('Comentário apagado.');
+        renderSynthesesList(dynamicDilemmas[currentPairIndex].id);
+    } catch (err) {
+        console.error('Error deleting comment:', err);
+        showActionFeedback('Erro ao apagar comentário.');
+    }
 }
 
 /**
@@ -162,16 +166,18 @@ export function initBalanca() {
     const btnNext = document.getElementById('btn-balanca-next');
 
     btnPrev?.addEventListener('click', () => {
+        if (dynamicDilemmas.length <= 1) return;
         if (currentPairIndex > 0) {
             currentPairIndex--;
         } else {
-            currentPairIndex = BALANCA_PAIRS.length - 1;
+            currentPairIndex = dynamicDilemmas.length - 1;
         }
         renderBalanca();
     });
 
     btnNext?.addEventListener('click', () => {
-        if (currentPairIndex < BALANCA_PAIRS.length - 1) {
+        if (dynamicDilemmas.length <= 1) return;
+        if (currentPairIndex < dynamicDilemmas.length - 1) {
             currentPairIndex++;
         } else {
             currentPairIndex = 0;
@@ -187,71 +193,61 @@ export function initBalanca() {
     }
 
     if (btnSubmit && input) {
-        btnSubmit.addEventListener('click', () => {
+        btnSubmit.addEventListener('click', async () => {
+            if (!state.authenticatedUser) {
+                showAuthGate();
+                return;
+            }
+
             const text = input.value.trim();
             if (!text) {
-                showActionFeedback('Escreva sua conclusão antes de enviar.');
+                showActionFeedback('Escreva seu comentário antes de enviar.');
                 return;
             }
             if (text.length > 280) {
-                showActionFeedback('A conclusão deve ter no máximo 280 caracteres.');
+                showActionFeedback('O comentário deve ter no máximo 280 caracteres.');
                 return;
             }
 
-            const currentPair = BALANCA_PAIRS[currentPairIndex];
-            const editId = btnSubmit.dataset.editId;
+            const currentDilemma = dynamicDilemmas[currentPairIndex];
+            if (!currentDilemma) return;
             
-            if (editId) {
-                // Modo Edição
-                const list = getStoredSyntheses();
-                const index = list.findIndex(s => s.id === editId);
-                if (index !== -1) {
-                    list[index].content = text;
-                    list[index].date = 'Editado agora';
-                    localStorage.setItem('gnoteca_balanca_syntheses', JSON.stringify(list));
-                    showActionFeedback('Conclusão editada com sucesso!');
-                }
-                btnSubmit.removeAttribute('data-editId');
-                btnSubmit.textContent = 'Compartilhar Conclusão';
-            } else {
-                // Modo Criação
-                saveSynthesis(currentPair.id, text);
-                showActionFeedback('Conclusão compartilhada com sucesso!');
+            btnSubmit.disabled = true;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('entries')
+                    .insert([{
+                        content: text,
+                        author_id: state.authenticatedUser.id,
+                        parent_id: currentDilemma.id
+                    }]);
+                
+                if (error) throw error;
+                
+                showActionFeedback('Comentário publicado!');
+                input.value = '';
+                if (counter) counter.textContent = '0 / 280';
+                renderSynthesesList(currentDilemma.id);
+            } catch (err) {
+                console.error('Save synthesis error:', err);
+                showActionFeedback('Erro ao publicar comentário.');
+            } finally {
+                btnSubmit.disabled = false;
             }
-            
-            input.value = '';
-            if (counter) counter.textContent = '0 / 280';
-            renderSynthesesList(currentPair.id);
         });
     }
 
-    // Delegação de eventos para Editar/Apagar Sínteses
+    // Delegação de eventos para Apagar Sínteses
     const synthesesContainer = document.getElementById('syntheses-items');
     if (synthesesContainer) {
         synthesesContainer.addEventListener('click', (e) => {
             if (e.target.classList.contains('delete-synthesis')) {
                 const id = e.target.dataset.id;
                 deleteSynthesis(id);
-                renderSynthesesList(BALANCA_PAIRS[currentPairIndex].id);
-                showActionFeedback('Conclusão apagada.');
-            }
-            
-            if (e.target.classList.contains('edit-synthesis')) {
-                const id = e.target.dataset.id;
-                const list = getStoredSyntheses();
-                const syn = list.find(s => s.id === id);
-                if (syn && input) {
-                    input.value = syn.content;
-                    if (counter) counter.textContent = `${syn.content.length} / 280`;
-                    input.focus();
-                    if (btnSubmit) {
-                        btnSubmit.textContent = 'Salvar Edição';
-                        btnSubmit.dataset.editId = id;
-                    }
-                }
             }
         });
     }
 
-    renderBalanca();
+    fetchDilemmas();
 }
